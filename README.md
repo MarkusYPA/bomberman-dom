@@ -9,6 +9,7 @@ Now with chat!
 
 Run with:
 ````
+npm install
 node server.mjs
 ````
 
