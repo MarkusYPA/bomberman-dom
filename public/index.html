@@ -2,14 +2,18 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <title>Move the Square</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Multiplayer Game</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-    <div id="game"></div>
-    <script type="module" src="client.js"></script>
+    <div id="game" class="game-area"></div>
+    <div class="chat-area">
+        <div id="chat" class="chat-box"></div>
+        <input id="chatInput" placeholder="Type a message..." />
+        <button id="send">Send</button>
+    </div>
+    <script src="client.js"></script>
 </body>
 
 </html>

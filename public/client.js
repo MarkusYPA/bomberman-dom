@@ -1,37 +1,47 @@
-const gameArea = document.getElementById("game");
-const socket = new WebSocket(`ws://${location.host}`);
+const nickname = prompt("Enter your nickname (max 12 chars):").slice(0, 12);
+const ws = new WebSocket(`ws://${location.host}`);
 
-let state = {};
+ws.addEventListener("open", () => {
+    ws.send(JSON.stringify({ type: "join", nickname }));
+});
 
 document.addEventListener("keydown", (e) => {
-    const dir = {
-        ArrowUp: "up",
-        ArrowDown: "down",
-        ArrowLeft: "left",
-        ArrowRight: "right",
-    }[e.key];
-
-    if (dir) {
-        socket.send(JSON.stringify({ type: "input", payload: dir }));
+    const map = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" };
+    if (map[e.key]) {
+        ws.send(JSON.stringify({ type: "input", payload: map[e.key] }));
     }
 });
 
-socket.addEventListener("message", (event) => {
-    const data = JSON.parse(event.data);
-    if (data.type === "state") {
-        state = data.payload;
-        render();
+ws.addEventListener("message", (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.type === "state") {
+        render(msg.payload);
+    } else if (msg.type === "chat") {
+        const p = document.createElement("p");
+        p.textContent = `${msg.nickname}: ${msg.message}`;
+        document.getElementById("chat").appendChild(p);
     }
 });
 
-function render() {
-    gameArea.innerHTML = "";
-    for (const id in state) {
-        const p = state[id];
-        const el = document.createElement("div");
-        el.className = "player";
-        el.style.left = `${p.x}px`;
-        el.style.top = `${p.y}px`;
-        gameArea.appendChild(el);
+function render(players) {
+    const box = document.getElementById("game");
+    box.innerHTML = "";
+    for (const id in players) {
+        const p = players[id];
+        const d = document.createElement("div");
+        d.className = "player";
+        d.style.left = `${100 + p.x * 20}px`;
+        d.style.top = `${100 + p.y * 20}px`;
+        d.textContent = p.nickname;
+        box.appendChild(d);
     }
 }
+
+document.getElementById("send").onclick = () => {
+    const input = document.getElementById("chatInput");
+    const msg = input.value.trim();
+    if (msg) {
+        ws.send(JSON.stringify({ type: "chat", message: msg }));
+        input.value = "";
+    }
+};
