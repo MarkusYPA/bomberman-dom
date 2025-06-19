@@ -1,0 +1,20 @@
+body {
+  margin: 0;
+  background: #222;
+}
+
+#game {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  margin: 20px auto;
+  background: #fff;
+  border: 2px solid black;
+}
+
+.player {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: red;
+}
