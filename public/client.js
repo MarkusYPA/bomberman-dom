@@ -5,10 +5,29 @@ ws.addEventListener("open", () => {
     ws.send(JSON.stringify({ type: "join", nickname }));
 });
 
+// Track held keys
+const held = new Set();
+const keyMap = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" };
+
+function sendHeld() {
+    ws.send(JSON.stringify({ type: "input", payload: Array.from(held) }));
+}
+
 document.addEventListener("keydown", (e) => {
-    const map = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" };
-    if (map[e.key]) {
-        ws.send(JSON.stringify({ type: "input", payload: map[e.key] }));
+    if (keyMap[e.key]) {
+        if (!held.has(keyMap[e.key])) {
+            held.add(keyMap[e.key]);
+            sendHeld();
+        }
+    }
+});
+
+document.addEventListener("keyup", (e) => {
+    if (keyMap[e.key]) {
+        if (held.has(keyMap[e.key])) {
+            held.delete(keyMap[e.key]);
+            sendHeld();
+        }
     }
 });
 

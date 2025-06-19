@@ -3,18 +3,7 @@ import Game from "./game.mjs";
 
 const game = new Game();
 const clients = new Map(); // socket -> { id, nickname }
-
-function parseMessage(buffer) {
-    const len = buffer[1] & 127;
-    const maskStart = len === 126 ? 4 : len === 127 ? 10 : 2;
-    const mask = buffer.slice(maskStart, maskStart + 4);
-    const data = buffer.slice(maskStart + 4);
-    const unmasked = Buffer.alloc(data.length);
-    for (let i = 0; i < data.length; i++) {
-        unmasked[i] = data[i] ^ mask[i % 4];
-    }
-    return unmasked.toString();
-}
+const heldInputs = new Map(); // id -> Set of held directions
 
 function encodeMessage(str) {
     const json = Buffer.from(str);
@@ -50,49 +39,91 @@ export function handleUpgrade(req, socket) {
     let id = null;
 
     socket.on("data", (buffer) => {
-        try {
-            const msg = parseMessage(buffer);
-            const obj = JSON.parse(msg);
+        let offset = 0;
+        while (offset < buffer.length) {
+            try {
+                // Parse one frame starting at offset
+                const fin = (buffer[offset] & 0x80) !== 0;
+                const opcode = buffer[offset] & 0x0f;
+                if (opcode !== 1) break; // Only handle text frames
 
-            if (obj.type === "join") {
-                if (clients.size >= 4) {
-                    socket.end();
-                    return;
+                let len = buffer[offset + 1] & 127;
+                let maskStart = offset + 2;
+                if (len === 126) {
+                    len = buffer.readUInt16BE(offset + 2);
+                    maskStart = offset + 4;
+                } else if (len === 127) {
+                    // Not supporting >65535 payloads for simplicity
+                    break;
+                }
+                const mask = buffer.slice(maskStart, maskStart + 4);
+                const dataStart = maskStart + 4;
+                const dataEnd = dataStart + len;
+                if (dataEnd > buffer.length) break; // Incomplete frame
+
+                const data = buffer.slice(dataStart, dataEnd);
+                const unmasked = Buffer.alloc(data.length);
+                for (let i = 0; i < data.length; i++) {
+                    unmasked[i] = data[i] ^ mask[i % 4];
+                }
+                const msg = unmasked.toString();
+                const obj = JSON.parse(msg);
+
+                if (obj.type === "join") {
+                    if (clients.size >= 4) {
+                        socket.end();
+                        return;
+                    }
+
+                    id = Math.random().toString(36).slice(2, 10);
+                    clients.set(socket, { id, nickname: obj.nickname });
+                    const added = game.addPlayer(id, obj.nickname);
+                    if (!added) {
+                        socket.end();
+                    }
+                    heldInputs.set(id, new Set());
                 }
 
-                id = Math.random().toString(36).slice(2, 10);
-                clients.set(socket, { id, nickname: obj.nickname });
-                const added = game.addPlayer(id, obj.nickname);
-                if (!added) {
-                    socket.end();
+                if (obj.type === "input" && id) {
+                    // obj.payload is an array of held directions
+                    heldInputs.set(id, new Set(obj.payload));
                 }
-            }
 
-            if (obj.type === "input" && id) {
-                game.handleInput(id, obj.payload);
-            }
+                if (obj.type === "chat" && id) {
+                    const sender = clients.get(socket)?.nickname || "???";
+                    broadcast({ type: "chat", nickname: sender, message: obj.message });
+                }
 
-            if (obj.type === "chat" && id) {
-                const sender = clients.get(socket)?.nickname || "???";
-                broadcast({ type: "chat", nickname: sender, message: obj.message });
+                offset = dataEnd;
+            } catch (e) {
+                console.error("Invalid WS data", e);
+                break;
             }
-        } catch (e) {
-            console.error("Invalid WS data", e);
         }
     });
 
     socket.on("close", () => {
-        if (id) game.removePlayer(id);
+        if (id) {
+            game.removePlayer(id);
+            heldInputs.delete(id);
+        }
         clients.delete(socket);
     });
 
     socket.on("end", () => {
-        if (id) game.removePlayer(id);
+        if (id) {
+            game.removePlayer(id);
+            heldInputs.delete(id);
+        }
         clients.delete(socket);
     });
 }
 
 export function tickGame() {
+    // Move players based on held inputs
+    for (const [id, held] of heldInputs.entries()) {
+        game.handleInput(id, held);
+    }
     const state = { type: "state", payload: game.getState() };
     broadcast(state);
 }
