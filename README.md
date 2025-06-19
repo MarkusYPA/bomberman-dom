@@ -2,7 +2,13 @@
 
 - server runs game
 - clients send inputs
-- server works out where players move and sends state to clients
-- clients render player positions
+- server works out players locations and sends them to clients
+- clients render game
 
 Now with chat!
+
+Run with:
+````
+node server.mjs
+````
+
