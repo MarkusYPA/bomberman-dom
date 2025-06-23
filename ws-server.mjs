@@ -71,15 +71,36 @@ export function handleUpgrade(req, socket) {
 
                 if (obj.type === "join") {
                     if (clients.size >= 4) {
-                        socket.end();
+                        // Send server full message before closing
+                        const fullMsg = encodeMessage(JSON.stringify({
+                            type: "error",
+                            message: "Server is full (4/4 players). Please try again later."
+                        }));
+                        socket.write(fullMsg);
+                        setTimeout(() => socket.end(), 100); // Small delay to ensure message is sent
                         return;
                     }
 
-                    id = Math.random().toString(36).slice(2, 10);
+                    // Find first available ID between 1-4
+                    const usedIds = new Set([...clients.values()].map(client => client.id));
+                    for (let i = 0; i <= 3; i++) {
+                        if (!usedIds.has(i)) {
+                            id = i;
+                            break;
+                        }
+                    }
+                    
                     clients.set(socket, { id, nickname: obj.nickname });
                     const added = game.addPlayer(id, obj.nickname);
                     if (!added) {
-                        socket.end();
+                        // Send error message if game couldn't add player
+                        const errorMsg = encodeMessage(JSON.stringify({
+                            type: "error",
+                            message: "Failed to join game. Please try again."
+                        }));
+                        socket.write(errorMsg);
+                        setTimeout(() => socket.end(), 100);
+                        return;
                     }
                     heldInputs.set(id, new Set());
                 }
@@ -111,6 +132,16 @@ export function handleUpgrade(req, socket) {
     });
 
     socket.on("end", () => {
+        if (id) {
+            game.removePlayer(id);
+            heldInputs.delete(id);
+        }
+        clients.delete(socket);
+    });
+
+    // Handle socket errors (like ECONNRESET) to prevent crashes
+    socket.on("error", (err) => {
+        console.log(`Socket error: ${err.code} - ${err.message}`);
         if (id) {
             game.removePlayer(id);
             heldInputs.delete(id);

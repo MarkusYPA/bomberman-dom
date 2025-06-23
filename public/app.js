@@ -19,6 +19,7 @@ function StartScreen() {
 
 function GameScreen() {
     return createVNode('div', { class: 'game-root' },
+        createVNode('div', { id: 'error-container', class: 'error-container' }), // Error messages
         createVNode('div', { id: 'game', class: 'game-area' }), // Game area for client.js
         createVNode('div', { class: 'chat-area' },
             createVNode('div', { id: 'chat', class: 'chat-box' }),

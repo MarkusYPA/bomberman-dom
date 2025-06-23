@@ -1,6 +1,27 @@
 const nickname = prompt("Enter your nickname (max 12 chars):").slice(0, 12);
 const ws = new WebSocket(`ws://${location.host}`);
 
+// Function to show error messages elegantly
+function showErrorMessage(message) {
+    const errorContainer = document.getElementById("error-container");
+    if (errorContainer) {
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "error-message";
+        errorDiv.textContent = message;
+        errorContainer.appendChild(errorDiv);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.parentNode.removeChild(errorDiv);
+            }
+        }, 5000);
+    } else {
+        // Fallback to alert if error container not found
+        alert(message);
+    }
+}
+
 ws.addEventListener("open", () => {
     ws.send(JSON.stringify({ type: "join", nickname }));
 });
@@ -39,6 +60,9 @@ ws.addEventListener("message", (e) => {
         const p = document.createElement("p");
         p.textContent = `${msg.nickname}: ${msg.message}`;
         document.getElementById("chat").appendChild(p);
+    } else if (msg.type === "error") {
+        // Display error message to user
+        showErrorMessage(msg.message);
     }
 });
 

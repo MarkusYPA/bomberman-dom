@@ -4,11 +4,24 @@ import { speed } from "./config.mjs";
 export default class Game {
     constructor() {
         this.players = {}; // id -> { nickname, x, y }
+        // Game boundary constants
+        this.minX = 0;
+        this.minY = 0;
+        this.maxX = (500 - 40) / 20;
+        this.maxY = (400 - 40) / 20;
+        this.corners = [
+            { x: this.minX, y: this.minY }, // Top-left
+            { x: this.maxX, y: this.minY }, // Top-right
+            { x: this.minX, y: this.maxY }, // Bottom-left
+            { x: this.maxX, y: this.maxY }  // Bottom-right
+        ];
     }
 
     addPlayer(id, nickname) {
         if (Object.keys(this.players).length >= 4) return false;
-        this.players[id] = { nickname, x: 0, y: 0 };
+        // Place each player in a different corner based on join order
+        const { x, y } = this.corners[id];
+        this.players[id] = { nickname, x, y };
         return true;
     }
 
@@ -33,13 +46,8 @@ export default class Game {
         p.y += dy * speed;
 
         // Simple clamping to the bounds of the box
-        const minX = 0;
-        const minY = 0;
-        const maxX = (500 - 40) / 20;
-        const maxY = (400 - 40) / 20;
-
-        p.x = Math.max(minX, Math.min(maxX, p.x));
-        p.y = Math.max(minY, Math.min(maxY, p.y));
+        p.x = Math.max(this.minX, Math.min(this.maxX, p.x));
+        p.y = Math.max(this.minY, Math.min(this.maxY, p.y));
     }
     getState() {
         return this.players;

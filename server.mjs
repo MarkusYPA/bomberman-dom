@@ -4,27 +4,36 @@ import { handleUpgrade, tickGame } from "./ws-server.mjs";
 import { interval } from "./config.mjs";
 
 const server = createServer((req, res) => {
+    // Helper function to safely serve files with error handling
+    const serveFile = (filePath, contentType) => {
+        const stream = createReadStream(filePath);
+        stream.on("error", (err) => {
+            console.error(`Error reading file ${filePath}:`, err.message);
+            if (!res.headersSent) {
+                res.writeHead(500);
+                res.end("Internal Server Error");
+            }
+        });
+        res.writeHead(200, { "Content-Type": contentType });
+        stream.pipe(res);
+    };
+
     switch (req.url) {
         case "/":
         case "/index.html":
-            res.writeHead(200, { "Content-Type": "text/html" });
-            createReadStream("public/index.html").pipe(res);
+            serveFile("public/index.html", "text/html");
             break;
         case "/client.js":
-            res.writeHead(200, { "Content-Type": "application/javascript" });
-            createReadStream("public/client.js").pipe(res);
+            serveFile("public/client.js", "application/javascript");
             break;
         case "/style.css":
-            res.writeHead(200, { "Content-Type": "text/css" });
-            createReadStream("public/style.css").pipe(res);
+            serveFile("public/style.css", "text/css");
             break;
         case "/app.js":
-            res.writeHead(200, { "Content-Type": "application/javascript" });
-            createReadStream("public/app.js").pipe(res);
+            serveFile("public/app.js", "application/javascript");
             break;
         case req.url.startsWith("/framework/") && req.url:
-            res.writeHead(200, { "Content-Type": "application/javascript" });
-            createReadStream("public" + req.url).pipe(res);
+            serveFile("public" + req.url, "application/javascript");
             break;
         default:
             res.writeHead(404);
@@ -33,6 +42,21 @@ const server = createServer((req, res) => {
 });
 
 server.on("upgrade", handleUpgrade);
+
+// Add error handling for the HTTP server
+server.on("error", (err) => {
+    console.error("Server error:", err.message);
+});
+
+// Handle unhandled errors to prevent crashes
+process.on("uncaughtException", (err) => {
+    console.error("Uncaught Exception:", err.message);
+    console.error(err.stack);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+    console.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
 
 setInterval(tickGame, interval);
 
