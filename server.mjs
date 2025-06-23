@@ -1,34 +1,32 @@
 import { createServer } from "http";
-import { createReadStream } from "fs";
+import { createReadStream, existsSync } from "fs";
+import { extname, join } from "path";
 import { handleUpgrade, tickGame } from "./ws-server.mjs";
 import { interval } from "./config.mjs";
 
+const mediaTypes = {
+    ".html": "text/html",
+    ".js": "application/javascript",
+    ".css": "text/css",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".svg": "image/svg+xml",
+    ".json": "application/json",
+};
+
 const server = createServer((req, res) => {
-    switch (req.url) {
-        case "/":
-        case "/index.html":
-            res.writeHead(200, { "Content-Type": "text/html" });
-            createReadStream("public/index.html").pipe(res);
-            break;
-        case "/client.js":
-            res.writeHead(200, { "Content-Type": "application/javascript" });
-            createReadStream("public/client.js").pipe(res);
-            break;
-        case "/style.css":
-            res.writeHead(200, { "Content-Type": "text/css" });
-            createReadStream("public/style.css").pipe(res);
-            break;
-        case "/app.js":
-            res.writeHead(200, { "Content-Type": "application/javascript" });
-            createReadStream("public/app.js").pipe(res);
-            break;
-        case req.url.startsWith("/framework/") && req.url:
-            res.writeHead(200, { "Content-Type": "application/javascript" });
-            createReadStream("public" + req.url).pipe(res);
-            break;
-        default:
-            res.writeHead(404);
-            res.end("Not found");
+    let filePath = req.url === "/" ? "/index.html" : req.url;
+    filePath = join("public", filePath);
+
+    if (existsSync(filePath)) {
+        const ext = extname(filePath);
+        const contentType = mediaTypes[ext] || "application/octet-stream";
+        res.writeHead(200, { "Content-Type": contentType });
+        createReadStream(filePath).pipe(res);
+    } else {
+        res.writeHead(404);
+        res.end("Not found");
     }
 });
 
