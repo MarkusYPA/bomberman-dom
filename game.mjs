@@ -21,7 +21,7 @@ export default class Game {
         if (Object.keys(this.players).length >= 4) return false;
         // Place each player in a different corner based on join order
         const { x, y } = this.corners[id];
-        this.players[id] = { nickname, x, y };
+        this.players[id] = { nickname, x, y, direction: "right" };
         return true;
     }
 
@@ -35,8 +35,8 @@ export default class Game {
         let dx = 0, dy = 0;
         if (held.has("up")) dy -= 1;
         if (held.has("down")) dy += 1;
-        if (held.has("left")) dx -= 1;
-        if (held.has("right")) dx += 1;
+        if (held.has("left")) { dx -= 1; p.direction = "left"; }
+        if (held.has("right")) { dx += 1; p.direction = "right"; }
         // Normalize diagonal speed
         if (dx !== 0 && dy !== 0) {
             dx *= 0.7071;

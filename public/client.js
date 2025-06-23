@@ -69,13 +69,23 @@ ws.addEventListener("message", (e) => {
 function render(players) {
     const box = document.getElementById("game");
     box.innerHTML = "";
+    const colors = ["#145214", "#c00", "#113377", "#111"]; // Colors for players
     for (const id in players) {
         const p = players[id];
         const d = document.createElement("div");
         d.className = "player";
         d.style.left = `${p.x * 20}px`;
         d.style.top = `${p.y * 20}px`;
-        d.textContent = p.nickname;
+        d.style.background = colors[id] || "#888";
+        d.style.color = "#fff";
+        d.style.fontWeight = "bold";
+        d.style.fontSize = "2em";
+        d.style.display = "flex";
+        d.style.alignItems = "center";
+        d.style.justifyContent = "center";
+        d.textContent = p.direction === "left" ? "<" : ">";
+        d.title = p.nickname;
+        // d.textContent = p.nickname;
         box.appendChild(d);
     }
 }
