@@ -49,8 +49,8 @@ function render(players) {
         const p = players[id];
         const d = document.createElement("div");
         d.className = "player";
-        d.style.left = `${100 + p.x * 20}px`;
-        d.style.top = `${100 + p.y * 20}px`;
+        d.style.left = `${p.x * 20}px`;
+        d.style.top = `${p.y * 20}px`;
         d.textContent = p.nickname;
         box.appendChild(d);
     }
