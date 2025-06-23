@@ -18,6 +18,14 @@ const server = createServer((req, res) => {
             res.writeHead(200, { "Content-Type": "text/css" });
             createReadStream("public/style.css").pipe(res);
             break;
+        case "/app.js":
+            res.writeHead(200, { "Content-Type": "application/javascript" });
+            createReadStream("public/app.js").pipe(res);
+            break;
+        case req.url.startsWith("/framework/") && req.url:
+            res.writeHead(200, { "Content-Type": "application/javascript" });
+            createReadStream("public" + req.url).pipe(res);
+            break;
         default:
             res.writeHead(404);
             res.end("Not found");
