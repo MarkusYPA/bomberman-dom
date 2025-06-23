@@ -9,12 +9,12 @@ export default class Game {
         this.minY = 0;
         this.maxX = (500 - 40) / 20;
         this.maxY = (400 - 40) / 20;
-        this.corners = [
-            { x: this.minX, y: this.minY }, // Top-left
-            { x: this.maxX, y: this.minY }, // Top-right
-            { x: this.minX, y: this.maxY }, // Bottom-left
-            { x: this.maxX, y: this.maxY }  // Bottom-right
-        ];
+        this.corners = {
+            1: { x: this.minX, y: this.minY }, // Top-left
+            2: { x: this.maxX, y: this.minY }, // Top-right
+            3: { x: this.minX, y: this.maxY }, // Bottom-left
+            4: { x: this.maxX, y: this.maxY }  // Bottom-right
+        };
     }
 
     addPlayer(id, nickname) {

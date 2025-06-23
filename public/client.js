@@ -76,7 +76,7 @@ function render(players) {
         d.className = "player";
         d.style.left = `${p.x * 20}px`;
         d.style.top = `${p.y * 20}px`;
-        d.style.background = colors[id] || "#888";
+        d.style.background = colors[id - 1] || "#888";
         d.style.color = "#fff";
         d.style.fontWeight = "bold";
         d.style.fontSize = "2em";

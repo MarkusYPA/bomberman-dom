@@ -83,7 +83,7 @@ export function handleUpgrade(req, socket) {
 
                     // Find first available ID between 1-4
                     const usedIds = new Set([...clients.values()].map(client => client.id));
-                    for (let i = 0; i <= 3; i++) {
+                    for (let i = 1; i <= 4; i++) {
                         if (!usedIds.has(i)) {
                             id = i;
                             break;
