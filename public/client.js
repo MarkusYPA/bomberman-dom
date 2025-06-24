@@ -1,4 +1,89 @@
-const nickname = prompt("Enter your nickname (max 12 chars):").slice(0, 12);
+// Function to create beautiful nickname modal
+function createNicknameModal() {
+    return new Promise((resolve) => {
+        // Create modal overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'nickname-modal-overlay';
+        
+        // Create modal content
+        const modal = document.createElement('div');
+        modal.className = 'nickname-modal';
+        
+        // Modal content HTML
+        modal.innerHTML = `
+            <h2>Enter Player Name</h2>
+            <p>Choose a nickname to identify yourself in the game terminal. Maximum 12 characters allowed.</p>
+            <input type="text" class="nickname-input" placeholder="PLAYER_NAME" maxlength="12" autocomplete="off">
+            <div class="character-count">0/12 characters</div>
+            <div class="nickname-modal-buttons">
+                <button type="button" class="cancel-btn">Cancel</button>
+                <button type="button" class="primary confirm-btn">Connect</button>
+            </div>
+        `;
+        
+        const input = modal.querySelector('.nickname-input');
+        const charCount = modal.querySelector('.character-count');
+        const confirmBtn = modal.querySelector('.confirm-btn');
+        const cancelBtn = modal.querySelector('.cancel-btn');
+        
+        // Update character count
+        function updateCharCount() {
+            const length = input.value.length;
+            charCount.textContent = `${length}/12 characters`;
+            charCount.style.color = length >= 10 ? '#ff4444' : '#ff8c00';
+        }
+        
+        // Handle input events
+        input.addEventListener('input', updateCharCount);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && input.value.trim()) {
+                resolve(input.value.trim().slice(0, 12));
+                document.body.removeChild(overlay);
+            }
+        });
+        
+        // Handle button clicks
+        confirmBtn.addEventListener('click', () => {
+            const nickname = input.value.trim();
+            if (nickname) {
+                resolve(nickname.slice(0, 12));
+                document.body.removeChild(overlay);
+            } else {
+                input.focus();
+                input.style.borderColor = '#ff4444';
+                setTimeout(() => {
+                    input.style.borderColor = '#8b4513';
+                }, 1000);
+            }
+        });
+        
+        cancelBtn.addEventListener('click', () => {
+            resolve('Player'); // Default nickname if cancelled
+            document.body.removeChild(overlay);
+        });
+        
+        // Add to DOM and focus
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        
+        // Focus input after a short delay to ensure modal is rendered
+        setTimeout(() => {
+            input.focus();
+            input.select();
+        }, 100);
+        
+        // Close on overlay click
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                resolve('Player'); // Default nickname
+                document.body.removeChild(overlay);
+            }
+        });
+    });
+}
+
+// Get nickname using beautiful modal
+const nickname = await createNicknameModal();
 const ws = new WebSocket(`ws://${location.host}`);
 
 // Function to show error messages elegantly
