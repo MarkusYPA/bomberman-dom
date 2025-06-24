@@ -19,11 +19,11 @@ function StartScreen() {
 }
 
 // Accept players as a parameter!
-function Scoreboard() {
+function PlayerBoard() {
     return createVNode('div', { class: 'scoreboard' },
         createVNode('h2', { style: 'margin: 0 0 8px 0;' }, 'Scoreboard'),
         ...[1, 2, 3, 4].map(i => {
-            const player = window.latestPlayers[i];
+            const player = state.players[i];
             return createVNode('div', {
                 class: `scoreboard-player player-color-${i}`,
                 style: `opacity: ${player ? 1 : 1.0};`
@@ -37,13 +37,10 @@ function Scoreboard() {
     );
 }
 
-// Store the latest players for rendering
-window.latestPlayers = {};
-
 function GameScreen() {
     return createVNode('div', { class: 'game-root' },
         createVNode('div', { id: 'error-container', class: 'error-container' }),
-        Scoreboard(window.latestPlayers),
+        PlayerBoard(),
         createVNode('div', { id: 'game', class: 'game-area' }),
         createVNode('div', { class: 'chat-area' },
             createVNode('div', { id: 'chat', class: 'chat-box' }),
@@ -60,8 +57,6 @@ function App() {
 }
 
 function update() { mount(document.body, App()); }
+
 subscribe(update);
 update();
-
-// Make update globally accessible for client.js to trigger re-render
-window.update = update;

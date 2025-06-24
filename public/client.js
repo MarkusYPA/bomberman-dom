@@ -57,7 +57,8 @@ document.addEventListener("keyup", (e) => {
 ws.addEventListener("message", (e) => {
     const msg = JSON.parse(e.data);
     if (msg.type === "state") {
-        render(msg.payload);
+        state.players = msg.payload; // Update state with players
+        renderGame(msg.payload);
     } else if (msg.type === "chat") {
         const p = document.createElement("p");
         p.textContent = `${msg.nickname}: ${msg.message}`;
@@ -68,8 +69,9 @@ ws.addEventListener("message", (e) => {
     }
 });
 
-function render(players) {
+function renderGame(players) {
     const box = document.getElementById("game");
+    if (!box) return;
     box.innerHTML = "";
     for (const id in players) {
         const p = players[id];
@@ -84,17 +86,29 @@ function render(players) {
     }
 }
 
-document.getElementById("send").onclick = () => {
-    const input = document.getElementById("chatInput");
-    const msg = input.value.trim();
-    if (msg) {
-        ws.send(JSON.stringify({ type: "chat", message: msg }));
-        input.value = "";
+document.addEventListener("DOMContentLoaded", setupChatHandlers);
+
+setupChatHandlers();
+
+function setupChatHandlers() {
+    const sendButton = document.getElementById("send");
+    const chatInput = document.getElementById("chatInput");
+
+    if (sendButton && chatInput) {
+        sendButton.onclick = () => {
+            const msg = chatInput.value.trim();
+            if (msg) {
+                ws.send(JSON.stringify({ type: "chat", message: msg }));
+                chatInput.value = "";
+            }
+        };
+        chatInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                sendButton.click();
+            }
+        });
+    } else {
+        setTimeout(setupChatHandlers, 100); // Retry if elements not found
     }
-};
-document.getElementById("chatInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-        e.preventDefault();
-        document.getElementById("send").click();
-    }
-});
+}
