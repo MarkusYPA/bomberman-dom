@@ -1,3 +1,5 @@
+import { state } from "./framework/state.js";
+
 const nickname = prompt("Enter your nickname (max 12 chars):").slice(0, 12);
 const ws = new WebSocket(`ws://${location.host}`);
 
@@ -69,14 +71,12 @@ ws.addEventListener("message", (e) => {
 function render(players) {
     const box = document.getElementById("game");
     box.innerHTML = "";
-    const colors = ["#145214", "#c00", "#113377", "#111"]; // Colors for players
     for (const id in players) {
         const p = players[id];
         const d = document.createElement("div");
-        d.className = "player";
+        d.className = `player player-color-${id}`;
         d.style.left = `${p.x * 20}px`;
         d.style.top = `${p.y * 20}px`;
-        d.style.background = colors[id - 1] || "#888";
         d.style.color = "#fff";
         d.style.fontWeight = "bold";
         d.style.fontSize = "2em";
