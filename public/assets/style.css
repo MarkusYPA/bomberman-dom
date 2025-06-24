@@ -16,10 +16,15 @@ body {
   position: absolute;
   width: 40px;
   height: 40px;
-  /* background: lightblue; */
   text-align: center;
   line-height: 40px;
   border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .player-color-1 { background: #145214 !important; }

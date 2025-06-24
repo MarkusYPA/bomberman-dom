@@ -77,12 +77,6 @@ function render(players) {
         d.className = `player player-color-${id}`;
         d.style.left = `${p.x * 20}px`;
         d.style.top = `${p.y * 20}px`;
-        d.style.color = "#fff";
-        d.style.fontWeight = "bold";
-        d.style.fontSize = "2em";
-        d.style.display = "flex";
-        d.style.alignItems = "center";
-        d.style.justifyContent = "center";
         d.textContent = p.direction === "left" ? "<" : ">";
         d.title = p.nickname;
         // d.textContent = p.nickname;
