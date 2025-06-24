@@ -1,5 +1,7 @@
 body {
   font-family: sans-serif;
+  background-image: url('background03.jpg');
+  background-size: cover;
 }
 
 .game-area {

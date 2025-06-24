@@ -98,3 +98,9 @@ document.getElementById("send").onclick = () => {
         input.value = "";
     }
 };
+document.getElementById("chatInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        document.getElementById("send").click();
+    }
+});
