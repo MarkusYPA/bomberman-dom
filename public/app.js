@@ -1,5 +1,5 @@
 import { createVNode, mount } from './framework/mini.js';
-import { state, subscribe } from './framework/state.js';
+import { state, subscribe, createReactiveComponent } from './framework/state.js';
 
 state.screen = 'start';
 state.players = {}; // This can be kept for compatibility, but not used for rendering
@@ -13,34 +13,45 @@ function StartScreen() {
                 // Dynamically import client.js as a module
                 await new Promise(requestAnimationFrame)
                 await import('./client.js');
+                
+                // Mount the PlayerBoard component after game screen is rendered
+                setTimeout(() => {
+                    const container = document.getElementById('player-board-container');
+                    if (container && !container.hasChildNodes()) {
+                        PlayerBoardComponent.mount(container);
+                    }
+                }, 0);
             }
         }, 'Start Game')
     );
 }
 
-// Accept players as a parameter!
-function PlayerBoard() {
-    return createVNode('div', { class: 'scoreboard' },
-        createVNode('h2', { style: 'margin: 0 0 8px 0;' }, 'Scoreboard'),
-        ...[1, 2, 3, 4].map(i => {
-            const player = state.players[i];
-            return createVNode('div', {
-                class: `scoreboard-player player-color-${i}`,
-                style: `opacity: ${player ? 1 : 1.0};`
-            },
-                createVNode('span', {}, `Player ${i}`),
-                createVNode('span', { style: 'margin-left: 10px; font-size: 0.95em; font-weight: normal;' },
-                    player ? player.nickname : '(empty)'
-                )
-            );
-        })
-    );
-}
+// PlayerBoard component that only re-renders when players state changes
+const PlayerBoardComponent = createReactiveComponent(
+    () => {
+        return createVNode('div', { class: 'scoreboard' },
+            createVNode('h2', { style: 'margin: 0 0 8px 0;' }, 'Scoreboard'),
+            ...[1, 2, 3, 4].map(i => {
+                const player = state.players[i];
+                return createVNode('div', {
+                    class: `scoreboard-player player-color-${i}`,
+                    style: `opacity: ${player ? 1 : 1.0};`
+                },
+                    createVNode('span', {}, `Player ${i}`),
+                    createVNode('span', { style: 'margin-left: 10px; font-size: 0.95em; font-weight: normal;' },
+                        player ? player.nickname : '(empty)'
+                    )
+                );
+            })
+        );
+    },
+    ['players'] // Only watch the 'players' path
+);
 
 function GameScreen() {
     return createVNode('div', { class: 'game-root' },
         createVNode('div', { id: 'error-container', class: 'error-container' }),
-        PlayerBoard(),
+        createVNode('div', { id: 'player-board-container' }), // Empty container for PlayerBoard
         createVNode('div', { id: 'game', class: 'game-area' }),
         createVNode('div', { class: 'chat-area' },
             createVNode('div', { id: 'chat', class: 'chat-box' }),
@@ -56,7 +67,12 @@ function App() {
     return createVNode('div', {}, 'Game loading...');
 }
 
-function update() { mount(document.body, App()); }
+// Only re-render the entire app when the screen changes
+function update(changedPath) { 
+    if (!changedPath || changedPath === 'screen') {
+        mount(document.body, App()); 
+    }
+}
 
-subscribe(update);
+subscribe(update, ['screen']); // Only watch for screen changes
 update();
