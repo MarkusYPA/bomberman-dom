@@ -22,6 +22,36 @@ function showErrorMessage(message) {
     }
 }
 
+// Function to show new message indicator
+function showNewMessageIndicator() {
+    const chatBox = document.getElementById("chat");
+    let indicator = document.getElementById("new-message-indicator");
+    
+    // Create indicator if it doesn't exist
+    if (!indicator) {
+        indicator = document.createElement("div");
+        indicator.id = "new-message-indicator";
+        indicator.className = "new-message-indicator";
+        indicator.textContent = "↓ New messages ↓";
+        indicator.onclick = () => {
+            chatBox.scrollTop = chatBox.scrollHeight;
+            indicator.remove();
+        };
+        chatBox.appendChild(indicator); // Append to chat-box instead of chat-area
+    }
+    
+    // Reset the fade-out timer
+    clearTimeout(indicator.fadeTimer);
+    indicator.style.opacity = "1";
+    
+    // Auto-fade after 3 seconds
+    indicator.fadeTimer = setTimeout(() => {
+        if (indicator.parentNode) {
+            indicator.style.opacity = "0.7";
+        }
+    }, 3000);
+}
+
 ws.addEventListener("open", () => {
     ws.send(JSON.stringify({ type: "join", nickname }));
 });
@@ -57,9 +87,38 @@ ws.addEventListener("message", (e) => {
     if (msg.type === "state") {
         render(msg.payload);
     } else if (msg.type === "chat") {
-        const p = document.createElement("p");
-        p.textContent = `${msg.nickname}: ${msg.message}`;
-        document.getElementById("chat").appendChild(p);
+        const chatBox = document.getElementById("chat");
+        
+        // Check if user is at the bottom before adding message
+        const isAtBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1;
+        
+        // Create message container
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `chat-message ${msg.nickname === nickname ? 'own' : 'other'}`;
+        
+        // Create sender name (only show for other people's messages)
+        if (msg.nickname !== nickname) {
+            const senderDiv = document.createElement("div");
+            senderDiv.className = "message-sender";
+            senderDiv.textContent = msg.nickname;
+            messageDiv.appendChild(senderDiv);
+        }
+        
+        // Create message bubble
+        const bubbleDiv = document.createElement("div");
+        bubbleDiv.className = "message-bubble";
+        bubbleDiv.textContent = msg.message;
+        messageDiv.appendChild(bubbleDiv);
+        
+        chatBox.appendChild(messageDiv);
+        
+        if (isAtBottom) {
+            // User was at bottom, auto-scroll to show new message
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } else {
+            // User is reading older messages, show new message indicator
+            showNewMessageIndicator();
+        }
     } else if (msg.type === "error") {
         // Display error message to user
         showErrorMessage(msg.message);
@@ -96,11 +155,29 @@ document.getElementById("send").onclick = () => {
     if (msg) {
         ws.send(JSON.stringify({ type: "chat", message: msg }));
         input.value = "";
+        
+        // Focus back on input for better UX
+        input.focus();
     }
 };
 document.getElementById("chatInput").addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
         e.preventDefault();
         document.getElementById("send").click();
+    }
+});
+
+// Add scroll listener to hide new message indicator when user scrolls to bottom
+document.addEventListener("DOMContentLoaded", () => {
+    const chatBox = document.getElementById("chat");
+    if (chatBox) {
+        chatBox.addEventListener("scroll", () => {
+            const isAtBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1;
+            const indicator = document.getElementById("new-message-indicator");
+            
+            if (isAtBottom && indicator) {
+                indicator.remove();
+            }
+        });
     }
 });

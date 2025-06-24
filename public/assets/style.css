@@ -24,22 +24,152 @@ body {
 
 .chat-area {
   width: 500px;
+  background: white;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
 }
 
 .chat-box {
   height: 150px;
   overflow-y: auto;
-  border: 1px solid #ccc;
-  padding: 5px;
-  margin-bottom: 5px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 10px;
+  position: relative; /* Make chat-box relative for absolute positioning of indicator */
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  scroll-behavior: smooth;
+}
+
+.chat-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-box::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+  background: rgba(0, 123, 255, 0.3);
+  border-radius: 3px;
+}
+
+.chat-box::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 123, 255, 0.5);
+}
+
+/* Chat message styling */
+.chat-message {
+  margin: 8px 0;
+  max-width: 70%;
+  word-wrap: break-word;
+  animation: messageSlide 0.3s ease-out;
+}
+
+.chat-message.own {
+  margin-left: auto;
+  margin-right: 0;
+  text-align: right;
+}
+
+.chat-message.own .message-bubble {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  margin-left: auto;
+}
+
+.chat-message.other {
+  margin-left: 0;
+  margin-right: auto;
+  text-align: left;
+}
+
+.chat-message.other .message-bubble {
+  background: linear-gradient(135deg, #e9ecef, #f8f9fa);
+  color: #333;
+  border: 1px solid #dee2e6;
+}
+
+.message-bubble {
+  padding: 8px 12px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  max-width: 100%;
+}
+
+.message-sender {
+  font-size: 11px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.chat-message.own .message-sender {
+  text-align: right;
+  color: #0056b3;
+}
+
+.chat-message.other .message-sender {
+  text-align: left;
+  color: #666;
+}
+
+@keyframes messageSlide {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 input {
   width: 400px;
+  padding: 10px 15px;
+  border: 2px solid #dee2e6;
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #fff, #f8f9fa);
+}
+
+input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background: white;
 }
 
 button {
   width: 80px;
+  padding: 10px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 10px;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #0056b3, #003d82);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
 }
 
 /* Error message styling */
@@ -70,6 +200,62 @@ button {
   }
   to {
     transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* New message indicator styling */
+.new-message-indicator {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 18px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+  z-index: 10;
+  transition: all 0.3s ease;
+  user-select: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+  animation: pulse 2s infinite, slideUp 0.3s ease-out;
+  min-width: 120px;
+  text-align: center;
+}
+
+.new-message-indicator:hover {
+  background: linear-gradient(135deg, #0056b3, #003d82);
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.6);
+  scale: 1.05;
+}
+
+.new-message-indicator:active {
+  transform: translateX(-50%) translateY(0px);
+  scale: 0.98;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(0, 123, 255, 0.6);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateX(-50%) translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
     opacity: 1;
   }
 }
