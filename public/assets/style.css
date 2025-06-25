@@ -1,5 +1,5 @@
 body {
-  font-family: sans-serif;
+  font-family: 'Press Start 2P', sans-serif;
   background-image: url('background03.jpg');
   background-size: cover;
 }
@@ -61,6 +61,14 @@ button {
   font-weight: bold;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   animation: slideIn 0.3s ease-out;
+}
+
+.countdown-timer {
+  font-size: 24px;
+  font-weight: bold;
+  color: orange;
+  text-align: center;
+  margin-top: 20px;
 }
 
 @keyframes slideIn {

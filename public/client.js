@@ -1,5 +1,8 @@
+import { createVNode, mount } from "./framework/mini.js";
+
 const nickname = prompt("Enter your nickname (max 12 chars):").slice(0, 12);
 const ws = new WebSocket(`ws://${location.host}`);
+let countdownTime = null; // Track countdown time
 
 // Function to show error messages elegantly
 function showErrorMessage(message) {
@@ -20,6 +23,18 @@ function showErrorMessage(message) {
         // Fallback to alert if error container not found
         alert(message);
     }
+}
+
+function CountdownComponent() {
+    if (countdownTime === null) {
+        return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, '');
+    }
+    return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, `Game starts in: ${countdownTime}s`);
+}
+
+function updateCountdown() {
+    const countdownElement = document.getElementById('countdown-container');
+    mount(countdownElement, CountdownComponent());
 }
 
 ws.addEventListener("open", () => {
@@ -54,7 +69,14 @@ document.addEventListener("keyup", (e) => {
 
 ws.addEventListener("message", (e) => {
     const msg = JSON.parse(e.data);
-    if (msg.type === "state") {
+    if (msg.type === "countdown") {
+        countdownTime = msg.time;
+        updateCountdown();
+    } else if (msg.type === "countdownFinished") {
+        countdownTime = null;
+        const countdownElement = document.getElementById('countdown-container');
+        mount(countdownElement, createVNode('div', { id: 'countdown', class: 'countdown-timer' }, 'Game starting...'));
+    } else if (msg.type === "state") {
         render(msg.payload);
     } else if (msg.type === "chat") {
         const p = document.createElement("p");
