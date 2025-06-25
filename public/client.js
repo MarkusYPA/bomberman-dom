@@ -248,6 +248,15 @@ ws.addEventListener("message", (e) => {
         bubbleDiv.textContent = msg.message;
         messageDiv.appendChild(bubbleDiv);
         
+        // Create timestamp
+        const timestampDiv = document.createElement("div");
+        timestampDiv.className = "message-timestamp";
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        timestampDiv.textContent = timeString;
+        
+        messageDiv.appendChild(timestampDiv);
+        
         chatBox.appendChild(messageDiv);
         
         if (isAtBottom) {
@@ -257,6 +266,18 @@ ws.addEventListener("message", (e) => {
             // User is reading older messages, show new message indicator
             showNewMessageIndicator();
         }
+    } else if (msg.type === "duplicateNickname") {
+        // Show error message and prompt for new nickname
+        showErrorMessage(msg.message);
+        // Prompt user to enter a different nickname
+        createNicknameModal().then(newNickname => {
+            const dimensions = getGameAreaDimensions();
+            ws.send(JSON.stringify({ 
+                type: "join", 
+                nickname: newNickname,
+                dimensions: dimensions 
+            }));
+        });
     } else if (msg.type === "error") {
         // Display error message to user
         showErrorMessage(msg.message);

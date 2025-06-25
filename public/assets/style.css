@@ -191,6 +191,25 @@ body {
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
 }
 
+.message-timestamp {
+  font-size: 9px;
+  opacity: 0.6;
+  margin-top: 2px;
+  font-family: 'Courier New', monospace;
+  color: #eedac2;
+  text-align: right;
+  font-style: italic;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+}
+
+.chat-message.own .message-timestamp {
+  text-align: right;
+}
+
+.chat-message.other .message-timestamp {
+  text-align: left;
+}
+
 @keyframes messageFlicker {
   from {
     transform: translateY(5px);

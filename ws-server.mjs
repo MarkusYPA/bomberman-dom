@@ -81,6 +81,18 @@ export function handleUpgrade(req, socket) {
                         return;
                     }
 
+                    // Check for duplicate nickname
+                    const usedNicknames = new Set([...clients.values()].map(client => client.nickname.toLowerCase()));
+                    if (usedNicknames.has(obj.nickname.toLowerCase())) {
+                        // Send duplicate name error message but keep connection open
+                        const duplicateMsg = encodeMessage(JSON.stringify({
+                            type: "duplicateNickname",
+                            message: `Nickname "${obj.nickname}" is already taken. Please choose a different name.`
+                        }));
+                        socket.write(duplicateMsg);
+                        return; // Don't close connection, just return and wait for new join attempt
+                    }
+
                     // Find first available ID between 1-4
                     const usedIds = new Set([...clients.values()].map(client => client.id));
                     for (let i = 1; i <= 4; i++) {
@@ -108,6 +120,9 @@ export function handleUpgrade(req, socket) {
                         return;
                     }
                     heldInputs.set(id, new Set());
+
+                    const sender = clients.get(socket)?.nickname || "???";
+                    broadcast({ type: "chat", nickname: sender, playerId: id, message: sender + " joined the game!" });
                 }
 
                 if (obj.type === "updateDimensions" && id) {
@@ -140,6 +155,9 @@ export function handleUpgrade(req, socket) {
             game.removePlayer(id);
             heldInputs.delete(id);
         }
+        const sender = clients.get(socket)?.nickname || "???";
+        broadcast({ type: "chat", nickname: sender, playerId: id, message: sender + " left the game!" });
+
         clients.delete(socket);
     });
 
@@ -148,6 +166,9 @@ export function handleUpgrade(req, socket) {
             game.removePlayer(id);
             heldInputs.delete(id);
         }
+        const sender = clients.get(socket)?.nickname || "???";
+        broadcast({ type: "chat", nickname: sender, playerId: id, message: sender + " left the game!" });
+
         clients.delete(socket);
     });
 
