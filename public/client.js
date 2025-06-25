@@ -1,4 +1,6 @@
+import { createVNode, mount } from "./framework/mini.js";
 import { state } from "./framework/state.js";
+import { CountdownComponent }from "./app.js";
 
 // Function to create beautiful nickname modal
 function createNicknameModal() {
@@ -110,6 +112,11 @@ function showErrorMessage(message) {
     }
 }
 
+function updateCountdown() {
+    const countdownElement = document.getElementById('countdown-container');
+    mount(countdownElement, CountdownComponent());
+}
+
 // Function to show new message indicator
 function showNewMessageIndicator() {
     const chatBox = document.getElementById("chat");
@@ -172,7 +179,13 @@ document.addEventListener("keyup", (e) => {
 
 ws.addEventListener("message", (e) => {
     const msg = JSON.parse(e.data);
-    if (msg.type === "state") {
+    if (msg.type === "countdown") {
+        state.countdownTime = msg.time;
+        updateCountdown();
+    } else if (msg.type === "countdownFinished") {
+        state.countdownTime = null;
+        updateCountdown();
+    } else if (msg.type === "state") {
         state.players = msg.payload; // Update state with players
         renderGame(msg.payload);
     } else if (msg.type === "chat") {
