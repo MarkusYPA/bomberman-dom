@@ -128,10 +128,7 @@ export function handleUpgrade(req, socket) {
                     heldInputs.set(id, new Set());
 
                     // Reset countdown whenever the number of players changes
-                    resetCountdown();
-                    if (clients.size >= 2) {
-                        startCountdown();
-                    }
+                    updateCountdown();
                 }
 
                 if (obj.type === "input" && id) {
@@ -159,10 +156,7 @@ export function handleUpgrade(req, socket) {
         clients.delete(socket);
 
         // Reset countdown whenever the number of players changes
-        resetCountdown();
-        if (clients.size >= 2) {
-            startCountdown();
-        }
+        updateCountdown();
     });
 
     socket.on("end", () => {
@@ -173,10 +167,7 @@ export function handleUpgrade(req, socket) {
         clients.delete(socket);
 
         // Reset countdown whenever the number of players changes
-        resetCountdown();
-        if (clients.size >= 2) {
-            startCountdown();
-        }
+        updateCountdown();
     });
 
     socket.on("error", (err) => {
@@ -188,10 +179,7 @@ export function handleUpgrade(req, socket) {
         clients.delete(socket);
 
         // Reset countdown whenever the number of players changes
-        resetCountdown();
-        if (clients.size >= 2) {
-            startCountdown();
-        }
+        updateCountdown();
     });
 }
 
@@ -202,4 +190,12 @@ export function tickGame() {
     }
     const state = { type: "state", payload: game.getState() };
     broadcast(state);
+}
+
+function updateCountdown() {
+    if (clients.size >= 2) {
+        startCountdown();
+    } else {
+        resetCountdown();
+    }
 }
