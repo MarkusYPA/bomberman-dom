@@ -3,12 +3,12 @@ import { clientEvents } from "./runGame.js";
 import { wallBreak } from "./sounds.js";
 
 function generalWallAttributes(domWall, wall) {
-        domWall.classList.add("wall")
-        domWall.style.position = "absolute";
-        domWall.style.width = `${wall.size}px`;
-        domWall.style.height = `${wall.size}px`;
-        domWall.style.left = `${wall.x}px`;
-        domWall.style.top = `${wall.y}px`;
+    domWall.classList.add("wall")
+    domWall.style.position = "absolute";
+    domWall.style.width = `${wall.size}px`;
+    domWall.style.height = `${wall.size}px`;
+    domWall.style.left = `${wall.x}px`;
+    domWall.style.top = `${wall.y}px`;
 }
 
 export function drawSolidWalls(walls) {
@@ -33,15 +33,15 @@ export function drawWeakWalls(walls) {
 
 let timedCount = 0;
 
-export function collapseWeakWall(id){
-        const targetWall = document.getElementById(id);
-        const countNow = timedCount;
-        const timedCollapse = new Timer(() => {
-            targetWall.remove();
-            clientEvents.delete(`collapse${countNow}`)
-        }, 500);
-        clientEvents.set(`collapse${countNow}`, timedCollapse)
-        timedCount++;
-        targetWall.classList.add('burning');
-        wallBreak.play();
+export function collapseWeakWall(id) {
+    const targetWall = document.getElementById(id);
+    const countNow = timedCount;
+    const timedCollapse = new Timer(() => {
+        targetWall.remove();
+        clientEvents.delete(`collapse${countNow}`)
+    }, 500);
+    clientEvents.set(`collapse${countNow}`, timedCollapse)
+    timedCount++;
+    targetWall.classList.add('burning');
+    wallBreak.play();
 }

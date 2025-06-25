@@ -234,7 +234,7 @@ ws.addEventListener("message", (e) => {
         console.log("startgame message:", msg)
         updateClientGameState(msg.payload);
         setShowing("game"); // trigger: exit miniGameLoop and start full game
-    } else if (msg.type === "gameState") {
+    } else if (msg.type === "gamestate") {
         updateClientGameState(msg.payload);
     }
 });

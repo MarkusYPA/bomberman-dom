@@ -32,8 +32,6 @@ export function updateClientGameState(update) {
     // Convert incoming object to Map for weakWalls
     if (update.weakWalls && typeof update.weakWalls === 'object' && Object.keys(update.weakWalls).length > 0) {
         clientGameState.weakWalls = new Map(Object.entries(update.weakWalls));
-        console.log("client wws updated, from:", update.weakWalls)
-        console.log("to:", clientGameState.weakWalls)
     }
     
     // Convert incoming object to Map for powerups

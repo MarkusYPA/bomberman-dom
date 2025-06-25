@@ -1,7 +1,7 @@
 //import { Finish } from "../finish.js";
 import { setUpGame, makeWalls, makeLevelMap } from "./initialize.js";
 //import { inputs } from "../shared/inputs.js";
-import { state } from "../bm-server-shared/state.js";
+import { clearTempsState, getNarrowState, state } from "../bm-server-shared/state.js";
 import { gridStep, interval, mult, speed } from "../bm-server-shared/config.js";
 import { broadcast, heldInputs } from "../ws-server.mjs";
 
@@ -39,7 +39,6 @@ export function startSequence(playerName = "", id = 1) {
     makeWalls(state.level);
 
     // broadcast state to start off game
-    //console.log("wws:", state.weakWalls)
     broadcast({ type: "startgame", payload: state });
     runGame();
 }
@@ -63,6 +62,10 @@ function runGame() {
                     return;
                 }
             })
+
+            // broadcast narrower state (no solidWalls, no surroundingWalls, no weakWalls, no powerups)
+            broadcast({ type: "gamestate", payload: getNarrowState(state) });
+            clearTempsState();
         }
     };
 };

@@ -15,3 +15,24 @@ export const state = {
     finishing: false,
     finished: false,
 };
+
+// Destructure to omit unwanted properties
+export function getNarrowState() {
+    const {
+        solidWalls,
+        surroundingWalls,
+        weakWalls,
+        powerups,
+        ...narrowState
+    } = state;
+    return narrowState;
+}
+
+export function clearTempsState() {
+    state.collapsingWalls = [];
+    state.newBombs.clear();
+    state.removedBombs.clear();
+    state.newFlames.clear();
+    state.pickedItems = [];
+    state.burningItems = [];
+}
