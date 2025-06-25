@@ -698,6 +698,12 @@ button:active {
     height: 300px;
   }
   
+  /* Scoreboard Responsive */
+  .scoreboard {
+    width: 90vw;
+    max-width: 500px;
+  }
+  
   /* Chat Area Responsive */
   .chat-area {
     width: 90vw;
@@ -841,6 +847,10 @@ button:active {
   .game-area {
     width: 600px;
     height: 480px;
+  }
+  
+  .scoreboard {
+    width: 600px;
   }
   
   .chat-area {
