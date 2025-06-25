@@ -74,5 +74,12 @@ function update(changedPath) {
     }
 }
 
+// Prevent default behavior for arrow keys to avoid page scrolling
+window.addEventListener("keydown", function (e) {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault();
+    };
+});
+
 subscribe(update, ['screen']); // Only watch for screen changes
 update();
