@@ -3,6 +3,7 @@ import { state, subscribe, createReactiveComponent } from './framework/state.js'
 
 state.screen = 'start';
 state.players = {}; // This can be kept for compatibility, but not used for rendering
+state.countdownTime = null; // Initialize countdown time
 
 function StartScreen() {
     return createVNode('div', { id: 'start-menu', class: 'start-menu' },
@@ -29,7 +30,21 @@ function StartScreen() {
 // PlayerBoard component that only re-renders when players state changes
 const PlayerBoardComponent = createReactiveComponent(
     () => {
-        return createVNode('div', { class: 'scoreboard' },
+        // Get current dimensions for responsive width
+        const isLargeScreen = window.matchMedia('(min-width: 1200px)').matches;
+        const isTablet = window.matchMedia('(max-width: 768px)').matches;
+        
+        let width = '500px';
+        if (isLargeScreen) {
+            width = '600px';
+        } else if (isTablet) {
+            width = '90vw';
+        }
+        
+        return createVNode('div', { 
+            class: 'scoreboard',
+            style: `width: ${width}; max-width: 600px;`
+        },
             createVNode('h2', { style: 'margin: 0 0 8px 0;' }, 'Scoreboard'),
             ...[1, 2, 3, 4].map(i => {
                 const player = state.players[i];
@@ -52,6 +67,7 @@ function GameScreen() {
     return createVNode('div', { class: 'game-root' },
         createVNode('div', { id: 'error-container', class: 'error-container' }),
         createVNode('div', { id: 'player-board-container' }), // Empty container for PlayerBoard
+        createVNode('div', { id: 'countdown-container' }, CountdownComponent()), // Countdown timer
         createVNode('div', { id: 'game', class: 'game-area' }),
         createVNode('div', { class: 'chat-area' },
             createVNode('div', { id: 'chat', class: 'chat-box' }),
@@ -59,6 +75,12 @@ function GameScreen() {
             createVNode('button', { id: 'send' }, 'Send')
         )
     );
+}
+export function CountdownComponent() {
+    if (state.countdownTime === null) {
+        return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, '');
+    }
+    return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, `Game starts in: ${state.countdownTime}s`);
 }
 
 function App() {

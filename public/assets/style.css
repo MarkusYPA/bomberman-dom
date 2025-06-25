@@ -440,6 +440,25 @@ body {
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
 }
 
+.message-timestamp {
+  font-size: 9px;
+  opacity: 0.6;
+  margin-top: 2px;
+  font-family: 'Courier New', monospace;
+  color: #eedac2;
+  text-align: right;
+  font-style: italic;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+}
+
+.chat-message.own .message-timestamp {
+  text-align: right;
+}
+
+.chat-message.other .message-timestamp {
+  text-align: left;
+}
+
 @keyframes messageFlicker {
   from {
     transform: translateY(5px);
@@ -529,6 +548,14 @@ button:active {
   font-weight: bold;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   animation: slideIn 0.3s ease-out;
+}
+
+.countdown-timer {
+  font-size: 24px;
+  font-weight: bold;
+  color: orange;
+  text-align: center;
+  margin-top: 20px;
 }
 
 @keyframes slideIn {
@@ -955,7 +982,13 @@ button:active {
     max-width: 500px;
     height: 300px;
   }
-
+  
+  /* Scoreboard Responsive */
+  .scoreboard {
+    width: 90vw;
+    max-width: 500px;
+  }
+  
   /* Chat Area Responsive */
   .chat-area {
     width: 90vw;
@@ -1102,7 +1135,11 @@ button:active {
     width: 600px;
     height: 480px;
   }
-
+  
+  .scoreboard {
+    width: 600px;
+  }
+  
   .chat-area {
     width: 600px;
     padding: 25px;

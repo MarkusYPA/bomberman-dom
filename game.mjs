@@ -4,17 +4,43 @@ import { speed } from "./config.mjs";
 export default class Game {
     constructor() {
         this.players = {}; // id -> { nickname, x, y }
-        // Game boundary constants
+        this.playerSize = 40; // Player size in pixels
+        this.gridSize = 20; // Grid size for movement calculations
+        
+        // Default dimensions (will be updated based on client)
+        this.dimensions = {
+            width: 500,
+            height: 400
+        };
+        
+        this.updateBoundaries();
+    }
+
+    updateBoundaries() {
+        // Game boundary constants based on current dimensions
         this.minX = 0;
         this.minY = 0;
-        this.maxX = (500 - 40) / 20;
-        this.maxY = (400 - 40) / 20;
+        this.maxX = (this.dimensions.width - this.playerSize) / this.gridSize;
+        this.maxY = (this.dimensions.height - this.playerSize) / this.gridSize;
         this.corners = {
             1: { x: this.minX, y: this.minY }, // Top-left
             2: { x: this.maxX, y: this.minY }, // Top-right
             3: { x: this.minX, y: this.maxY }, // Bottom-left
             4: { x: this.maxX, y: this.maxY }  // Bottom-right
         };
+    }
+
+    setDimensions(width, height) {
+        this.dimensions.width = width;
+        this.dimensions.height = height;
+        this.updateBoundaries();
+        
+        // Clamp existing players to new boundaries
+        for (const id in this.players) {
+            const p = this.players[id];
+            p.x = Math.max(this.minX, Math.min(this.maxX, p.x));
+            p.y = Math.max(this.minY, Math.min(this.maxY, p.y));
+        }
     }
 
     addPlayer(id, nickname) {
