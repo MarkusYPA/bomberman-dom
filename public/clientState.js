@@ -1,11 +1,12 @@
-import { gameLoop } from "./client.js";
+import { miniGameLoop } from "./client.js";
 
 export const clientState = {};
+export let showing = "splash";
 
 export function updateGameState(currentState, newState) {
     // start requesting animation frames
     if (Object.keys(currentState).length === 0) {
-        gameLoop();
+        miniGameLoop();
     }
 
     for (const id in newState) {
@@ -20,4 +21,8 @@ export function updateGameState(currentState, newState) {
             }
         }
     }
+}
+
+export function setShowing(value) {
+    showing = value;
 }

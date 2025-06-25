@@ -13,6 +13,10 @@ body {
   margin-bottom: 20px;
 }
 
+#game.level-1 {
+  background-image: url("images/bluegrass.jpg");
+}
+
 .player {
   position: absolute;
   width: 40px;
@@ -26,16 +30,261 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+
+  will-change: transform;
+  /* to own layer => GPU acceleration */
+  background-image: url("images/nalleRight3.png");
+  background-size: contain;
+  z-index: 10;
 }
-.player-color-1 { background: #fc6621 /*316289*/ !important; }  /* Retro orange */
-.player-color-2 { background: #374a1f !important; }  /* Retro green */
-.player-color-3 { background: #fda921 !important; }  /* Retro yellow */
-.player-color-4 { background: #a4301e !important; }  /* Retro red */
+
+.player-color-1 {
+  background: #fc6621
+    /*316289*/
+    !important;
+}
+
+/* Retro orange */
+.player-color-2 {
+  background: #374a1f !important;
+}
+
+/* Retro green */
+.player-color-3 {
+  background: #fda921 !important;
+}
+
+/* Retro yellow */
+.player-color-4 {
+  background: #a4301e !important;
+}
+
+.player.left {
+  background-image: url('images/nalleLeft3.png');
+}
+
+.player.dead {
+  background-image: url("images/nalleDead.png");
+}
+
+.player.invulnerable {
+  background-image: url('images/nalleRight3white.png');
+}
+
+.player.left.invulnerable {
+  background-image: url('images/nalleLeft3white.png');
+}
+
+
+.wall {
+  z-index: 3;
+  background-size: cover;
+}
+
+.level-1.wall.solid {
+  background-image: url("images/solidwall.svg")
+}
+
+.level-1.wall.weak {
+  background-image: url("images/weakwall02.svg");
+}
+
+.level-1.wall.burning {
+  background-image: url("images/burningwall.svg");
+}
+
+.bomb {
+  position: absolute;
+  background-image: url("images/bomb.svg");
+  background-size: cover;
+  z-index: 4;
+}
+
+.bomb.glowing {
+  background-image: url("images/bomborange.svg");
+}
+
+.flame {
+  position: absolute;
+  z-index: 1;
+}
+
+.flame.horizontal {
+  background-image: url("images/flamehor.svg");
+  background-size: cover;
+}
+
+.flame.left {
+  background-image: url("images/flameendl.svg");
+  background-size: cover;
+  z-index: 0;
+}
+
+.flame.right {
+  background-image: url("images/flameendr.svg");
+  background-size: cover;
+  z-index: 0;
+}
+
+.flame.vertical {
+  background-image: url("images/flamevert.svg");
+  background-size: cover;
+}
+
+.flame.up {
+  background-image: url("images/flameendu.svg");
+  background-size: cover;
+  z-index: 0;
+}
+
+.flame.down {
+  background-image: url("images/flameendd.svg");
+  background-size: cover;
+  z-index: 0;
+}
+
+.powerup {
+  position: absolute;
+  z-index: 2;
+}
+
+.bombup {
+  background-image: url("images/bombup.svg");
+  background-size: cover;
+}
+
+.flameup {
+  background-image: url("images/flameup.svg");
+  background-size: cover;
+}
+
+.finish {
+  background-image: url("images/finishgrey.svg");
+  background-size: cover;
+  position: absolute;
+  z-index: 2;
+}
+
+#game-over-menu {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8) url("images/loser1.gif") no-repeat center center;
+  background-size: cover;
+  padding: 30px;
+  border-radius: 20px;
+  display: none;
+  z-index: 20;
+  width: 480px;
+  height: 480px;
+  color: #fff;
+  text-align: center;
+}
+
+#game-over-menu h1 {
+  position: relative;
+  margin: 0px;
+  font-size: 3em;
+  text-shadow: 2px 2px 4px #000;
+}
+
+#game-over-menu button {
+  display: block;
+  margin: 390px auto;
+  padding: 12px 24px;
+  font-size: 1.2em;
+  background: #fff;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#game-over-menu button:hover {
+  background: #ddd;
+}
+
+#victory {
+  width: 70vw;
+  height: 70vh;
+  /*     width: 100vw;
+    height: 80vh; */
+  background-image: url("images/victory.svg");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: none;
+  color: white;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.victory-text {
+  max-width: 30vw;
+  text-align: center;
+  background: white;
+  padding: 1.5vh;
+  border-radius: 10px;
+  color: black;
+}
+
+#victory h1.victory-text {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-top: 50px;
+}
+
+#victory-message.victory-text {
+  font-size: 24px;
+  margin-top: 0;
+}
+
+#victory button {
+  padding: 12px 24px;
+  font-size: 1.8em;
+  background: #fff;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  margin-top: 10vh;
+}
+
+#victory button:hover {
+  background: #ddd;
+}
+
+.textbar {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  font-family: monospace;
+  justify-content: space-around;
+}
+
+.infobox {
+  flex: 1;
+  /* Equal width for all */
+  background-color: #474747;
+  border-style: solid;
+  border-color: #ececec;
+  text-align: left;
+  color: white;
+  border-radius: 5px;
+
+  display: flex;
+  align-items: center;
+}
+
+/* Retro red */
 
 .scoreboard {
   width: 500px;
   margin-bottom: 12px;
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
   border-radius: 8px;
   padding: 8px 0 8px 0;
   box-sizing: border-box;
@@ -63,7 +312,7 @@ body {
   margin-top: 20px;
   box-shadow: 4px 4px 0px #654321, 8px 8px 0px #4a2c17;
   position: relative;
-  background-image: 
+  background-image:
     radial-gradient(circle at 1px 1px, rgba(139, 69, 19, 0.1) 1px, transparent 0);
   background-size: 20px 20px;
 }
@@ -98,7 +347,7 @@ body {
   font-size: 13px;
   scroll-behavior: smooth;
   box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
-  background-image: 
+  background-image:
     linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent);
   background-size: 2px 2px;
   display: flex;
@@ -197,9 +446,11 @@ body {
     opacity: 0;
     text-shadow: 0 0 10px currentColor;
   }
+
   50% {
     text-shadow: 0 0 5px currentColor;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -285,6 +536,7 @@ button:active {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -330,10 +582,13 @@ button:active {
 }
 
 @keyframes retroPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 2px 2px 0px #4a2c17;
     filter: brightness(1);
   }
+
   50% {
     box-shadow: 2px 2px 0px #4a2c17, 0 0 8px #ff8c00;
     filter: brightness(1.2);
@@ -345,6 +600,7 @@ button:active {
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -505,6 +761,7 @@ button:active {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -515,6 +772,7 @@ button:active {
     transform: scale(0.8) translateY(-50px);
     opacity: 0;
   }
+
   to {
     transform: scale(1) translateY(0);
     opacity: 1;
@@ -543,14 +801,12 @@ button:active {
   transform: translate(-50%, -50%);
   width: 600px;
   height: 400px;
-  background-image: 
-    repeating-linear-gradient(
-      0deg,
+  background-image:
+    repeating-linear-gradient(0deg,
       transparent,
       transparent 1px,
       rgba(0, 255, 65, 0.03) 2px,
-      rgba(0, 255, 65, 0.03) 4px
-    );
+      rgba(0, 255, 65, 0.03) 4px);
   pointer-events: none;
   z-index: 1;
 }
@@ -560,7 +816,7 @@ button:active {
   font-size: 48px;
   font-weight: bold;
   color: #00ff41;
-  text-shadow: 
+  text-shadow:
     0 0 10px #00ff41,
     0 0 20px #00ff41,
     0 0 30px #00ff41,
@@ -576,8 +832,8 @@ button:active {
   padding: 30px 40px;
   border: 4px solid #8b4513;
   border-style: outset;
-  box-shadow: 
-    4px 4px 0px #654321, 
+  box-shadow:
+    4px 4px 0px #654321,
     8px 8px 0px #4a2c17,
     inset 0 0 20px rgba(0, 255, 65, 0.1);
 }
@@ -605,7 +861,7 @@ button:active {
   transition: all 0.1s ease;
   text-transform: uppercase;
   letter-spacing: 2px;
-  box-shadow: 
+  box-shadow:
     4px 4px 0px #4a2c17,
     8px 8px 0px #2d1b0f;
   text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
@@ -618,11 +874,11 @@ button:active {
 .start-menu button:hover {
   background: #a0522d;
   border-color: #8b4513;
-  box-shadow: 
+  box-shadow:
     2px 2px 0px #4a2c17,
     4px 4px 0px #2d1b0f;
   transform: translate(2px, 2px);
-  text-shadow: 
+  text-shadow:
     2px 2px 0px rgba(0, 0, 0, 0.7),
     0 0 8px #ff8c00;
 }
@@ -648,14 +904,15 @@ button:active {
 
 @keyframes titleGlow {
   0% {
-    text-shadow: 
+    text-shadow:
       0 0 10px #00ff41,
       0 0 20px #00ff41,
       0 0 30px #00ff41,
       2px 2px 0px #004d00;
   }
+
   100% {
-    text-shadow: 
+    text-shadow:
       0 0 15px #00ff41,
       0 0 25px #00ff41,
       0 0 35px #00ff41,
@@ -665,39 +922,40 @@ button:active {
 
 /* Responsive Design for Mobile and Tablets */
 @media (max-width: 768px) {
+
   /* Start Menu Responsive */
   .start-menu {
     padding: 20px;
     min-height: 100vh;
   }
-  
+
   .start-menu h1 {
     font-size: 28px;
     padding: 20px 25px;
     letter-spacing: 2px;
     margin: 0 0 15px 0;
   }
-  
+
   .start-menu button {
     font-size: 14px;
     padding: 15px 30px;
     min-width: 180px;
     letter-spacing: 1px;
   }
-  
+
   .start-menu::before {
     width: 90vw;
     height: 300px;
     max-width: 500px;
   }
-  
+
   /* Game Area Responsive */
   .game-area {
     width: 90vw;
     max-width: 500px;
     height: 300px;
   }
-  
+
   /* Chat Area Responsive */
   .chat-area {
     width: 90vw;
@@ -705,114 +963,115 @@ button:active {
     padding: 15px;
     background-size: 15px 15px;
   }
-  
+
   .chat-box {
     height: 120px;
     font-size: 12px;
     padding: 10px;
     padding-bottom: 45px;
   }
-  
+
   /* Input and Button Responsive */
   input {
     width: calc(100% - 90px);
     font-size: 12px;
     padding: 10px 12px;
   }
-  
+
   button {
     width: 70px;
     font-size: 10px;
     padding: 10px;
     margin-left: 8px;
   }
-  
+
   /* Nickname Modal Responsive */
   .nickname-modal {
     width: 95%;
     max-width: 350px;
     padding: 20px;
   }
-  
+
   .nickname-modal h2 {
     font-size: 14px;
   }
-  
+
   .nickname-modal p {
     font-size: 12px;
   }
-  
+
   .nickname-input {
     font-size: 14px;
     padding: 10px 12px;
   }
-  
+
   .nickname-modal button {
     font-size: 11px;
     padding: 10px 15px;
     min-width: 70px;
   }
-  
+
   /* Message Bubbles Responsive */
   .message-bubble {
     font-size: 12px;
     padding: 6px 10px;
   }
-  
+
   .message-sender {
     font-size: 9px;
   }
 }
 
 @media (max-width: 480px) {
+
   /* Extra Small Screens */
   .start-menu h1 {
     font-size: 22px;
     padding: 15px 20px;
     letter-spacing: 1px;
   }
-  
+
   .start-menu button {
     font-size: 12px;
     padding: 12px 25px;
     min-width: 160px;
   }
-  
+
   .start-menu::before {
     width: 95vw;
     height: 250px;
   }
-  
+
   .game-area {
     height: 250px;
   }
-  
+
   .chat-area {
     padding: 12px;
   }
-  
+
   .chat-box {
     height: 100px;
     font-size: 11px;
     padding-bottom: 45px;
   }
-  
+
   input {
     width: calc(100% - 70px);
     font-size: 11px;
     padding: 8px 10px;
   }
-  
+
   button {
     width: 60px;
     font-size: 9px;
     padding: 8px;
   }
-  
+
   .nickname-modal {
     padding: 15px;
   }
-  
+
   .nickname-modal::before {
     margin: -15px -15px 15px -15px;
     font-size: 10px;
@@ -821,43 +1080,44 @@ button:active {
 }
 
 @media (min-width: 1200px) {
+
   /* Large Screens */
   .start-menu h1 {
     font-size: 56px;
     padding: 35px 45px;
   }
-  
+
   .start-menu button {
     font-size: 20px;
     padding: 25px 50px;
     min-width: 250px;
   }
-  
+
   .start-menu::before {
     width: 700px;
     height: 450px;
   }
-  
+
   .game-area {
     width: 600px;
     height: 480px;
   }
-  
+
   .chat-area {
     width: 600px;
     padding: 25px;
   }
-  
+
   .chat-box {
     height: 180px;
     font-size: 14px;
   }
-  
+
   input {
     width: 480px;
     font-size: 14px;
   }
-  
+
   button {
     width: 90px;
     font-size: 13px;

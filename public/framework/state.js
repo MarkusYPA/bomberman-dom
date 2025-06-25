@@ -1,9 +1,4 @@
-export const state = makeReactive({
-    tasks: [],
-    filter: 'all',      // 'all', 'active', or 'completed'
-    editingId: null,
-    currentId: 1,
-})
+export const state = makeReactive({})
 
 // Store subscribers by path - allows selective notifications
 let subscribers = new Map() // path -> Set of callback functions

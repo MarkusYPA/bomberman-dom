@@ -1,5 +1,7 @@
 import { state } from "./framework/state.js";
-import { clientState, updateGameState } from "./clientState.js";
+import { clientState, setShowing, showing, updateGameState } from "./clientState.js";
+import { startSequenceClient } from "./bomberman/runGame.js"
+import { clientGameState, updateClientGameState } from "./shared/state.js";
 
 // Function to create beautiful nickname modal
 function createNicknameModal() {
@@ -7,11 +9,11 @@ function createNicknameModal() {
         // Create modal overlay
         const overlay = document.createElement('div');
         overlay.className = 'nickname-modal-overlay';
-        
+
         // Create modal content
         const modal = document.createElement('div');
         modal.className = 'nickname-modal';
-        
+
         // Modal content HTML
         modal.innerHTML = `
             <h2>Enter Player Name</h2>
@@ -23,19 +25,19 @@ function createNicknameModal() {
                 <button type="button" class="primary confirm-btn">Connect</button>
             </div>
         `;
-        
+
         const input = modal.querySelector('.nickname-input');
         const charCount = modal.querySelector('.character-count');
         const confirmBtn = modal.querySelector('.confirm-btn');
         const cancelBtn = modal.querySelector('.cancel-btn');
-        
+
         // Update character count
         function updateCharCount() {
             const length = input.value.length;
             charCount.textContent = `${length}/12 characters`;
             charCount.style.color = length >= 10 ? '#ff4444' : '#ff8c00';
         }
-        
+
         // Handle input events
         input.addEventListener('input', updateCharCount);
         input.addEventListener('keypress', (e) => {
@@ -44,7 +46,7 @@ function createNicknameModal() {
                 document.body.removeChild(overlay);
             }
         });
-        
+
         // Handle button clicks
         confirmBtn.addEventListener('click', () => {
             const nickname = input.value.trim();
@@ -59,22 +61,22 @@ function createNicknameModal() {
                 }, 1000);
             }
         });
-        
+
         cancelBtn.addEventListener('click', () => {
             resolve('Player'); // Default nickname if cancelled
             document.body.removeChild(overlay);
         });
-        
+
         // Add to DOM and focus
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
-        
+
         // Focus input after a short delay to ensure modal is rendered
         setTimeout(() => {
             input.focus();
             input.select();
         }, 100);
-        
+
         // Close on overlay click
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) {
@@ -115,7 +117,7 @@ function showErrorMessage(message) {
 function showNewMessageIndicator() {
     const chatBox = document.getElementById("chat");
     let indicator = document.getElementById("new-message-indicator");
-    
+
     // Create indicator if it doesn't exist
     if (!indicator) {
         indicator = document.createElement("div");
@@ -128,11 +130,11 @@ function showNewMessageIndicator() {
         };
         chatBox.appendChild(indicator); // Append to chat-box instead of chat-area
     }
-    
+
     // Reset the fade-out timer
     clearTimeout(indicator.fadeTimer);
     indicator.style.opacity = "1";
-    
+
     // Auto-fade after 3 seconds
     indicator.fadeTimer = setTimeout(() => {
         if (indicator.parentNode) {
@@ -147,10 +149,10 @@ ws.addEventListener("open", () => {
 
 // Track held keys
 const held = new Set();
-const keyMap = { 
-    ArrowUp: "up", 
-    ArrowDown: "down", 
-    ArrowLeft: "left", 
+const keyMap = {
+    ArrowUp: "up",
+    ArrowDown: "down",
+    ArrowLeft: "left",
     ArrowRight: "right",
     " ": "bomb",
     Space: "bomb"          // some browsers use 'Space'
@@ -158,6 +160,7 @@ const keyMap = {
 const allKeys = ["left", "right", "up", "down", "bomb"];
 
 function sendHeld() {
+    // create and send object of booleans from set
     const payload = {};
     for (const key of allKeys) {
         payload[key] = held.has(key);
@@ -192,15 +195,15 @@ ws.addEventListener("message", (e) => {
         updateGameState(clientState, msg.payload);
     } else if (msg.type === "chat") {
         const chatBox = document.getElementById("chat");
-        
+
         // Check if user is at the bottom before adding message
         const isAtBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1;
-        
+
         // Create message container
         const messageDiv = document.createElement("div");
         const isOwnMessage = msg.nickname === nickname;
         messageDiv.className = `chat-message ${isOwnMessage ? 'own' : 'other'}`;
-        
+
         // Create sender name (only show for other people's messages)
         if (!isOwnMessage) {
             const senderDiv = document.createElement("div");
@@ -208,15 +211,15 @@ ws.addEventListener("message", (e) => {
             senderDiv.textContent = msg.nickname;
             messageDiv.appendChild(senderDiv);
         }
-        
+
         // Create message bubble with player color
         const bubbleDiv = document.createElement("div");
         bubbleDiv.className = `message-bubble player-color-${msg.playerId}`;
         bubbleDiv.textContent = msg.message;
         messageDiv.appendChild(bubbleDiv);
-        
+
         chatBox.appendChild(messageDiv);
-        
+
         if (isAtBottom) {
             // User was at bottom, auto-scroll to show new message
             chatBox.scrollTop = chatBox.scrollHeight;
@@ -227,19 +230,33 @@ ws.addEventListener("message", (e) => {
     } else if (msg.type === "error") {
         // Display error message to user
         showErrorMessage(msg.message);
+    } else if (msg.type === "startgame") {
+        console.log("startgame message:", msg)
+        updateClientGameState(msg.payload);
+        setShowing("game"); // trigger: exit miniGameLoop and start full game
+    } else if (msg.type === "gameState") {
+        updateClientGameState(msg.payload);
     }
 });
 
-export function gameLoop() {
+export function miniGameLoop() {
+
+    const box = document.getElementById("game");
     requestAnimationFrame(renderGame);
 
     function renderGame(timestamp) {
         if (Object.keys(clientState).length === 0) {
             return;
         }
-
-        const box = document.getElementById("game");
+        
         if (!box) return;
+
+        if (showing === "game") {
+            box.innerHTML = "";
+            startSequenceClient();
+            return;
+        }
+
         box.innerHTML = "";
         const colors = ["#145214", "#c00", "#113377", "#111"]; // Colors for players
         for (const id in clientState) {
@@ -280,7 +297,7 @@ function setupChatHandlers() {
             if (msg) {
                 ws.send(JSON.stringify({ type: "chat", message: msg }));
                 chatInput.value = "";
-        
+
                 // Focus back on input for better UX
                 //chatInput.focus();
             }
@@ -295,7 +312,7 @@ function setupChatHandlers() {
         chatBox.addEventListener("scroll", () => {
             const isAtBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1;
             const indicator = document.getElementById("new-message-indicator");
-            
+
             if (isAtBottom && indicator) {
                 indicator.remove();
             }

@@ -1,9 +1,11 @@
 import { createHash } from "crypto";
 import Game from "./game.mjs";
+import { stopMiniGame } from "./server.mjs";
+import { startSequence } from "./bm-server/game.js";
 
 const game = new Game();
 const clients = new Map(); // socket -> { id, nickname }
-const heldInputs = new Map(); // id -> Set of held directions
+export const heldInputs = new Map(); // id -> Set of held directions
 
 function encodeMessage(str) {
     const json = Buffer.from(str);
@@ -14,8 +16,19 @@ function encodeMessage(str) {
     return Buffer.concat([header, json]);
 }
 
-function broadcast(obj) {
-    const msg = encodeMessage(JSON.stringify(obj));
+// JSON.stringify doesn't serialize Maps and Sets by default, this helps
+function replacer(key, value) {
+    if (value instanceof Map) {
+        return Object.fromEntries(value);
+    }
+    if (value instanceof Set) {
+        return Array.from(value);
+    }
+    return value;
+}
+
+export function broadcast(obj) {
+    const msg = encodeMessage(JSON.stringify(obj, replacer));
     for (const socket of clients.keys()) {
         try {
             socket.write(msg);
@@ -89,7 +102,7 @@ export function handleUpgrade(req, socket) {
                             break;
                         }
                     }
-                    
+
                     clients.set(socket, { id, nickname: obj.nickname });
                     const added = game.addPlayer(id, obj.nickname);
                     if (!added) {
@@ -111,8 +124,16 @@ export function handleUpgrade(req, socket) {
                 }
 
                 if (obj.type === "chat" && id) {
+
                     const sender = clients.get(socket)?.nickname || "???";
-                    broadcast({ type: "chat", nickname: sender, playerId: id, message: obj.message });
+
+                    if (obj.message === "start game") {
+                        // logic for stoppping minigame, telling client to do the same, and starting the real game.
+                        stopMiniGame();
+                        startSequence(sender, id);  // this should be run with all connected players eventually
+                    } else {                        
+                        broadcast({ type: "chat", nickname: sender, playerId: id, message: obj.message });
+                    }
                 }
 
                 offset = dataEnd;
