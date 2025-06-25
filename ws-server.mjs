@@ -106,8 +106,9 @@ export function handleUpgrade(req, socket) {
                 }
 
                 if (obj.type === "input" && id) {
-                    // obj.payload is an array of held directions
-                    heldInputs.set(id, new Set(obj.payload));
+                    // obj.payload is an object of booleans
+                    console.log("input on server:", obj.payload);
+                    heldInputs.set(id, obj.payload);
                 }
 
                 if (obj.type === "chat" && id) {

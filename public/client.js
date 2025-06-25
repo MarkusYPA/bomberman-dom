@@ -30,10 +30,22 @@ ws.addEventListener("open", () => {
 
 // Track held keys
 const held = new Set();
-const keyMap = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" };
+const keyMap = { 
+    ArrowUp: "up", 
+    ArrowDown: "down", 
+    ArrowLeft: "left", 
+    ArrowRight: "right",
+    " ": "bomb",
+    Space: "bomb"          // some browsers use 'Space'
+};
+const allKeys = ["left", "right", "up", "down", "bomb"];
 
 function sendHeld() {
-    ws.send(JSON.stringify({ type: "input", payload: Array.from(held) }));
+    const payload = {};
+    for (const key of allKeys) {
+        payload[key] = held.has(key);
+    }
+    ws.send(JSON.stringify({ type: "input", payload }));
 }
 
 document.addEventListener("keydown", (e) => {
