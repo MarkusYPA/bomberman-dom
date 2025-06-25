@@ -107,13 +107,12 @@ export function handleUpgrade(req, socket) {
 
                 if (obj.type === "input" && id) {
                     // obj.payload is an object of booleans
-                    console.log("input on server:", obj.payload);
                     heldInputs.set(id, obj.payload);
                 }
 
                 if (obj.type === "chat" && id) {
                     const sender = clients.get(socket)?.nickname || "???";
-                    broadcast({ type: "chat", nickname: sender, message: obj.message });
+                    broadcast({ type: "chat", nickname: sender, playerId: id, message: obj.message });
                 }
 
                 offset = dataEnd;
