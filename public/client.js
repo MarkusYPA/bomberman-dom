@@ -183,19 +183,20 @@ ws.addEventListener("message", (e) => {
         
         // Create message container
         const messageDiv = document.createElement("div");
-        messageDiv.className = `chat-message ${msg.nickname === nickname ? 'own' : 'other'}`;
+        const isOwnMessage = msg.nickname === nickname;
+        messageDiv.className = `chat-message ${isOwnMessage ? 'own' : 'other'}`;
         
         // Create sender name (only show for other people's messages)
-        if (msg.nickname !== nickname) {
+        if (!isOwnMessage) {
             const senderDiv = document.createElement("div");
             senderDiv.className = "message-sender";
             senderDiv.textContent = msg.nickname;
             messageDiv.appendChild(senderDiv);
         }
         
-        // Create message bubble
+        // Create message bubble with player color
         const bubbleDiv = document.createElement("div");
-        bubbleDiv.className = "message-bubble";
+        bubbleDiv.className = `message-bubble player-color-${msg.playerId}`;
         bubbleDiv.textContent = msg.message;
         messageDiv.appendChild(bubbleDiv);
         
@@ -247,8 +248,8 @@ function setupChatHandlers() {
                 ws.send(JSON.stringify({ type: "chat", message: msg }));
                 chatInput.value = "";
         
-        // Focus back on input for better UX
-        input.focus();
+                // Focus back on input for better UX
+                //chatInput.focus();
             }
         };
         chatInput.addEventListener("keypress", (e) => {
@@ -257,7 +258,7 @@ function setupChatHandlers() {
                 sendButton.click();
             }
         });
-    } else if (chatBox) {
+
         chatBox.addEventListener("scroll", () => {
             const isAtBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1;
             const indicator = document.getElementById("new-message-indicator");

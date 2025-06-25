@@ -112,7 +112,7 @@ export function handleUpgrade(req, socket) {
 
                 if (obj.type === "chat" && id) {
                     const sender = clients.get(socket)?.nickname || "???";
-                    broadcast({ type: "chat", nickname: sender, message: obj.message });
+                    broadcast({ type: "chat", nickname: sender, playerId: id, message: obj.message });
                 }
 
                 offset = dataEnd;
