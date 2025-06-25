@@ -30,7 +30,21 @@ function StartScreen() {
 // PlayerBoard component that only re-renders when players state changes
 const PlayerBoardComponent = createReactiveComponent(
     () => {
-        return createVNode('div', { class: 'scoreboard' },
+        // Get current dimensions for responsive width
+        const isLargeScreen = window.matchMedia('(min-width: 1200px)').matches;
+        const isTablet = window.matchMedia('(max-width: 768px)').matches;
+        
+        let width = '500px';
+        if (isLargeScreen) {
+            width = '600px';
+        } else if (isTablet) {
+            width = '90vw';
+        }
+        
+        return createVNode('div', { 
+            class: 'scoreboard',
+            style: `width: ${width}; max-width: 600px;`
+        },
             createVNode('h2', { style: 'margin: 0 0 8px 0;' }, 'Scoreboard'),
             ...[1, 2, 3, 4].map(i => {
                 const player = state.players[i];

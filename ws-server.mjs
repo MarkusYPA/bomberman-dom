@@ -65,6 +65,46 @@ export function handleUpgrade(req, socket) {
     );
 
     let id = null;
+    let pingInterval = null;
+    let lastPongTime = Date.now();
+
+    // Set up ping/pong heartbeat to detect disconnected clients
+    const startHeartbeat = () => {
+        pingInterval = setInterval(() => {
+            //todo: check if 30 seconds pong timeout is appropriate
+            if (Date.now() - lastPongTime > 30000) { // 30 seconds timeout
+                console.log(`Client ${id} timeout - closing connection`);
+                socket.destroy();
+                return;
+            }
+            
+            // Send ping frame (opcode 9)
+            try {
+                const pingFrame = Buffer.from([0x89, 0x00]); // Ping with no payload
+                socket.write(pingFrame);
+            } catch (err) {
+                console.log(`Failed to send ping to client ${id}: ${err.message}`);
+                socket.destroy();
+            }
+        }, 10000); // Ping every 10 seconds
+        //todo: check if 10 seconds ping timeout is appropriate
+    };
+
+    const cleanup = () => {
+        if (pingInterval) {
+            clearInterval(pingInterval);
+            pingInterval = null;
+        }
+        if (id) {
+            game.removePlayer(id);
+            heldInputs.delete(id);
+            const sender = clients.get(socket)?.nickname || "???";
+            if (sender && sender !== "???") {
+                broadcast({ type: "chat", nickname: sender, playerId: id, message: sender + " left the game!" });
+            }
+        }
+        clients.delete(socket);
+    };
 
     socket.on("data", (buffer) => {
         let offset = 0;
@@ -72,7 +112,15 @@ export function handleUpgrade(req, socket) {
             try {
                 const fin = (buffer[offset] & 0x80) !== 0;
                 const opcode = buffer[offset] & 0x0f;
-                if (opcode !== 1) break;
+                
+                // Handle pong frames (opcode 10)
+                if (opcode === 10) {
+                    lastPongTime = Date.now();
+                    offset += 2; // Skip pong frame
+                    continue;
+                }
+                
+                if (opcode !== 1) break; // Only handle text frames
 
                 let len = buffer[offset + 1] & 127;
                 let maskStart = offset + 2;
@@ -106,12 +154,30 @@ export function handleUpgrade(req, socket) {
                         return;
                     }
 
+                    // Check for duplicate nickname
+                    const usedNicknames = new Set([...clients.values()].map(client => client.nickname.toLowerCase()));
+                    if (usedNicknames.has(obj.nickname.toLowerCase())) {
+                        // Send duplicate name error message but keep connection open
+                        const duplicateMsg = encodeMessage(JSON.stringify({
+                            type: "duplicateNickname",
+                            message: `Nickname "${obj.nickname}" is already taken. Please choose a different name.`
+                        }));
+                        socket.write(duplicateMsg);
+                        return; // Don't close connection, just return and wait for new join attempt
+                    }
+                    
+                    // Find first available ID between 1-4
                     const usedIds = new Set([...clients.values()].map(client => client.id));
                     for (let i = 1; i <= 4; i++) {
                         if (!usedIds.has(i)) {
                             id = i;
                             break;
                         }
+                    }
+                    
+                    // Update game dimensions if provided
+                    if (obj.dimensions) {
+                        game.setDimensions(obj.dimensions.width, obj.dimensions.height);
                     }
                     
                     clients.set(socket, { id, nickname: obj.nickname });
@@ -129,6 +195,19 @@ export function handleUpgrade(req, socket) {
 
                     // Reset countdown whenever the number of players changes
                     updateCountdown();
+
+                    // Start heartbeat after successful join
+                    startHeartbeat();
+
+                    const sender = clients.get(socket)?.nickname || "???";
+                    broadcast({ type: "chat", nickname: sender, playerId: id, message: sender + " joined the game!" });
+                }
+
+                if (obj.type === "updateDimensions" && id) {
+                    // Update game dimensions when screen size changes
+                    if (obj.dimensions) {
+                        game.setDimensions(obj.dimensions.width, obj.dimensions.height);
+                    }
                 }
 
                 if (obj.type === "input" && id) {
@@ -149,34 +228,26 @@ export function handleUpgrade(req, socket) {
     });
 
     socket.on("close", () => {
-        if (id) {
-            game.removePlayer(id);
-            heldInputs.delete(id);
-        }
-        clients.delete(socket);
+        console.log(`Socket closed for client ${id}`);
+        cleanup();
 
         // Reset countdown whenever the number of players changes
         updateCountdown();
     });
 
     socket.on("end", () => {
-        if (id) {
-            game.removePlayer(id);
-            heldInputs.delete(id);
-        }
-        clients.delete(socket);
+        console.log(`Socket ended for client ${id}`);
+        cleanup();
 
         // Reset countdown whenever the number of players changes
         updateCountdown();
     });
 
+    // Handle socket errors (like ECONNRESET) to prevent crashes
     socket.on("error", (err) => {
-        console.log(`Socket error: ${err.code} - ${err.message}`);
-        if (id) {
-            game.removePlayer(id);
-            heldInputs.delete(id);
-        }
-        clients.delete(socket);
+        console.log(`Socket error for client ${id}: ${err.code} - ${err.message}`);
+        cleanup();
+
 
         // Reset countdown whenever the number of players changes
         updateCountdown();

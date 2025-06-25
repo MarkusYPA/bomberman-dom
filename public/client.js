@@ -91,6 +91,49 @@ const nickname = await createNicknameModal();
 
 const ws = new WebSocket(`ws://${location.host}`);
 
+// Function to get current game area dimensions
+function getGameAreaDimensions() {
+    // Check if we're on mobile, tablet, or desktop based on CSS media queries
+    const isLargeScreen = window.matchMedia('(min-width: 1200px)').matches;
+    const isTablet = window.matchMedia('(max-width: 768px)').matches;
+    const isMobile = window.matchMedia('(max-width: 480px)').matches;
+    
+    if (isLargeScreen) {
+        return { width: 600, height: 480 };
+    } else if (isMobile) {
+        const vw = Math.min(window.innerWidth * 0.95, 500);
+        return { width: vw, height: 250 };
+    } else if (isTablet) {
+        const vw = Math.min(window.innerWidth * 0.9, 500);
+        return { width: vw, height: 300 };
+    } else {
+        return { width: 500, height: 400 }; // Default
+    }
+}
+
+// Function to update game dimensions when screen size changes
+function updateGameDimensions() {
+    if (ws.readyState === WebSocket.OPEN) {
+        const dimensions = getGameAreaDimensions();
+        ws.send(JSON.stringify({ 
+            type: "updateDimensions", 
+            dimensions: dimensions 
+        }));
+    }
+}
+
+// Listen for window resize events
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(updateGameDimensions, 100);
+});
+
+// Listen for orientation change on mobile devices
+window.addEventListener('orientationchange', () => {
+    setTimeout(updateGameDimensions, 500); // Wait for orientation change to complete
+});
+
 // Function to show error messages elegantly
 function showErrorMessage(message) {
     const errorContainer = document.getElementById("error-container");
@@ -148,7 +191,12 @@ function showNewMessageIndicator() {
 }
 
 ws.addEventListener("open", () => {
-    ws.send(JSON.stringify({ type: "join", nickname }));
+    const dimensions = getGameAreaDimensions();
+    ws.send(JSON.stringify({ 
+        type: "join", 
+        nickname: nickname,
+        dimensions: dimensions 
+    }));
 });
 
 // Track held keys
@@ -213,6 +261,15 @@ ws.addEventListener("message", (e) => {
         bubbleDiv.textContent = msg.message;
         messageDiv.appendChild(bubbleDiv);
         
+        // Create timestamp
+        const timestampDiv = document.createElement("div");
+        timestampDiv.className = "message-timestamp";
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        timestampDiv.textContent = timeString;
+        
+        messageDiv.appendChild(timestampDiv);
+        
         chatBox.appendChild(messageDiv);
         
         if (isAtBottom) {
@@ -222,15 +279,52 @@ ws.addEventListener("message", (e) => {
             // User is reading older messages, show new message indicator
             showNewMessageIndicator();
         }
+    } else if (msg.type === "duplicateNickname") {
+        // Show error message and prompt for new nickname
+        showErrorMessage(msg.message);
+        // Prompt user to enter a different nickname
+        createNicknameModal().then(newNickname => {
+            const dimensions = getGameAreaDimensions();
+            ws.send(JSON.stringify({ 
+                type: "join", 
+                nickname: newNickname,
+                dimensions: dimensions 
+            }));
+        });
     } else if (msg.type === "error") {
         // Display error message to user
         showErrorMessage(msg.message);
     }
 });
 
+// Handle WebSocket close event
+ws.addEventListener("close", (event) => {
+    console.log('WebSocket connection closed:', event.code, event.reason);
+    showErrorMessage("Connection lost. Please refresh the page to reconnect.");
+});
+
+// Handle WebSocket error event  
+ws.addEventListener("error", (error) => {
+    console.error('WebSocket error:', error);
+    showErrorMessage("Connection error occurred. Please check your internet connection.");
+});
+
+// Add beforeunload event to properly close connection when page is unloaded
+window.addEventListener("beforeunload", () => {
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.close(1000, "Page unload"); // Normal closure
+    }
+});
+
 function renderGame(players) {
     const box = document.getElementById("game");
     if (!box) return;
+    
+    // Update the game area size to match current dimensions
+    const dimensions = getGameAreaDimensions();
+    box.style.width = `${dimensions.width}px`;
+    box.style.height = `${dimensions.height}px`;
+    
     box.innerHTML = "";
     for (const id in players) {
         const p = players[id];
