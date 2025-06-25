@@ -1,6 +1,6 @@
 import { createVNode, mount } from "./framework/mini.js";
-
 import { state } from "./framework/state.js";
+import { CountdownComponent }from "./app.js";
 
 // Function to create beautiful nickname modal
 function createNicknameModal() {
@@ -90,7 +90,6 @@ function createNicknameModal() {
 const nickname = await createNicknameModal();
 
 const ws = new WebSocket(`ws://${location.host}`);
-let countdownTime = null; // Track countdown time
 
 // Function to show error messages elegantly
 function showErrorMessage(message) {
@@ -111,13 +110,6 @@ function showErrorMessage(message) {
         // Fallback to alert if error container not found
         alert(message);
     }
-}
-
-function CountdownComponent() {
-    if (countdownTime === null) {
-        return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, '');
-    }
-    return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, `Game starts in: ${countdownTime}s`);
 }
 
 function updateCountdown() {
@@ -188,12 +180,11 @@ document.addEventListener("keyup", (e) => {
 ws.addEventListener("message", (e) => {
     const msg = JSON.parse(e.data);
     if (msg.type === "countdown") {
-        countdownTime = msg.time;
+        state.countdownTime = msg.time;
         updateCountdown();
     } else if (msg.type === "countdownFinished") {
-        countdownTime = null;
-        const countdownElement = document.getElementById('countdown-container');
-        mount(countdownElement, createVNode('div', { id: 'countdown', class: 'countdown-timer' }, 'Game starting...'));
+        state.countdownTime = null;
+        updateCountdown();
     } else if (msg.type === "state") {
         state.players = msg.payload; // Update state with players
         renderGame(msg.payload);
