@@ -1,9 +1,13 @@
 import { createHash } from "crypto";
 import Game from "./game.mjs";
+import { start } from "repl";
 
 const game = new Game();
 const clients = new Map(); // socket -> { id, nickname }
 const heldInputs = new Map(); // id -> Set of held directions
+
+let countdownTimer = null;
+let countdown = 10;
 
 function encodeMessage(str) {
     const json = Buffer.from(str);
@@ -21,6 +25,30 @@ function broadcast(obj) {
             socket.write(msg);
         } catch { }
     }
+}
+
+function resetCountdown() {
+    if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+    }
+    broadcast({ type: "countdown", time: null });
+}
+
+function startCountdown() {
+    resetCountdown();
+    let timeLeft = countdown;
+
+    countdownTimer = setInterval(() => {
+        if (timeLeft > 0) {
+            broadcast({ type: "countdown", time: timeLeft });
+            timeLeft--;
+        } else {
+            clearInterval(countdownTimer);
+            countdownTimer = null;
+            broadcast({ type: "countdownFinished" }); // Notify clients that countdown is finished
+        }
+    }, 1000);
 }
 
 export function handleUpgrade(req, socket) {
@@ -82,7 +110,6 @@ export function handleUpgrade(req, socket) {
         let offset = 0;
         while (offset < buffer.length) {
             try {
-                // Parse one frame starting at offset
                 const fin = (buffer[offset] & 0x80) !== 0;
                 const opcode = buffer[offset] & 0x0f;
                 
@@ -101,13 +128,12 @@ export function handleUpgrade(req, socket) {
                     len = buffer.readUInt16BE(offset + 2);
                     maskStart = offset + 4;
                 } else if (len === 127) {
-                    // Not supporting >65535 payloads for simplicity
                     break;
                 }
                 const mask = buffer.slice(maskStart, maskStart + 4);
                 const dataStart = maskStart + 4;
                 const dataEnd = dataStart + len;
-                if (dataEnd > buffer.length) break; // Incomplete frame
+                if (dataEnd > buffer.length) break;
 
                 const data = buffer.slice(dataStart, dataEnd);
                 const unmasked = Buffer.alloc(data.length);
@@ -119,13 +145,12 @@ export function handleUpgrade(req, socket) {
 
                 if (obj.type === "join") {
                     if (clients.size >= 4) {
-                        // Send server full message before closing
                         const fullMsg = encodeMessage(JSON.stringify({
                             type: "error",
                             message: "Server is full (4/4 players). Please try again later."
                         }));
                         socket.write(fullMsg);
-                        setTimeout(() => socket.end(), 100); // Small delay to ensure message is sent
+                        setTimeout(() => socket.end(), 100);
                         return;
                     }
 
@@ -140,7 +165,7 @@ export function handleUpgrade(req, socket) {
                         socket.write(duplicateMsg);
                         return; // Don't close connection, just return and wait for new join attempt
                     }
-
+                    
                     // Find first available ID between 1-4
                     const usedIds = new Set([...clients.values()].map(client => client.id));
                     for (let i = 1; i <= 4; i++) {
@@ -158,7 +183,6 @@ export function handleUpgrade(req, socket) {
                     clients.set(socket, { id, nickname: obj.nickname });
                     const added = game.addPlayer(id, obj.nickname);
                     if (!added) {
-                        // Send error message if game couldn't add player
                         const errorMsg = encodeMessage(JSON.stringify({
                             type: "error",
                             message: "Failed to join game. Please try again."
@@ -168,6 +192,9 @@ export function handleUpgrade(req, socket) {
                         return;
                     }
                     heldInputs.set(id, new Set());
+
+                    // Reset countdown whenever the number of players changes
+                    updateCountdown();
 
                     // Start heartbeat after successful join
                     startHeartbeat();
@@ -184,7 +211,6 @@ export function handleUpgrade(req, socket) {
                 }
 
                 if (obj.type === "input" && id) {
-                    // obj.payload is an array of held directions
                     heldInputs.set(id, new Set(obj.payload));
                 }
 
@@ -204,17 +230,27 @@ export function handleUpgrade(req, socket) {
     socket.on("close", () => {
         console.log(`Socket closed for client ${id}`);
         cleanup();
+
+        // Reset countdown whenever the number of players changes
+        updateCountdown();
     });
 
     socket.on("end", () => {
         console.log(`Socket ended for client ${id}`);
         cleanup();
+
+        // Reset countdown whenever the number of players changes
+        updateCountdown();
     });
 
     // Handle socket errors (like ECONNRESET) to prevent crashes
     socket.on("error", (err) => {
         console.log(`Socket error for client ${id}: ${err.code} - ${err.message}`);
         cleanup();
+
+
+        // Reset countdown whenever the number of players changes
+        updateCountdown();
     });
 }
 
@@ -225,4 +261,12 @@ export function tickGame() {
     }
     const state = { type: "state", payload: game.getState() };
     broadcast(state);
+}
+
+function updateCountdown() {
+    if (clients.size >= 2) {
+        startCountdown();
+    } else {
+        resetCountdown();
+    }
 }
