@@ -37,6 +37,46 @@ export function handleUpgrade(req, socket) {
     );
 
     let id = null;
+    let pingInterval = null;
+    let lastPongTime = Date.now();
+
+    // Set up ping/pong heartbeat to detect disconnected clients
+    const startHeartbeat = () => {
+        pingInterval = setInterval(() => {
+            //todo: check if 30 seconds pong timeout is appropriate
+            if (Date.now() - lastPongTime > 30000) { // 30 seconds timeout
+                console.log(`Client ${id} timeout - closing connection`);
+                socket.destroy();
+                return;
+            }
+            
+            // Send ping frame (opcode 9)
+            try {
+                const pingFrame = Buffer.from([0x89, 0x00]); // Ping with no payload
+                socket.write(pingFrame);
+            } catch (err) {
+                console.log(`Failed to send ping to client ${id}: ${err.message}`);
+                socket.destroy();
+            }
+        }, 10000); // Ping every 10 seconds
+        //todo: check if 10 seconds ping timeout is appropriate
+    };
+
+    const cleanup = () => {
+        if (pingInterval) {
+            clearInterval(pingInterval);
+            pingInterval = null;
+        }
+        if (id) {
+            game.removePlayer(id);
+            heldInputs.delete(id);
+            const sender = clients.get(socket)?.nickname || "???";
+            if (sender && sender !== "???") {
+                broadcast({ type: "chat", nickname: sender, playerId: id, message: sender + " left the game!" });
+            }
+        }
+        clients.delete(socket);
+    };
 
     socket.on("data", (buffer) => {
         let offset = 0;
@@ -45,6 +85,14 @@ export function handleUpgrade(req, socket) {
                 // Parse one frame starting at offset
                 const fin = (buffer[offset] & 0x80) !== 0;
                 const opcode = buffer[offset] & 0x0f;
+                
+                // Handle pong frames (opcode 10)
+                if (opcode === 10) {
+                    lastPongTime = Date.now();
+                    offset += 2; // Skip pong frame
+                    continue;
+                }
+                
                 if (opcode !== 1) break; // Only handle text frames
 
                 let len = buffer[offset + 1] & 127;
@@ -121,6 +169,9 @@ export function handleUpgrade(req, socket) {
                     }
                     heldInputs.set(id, new Set());
 
+                    // Start heartbeat after successful join
+                    startHeartbeat();
+
                     const sender = clients.get(socket)?.nickname || "???";
                     broadcast({ type: "chat", nickname: sender, playerId: id, message: sender + " joined the game!" });
                 }
@@ -151,35 +202,19 @@ export function handleUpgrade(req, socket) {
     });
 
     socket.on("close", () => {
-        if (id) {
-            game.removePlayer(id);
-            heldInputs.delete(id);
-        }
-        const sender = clients.get(socket)?.nickname || "???";
-        broadcast({ type: "chat", nickname: sender, playerId: id, message: sender + " left the game!" });
-
-        clients.delete(socket);
+        console.log(`Socket closed for client ${id}`);
+        cleanup();
     });
 
     socket.on("end", () => {
-        if (id) {
-            game.removePlayer(id);
-            heldInputs.delete(id);
-        }
-        const sender = clients.get(socket)?.nickname || "???";
-        broadcast({ type: "chat", nickname: sender, playerId: id, message: sender + " left the game!" });
-
-        clients.delete(socket);
+        console.log(`Socket ended for client ${id}`);
+        cleanup();
     });
 
     // Handle socket errors (like ECONNRESET) to prevent crashes
     socket.on("error", (err) => {
-        console.log(`Socket error: ${err.code} - ${err.message}`);
-        if (id) {
-            game.removePlayer(id);
-            heldInputs.delete(id);
-        }
-        clients.delete(socket);
+        console.log(`Socket error for client ${id}: ${err.code} - ${err.message}`);
+        cleanup();
     });
 }
 

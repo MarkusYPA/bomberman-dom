@@ -284,6 +284,25 @@ ws.addEventListener("message", (e) => {
     }
 });
 
+// Handle WebSocket close event
+ws.addEventListener("close", (event) => {
+    console.log('WebSocket connection closed:', event.code, event.reason);
+    showErrorMessage("Connection lost. Please refresh the page to reconnect.");
+});
+
+// Handle WebSocket error event  
+ws.addEventListener("error", (error) => {
+    console.error('WebSocket error:', error);
+    showErrorMessage("Connection error occurred. Please check your internet connection.");
+});
+
+// Add beforeunload event to properly close connection when page is unloaded
+window.addEventListener("beforeunload", () => {
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.close(1000, "Page unload"); // Normal closure
+    }
+});
+
 function renderGame(players) {
     const box = document.getElementById("game");
     if (!box) return;
