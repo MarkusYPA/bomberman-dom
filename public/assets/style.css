@@ -21,27 +21,6 @@ body {
   background-image: url("images/bluegrass.jpg");
 }
 
-.player {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  text-align: center;
-  line-height: 40px;
-  border-radius: 5px;
-  color: white;
-  font-weight: bold;
-  font-size: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  will-change: transform;
-  /* to own layer => GPU acceleration */
-  background-image: url("images/nalleRight3.png");
-  background-size: contain;
-  z-index: 10;
-}
-
 /* Retro orange */
 .player-color-1 {
   background: #fc6621
@@ -64,20 +43,94 @@ body {
   background: #a4301e !important;
 }
 
-.player.left {
-  background-image: url('images/nalleLeft3.png');
+.player {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  will-change: transform;
+  /* to own layer => GPU acceleration */
+  background-image: url("images/nalleRight3.png");
+  background-size: contain;
+  z-index: 10;
 }
+
+.player.id1 {
+  background-image: url('images/bear-orange-right.png');
+}
+
+.player.id2 {
+  background-image: url('images/bear-green-right.png');
+}
+
+.player.id3 {
+  background-image: url('images/bear-yellow-right.png');
+}
+
+.player.id4 {
+  background-image: url('images/bear-red-right.png');
+}
+
+.player.id1.left {
+  background-image: url('images/bear-orange-left.png');
+}
+
+.player.id2.left {
+  background-image: url('images/bear-green-left.png');
+}
+
+.player.id3.left {
+  background-image: url('images/bear-yellow-left.png');
+}
+
+.player.id4.left {
+  background-image: url('images/bear-red-left.png');
+}
+
 
 .player.dead {
   background-image: url("images/nalleDead.png");
 }
 
-.player.invulnerable {
-  background-image: url('images/nalleRight3white.png');
+.player.id1.invulnerable {
+  background-image: url('images/bear-orange-right-iv.png');
 }
 
-.player.left.invulnerable {
-  background-image: url('images/nalleLeft3white.png');
+.player.id1.left.invulnerable {
+  background-image: url('images/bear-orange-left-iv.png');
+}
+
+.player.id2.invulnerable {
+  background-image: url('images/bear-green-right-iv.png');
+}
+
+.player.id2.left.invulnerable {
+  background-image: url('images/bear-green-left-iv.png');
+}
+
+.player.id3.invulnerable {
+  background-image: url('images/bear-yellow-right-iv.png');
+}
+
+.player.id3.left.invulnerable {
+  background-image: url('images/bear-yellow-left-iv.png');
+}
+
+.player.id4.invulnerable {
+  background-image: url('images/bear-red-right-iv.png');
+}
+
+.player.id4.left.invulnerable {
+  background-image: url('images/bear-red-left-iv.png');
 }
 
 .wall {

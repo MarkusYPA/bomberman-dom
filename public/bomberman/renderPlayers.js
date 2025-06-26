@@ -10,7 +10,7 @@ export function addPlayers(players) {
         const domPlayer = document.createElement("div");
 
         domPlayer.id = player.name;
-        domPlayer.classList.add("player");
+        domPlayer.classList.add("player", `id${player.id}`);
         domPlayer.style.width = `${player.size}px`;
         domPlayer.style.height = `${player.size}px`;
         domPlayer.style.position = 'absolute';
