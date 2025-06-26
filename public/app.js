@@ -42,18 +42,16 @@ const PlayerBoardComponent = createReactiveComponent(
         }
         
         return createVNode('div', { 
-            class: 'scoreboard',
-            style: `width: ${width}; max-width: 600px;`
-        },
-            createVNode('h2', { style: 'margin: 0 0 8px 0;' }, 'Scoreboard'),
+            class: `scoreboard scoreboard-width`
+},
+            createVNode('h2', {}, 'Scoreboard'),
             ...[1, 2, 3, 4].map(i => {
                 const player = state.players[i];
                 return createVNode('div', {
-                    class: `scoreboard-player player-color-${i}`,
-                    style: `opacity: ${player ? 1 : 1.0};`
+                    class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
                 },
                     createVNode('span', {}, `Player ${i}`),
-                    createVNode('span', { style: 'margin-left: 10px; font-size: 0.95em; font-weight: normal;' },
+                    createVNode('span', { class: 'player-nickname' },
                         player ? player.nickname : '(empty)'
                     )
                 );
