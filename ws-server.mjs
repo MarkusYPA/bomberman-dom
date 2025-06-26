@@ -317,19 +317,14 @@ export function tickGame() {
     const state = { type: "state", payload: game.getState() };
     broadcast(state);
 }
-function startGameImmediately() {
-    resetLobbyTimer();
-    resetCountdown();
-    broadcast({ type: "state", payload: game.getState() });
-    broadcast({ type: "lobbyFinished" });
-    broadcast({ type: "countdownFinished" });
-    stopMiniGame();
-    startSequence(clients);
-}
 
 function updateCountdown() {
     if (clients.size >= 4) {
-        startGameImmediately();
+        // Stop lobby timer if running, start countdown immediately
+        resetLobbyTimer();
+        if (!countdownTimer) {
+            startCountdown();
+        }
     } else if (clients.size >= 2) {
         if (!lobbyTimer && !lobbyTimeLeft && !countdownTimer) {
             startLobbyTimer();
