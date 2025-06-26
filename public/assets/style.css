@@ -482,7 +482,14 @@ button:active {
   animation: slideIn 0.3s ease-out;
 }
 
-.countdown-timer {
+.countdown-timer{
+  font-size: 24px;
+  font-weight: bold;
+  color: orange;
+  text-align: center;
+  margin-top: 20px;
+}
+.lobby-timer{
   font-size: 24px;
   font-weight: bold;
   color: orange;

@@ -4,6 +4,7 @@ import { state, subscribe, createReactiveComponent } from './framework/state.js'
 state.screen = 'start';
 state.players = {}; // This can be kept for compatibility, but not used for rendering
 state.countdownTime = null; // Initialize countdown time
+state.lobbyTime = null;
 
 function StartScreen() {
     return createVNode('div', { id: 'start-menu', class: 'start-menu' },
@@ -14,12 +15,16 @@ function StartScreen() {
                 // Dynamically import client.js as a module
                 await new Promise(requestAnimationFrame)
                 await import('./client.js');
-                
+
                 // Mount the PlayerBoard component after game screen is rendered
                 setTimeout(() => {
                     const container = document.getElementById('player-board-container');
                     if (container && !container.hasChildNodes()) {
                         PlayerBoardComponent.mount(container);
+                    }
+                    const lobbyContainer = document.getElementById('lobby-timer-container');
+                    if (lobbyContainer) {
+                        mount(lobbyContainer, LobbyTimerComponent());
                     }
                 }, 0);
             }
@@ -30,9 +35,9 @@ function StartScreen() {
 // PlayerBoard component that only re-renders when players state changes
 const PlayerBoardComponent = createReactiveComponent(
     () => {
-        return createVNode('div', { 
+        return createVNode('div', {
             class: `scoreboard scoreboard-width`
-            },
+        },
             createVNode('h2', {}, 'Scoreboard'),
             ...[1, 2, 3, 4].map(i => {
                 const player = state.players[i];
@@ -54,6 +59,7 @@ function GameScreen() {
     return createVNode('div', { class: 'game-root' },
         createVNode('div', { id: 'error-container', class: 'error-container' }),
         createVNode('div', { id: 'player-board-container' }), // Empty container for PlayerBoard
+        createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()), // Lobby timer
         createVNode('div', { id: 'countdown-container' }, CountdownComponent()), // Countdown timer
         createVNode('div', { id: 'game', class: 'game-area' }),
         createVNode('div', { class: 'chat-area' },
@@ -69,6 +75,12 @@ export function CountdownComponent() {
     }
     return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, `Game starts in: ${state.countdownTime}s`);
 }
+export function LobbyTimerComponent() {
+    if (state.lobbyTime === null) {
+        return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, '');
+    }
+    return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, `Lobby: Game starts in ${state.lobbyTime}s`);
+}
 
 function App() {
     if (state.screen === 'start') return StartScreen();
@@ -77,9 +89,9 @@ function App() {
 }
 
 // Only re-render the entire app when the screen changes
-function update(changedPath) { 
+function update(changedPath) {
     if (!changedPath || changedPath === 'screen') {
-        mount(document.body, App()); 
+        mount(document.body, App());
     }
 }
 
