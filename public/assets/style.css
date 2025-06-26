@@ -10,13 +10,14 @@ body {
   height: 400px;
   border: 1px solid #000;
   position: relative;
+  margin-top: 20px;
   margin-bottom: 20px;
 }
 
 #game.level-1 {
-  width: 650;
+  width: 650px;
   height: 550px;
-  margin: 50px 50px 70px 50px;
+  margin: 70px 50px 70px 50px;
   background-image: url("images/bluegrass.jpg");
 }
 
