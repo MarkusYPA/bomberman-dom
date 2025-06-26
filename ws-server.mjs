@@ -1,10 +1,12 @@
 import { createHash } from "crypto";
 import Game from "./game.mjs";
 import { start } from "repl";
+import { stopMiniGame } from "./server.mjs";
+import { startSequence } from "./bm-server/game.js";
 
 const game = new Game();
 const clients = new Map(); // socket -> { id, nickname }
-const heldInputs = new Map(); // id -> Set of held directions
+export const heldInputs = new Map(); // id -> Set of held directions
 
 let countdownTimer = null;
 let countdown = 10;
@@ -18,8 +20,19 @@ function encodeMessage(str) {
     return Buffer.concat([header, json]);
 }
 
-function broadcast(obj) {
-    const msg = encodeMessage(JSON.stringify(obj));
+// JSON.stringify doesn't serialize Maps and Sets by default, this helps
+function replacer(key, value) {
+    if (value instanceof Map) {
+        return Object.fromEntries(value);
+    }
+    if (value instanceof Set) {
+        return Array.from(value);
+    }
+    return value;
+}
+
+export function broadcast(obj) {
+    const msg = encodeMessage(JSON.stringify(obj, replacer));
     for (const socket of clients.keys()) {
         try {
             socket.write(msg);
@@ -47,6 +60,10 @@ function startCountdown() {
             clearInterval(countdownTimer);
             countdownTimer = null;
             broadcast({ type: "countdownFinished" }); // Notify clients that countdown is finished
+
+            // stop minigame and start bomberman
+            stopMiniGame();
+            startSequence(clients);
         }
     }, 1000);
 }
@@ -77,7 +94,7 @@ export function handleUpgrade(req, socket) {
                 socket.destroy();
                 return;
             }
-            
+
             // Send ping frame (opcode 9)
             try {
                 const pingFrame = Buffer.from([0x89, 0x00]); // Ping with no payload
@@ -112,14 +129,14 @@ export function handleUpgrade(req, socket) {
             try {
                 const fin = (buffer[offset] & 0x80) !== 0;
                 const opcode = buffer[offset] & 0x0f;
-                
+
                 // Handle pong frames (opcode 10)
                 if (opcode === 10) {
                     lastPongTime = Date.now();
                     offset += 2; // Skip pong frame
                     continue;
                 }
-                
+
                 if (opcode !== 1) break; // Only handle text frames
 
                 let len = buffer[offset + 1] & 127;
@@ -165,7 +182,7 @@ export function handleUpgrade(req, socket) {
                         socket.write(duplicateMsg);
                         return; // Don't close connection, just return and wait for new join attempt
                     }
-                    
+
                     // Find first available ID between 1-4
                     const usedIds = new Set([...clients.values()].map(client => client.id));
                     for (let i = 1; i <= 4; i++) {
@@ -174,12 +191,12 @@ export function handleUpgrade(req, socket) {
                             break;
                         }
                     }
-                    
+
                     // Update game dimensions if provided
                     if (obj.dimensions) {
                         game.setDimensions(obj.dimensions.width, obj.dimensions.height);
                     }
-                    
+
                     clients.set(socket, { id, nickname: obj.nickname });
                     const added = game.addPlayer(id, obj.nickname);
                     if (!added) {
@@ -211,7 +228,8 @@ export function handleUpgrade(req, socket) {
                 }
 
                 if (obj.type === "input" && id) {
-                    heldInputs.set(id, new Set(obj.payload));
+                    // obj.payload is an object of booleans
+                    heldInputs.set(id, obj.payload);
                 }
 
                 if (obj.type === "chat" && id) {
@@ -247,7 +265,6 @@ export function handleUpgrade(req, socket) {
     socket.on("error", (err) => {
         console.log(`Socket error for client ${id}: ${err.code} - ${err.message}`);
         cleanup();
-
 
         // Reset countdown whenever the number of players changes
         updateCountdown();

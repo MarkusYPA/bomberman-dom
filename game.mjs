@@ -59,10 +59,10 @@ export default class Game {
         const p = this.players[id];
         if (!p) return;
         let dx = 0, dy = 0;
-        if (held.has("up")) dy -= 1;
-        if (held.has("down")) dy += 1;
-        if (held.has("left")) { dx -= 1; p.direction = "left"; }
-        if (held.has("right")) { dx += 1; p.direction = "right"; }
+        if (held.up) dy -= 1;
+        if (held.down) dy += 1;
+        if (held.left) { dx -= 1; p.direction = "left"; }
+        if (held.right) { dx += 1; p.direction = "right"; }
         // Normalize diagonal speed
         if (dx !== 0 && dy !== 0) {
             dx *= 0.7071;
