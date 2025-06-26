@@ -1,9 +1,10 @@
 import { createVNode, mount } from "./framework/mini.js";
 import { state } from "./framework/state.js";
-import { clientState, setShowing, showing, updateGameState } from "./clientState.js";
 import { startSequenceClient } from "./bomberman/runGame.js"
-import { clientGameState, updateClientGameState } from "./shared/state.js";
+import { updateClientGameState } from "./shared/state.js";
 import { CountdownComponent } from "./app.js";
+
+let box // game area
 
 // Function to create beautiful nickname modal
 function createNicknameModal() {
@@ -91,7 +92,6 @@ function createNicknameModal() {
 
 // Get nickname using beautiful modal
 const nickname = await createNicknameModal();
-
 const ws = new WebSocket(`ws://${location.host}`);
 
 // Function to get current game area dimensions
@@ -252,8 +252,8 @@ ws.addEventListener("message", (e) => {
     } else if (msg.type === "state") {
         state.players = msg.payload; // Update state with players
         //console.log(msg.payload)
-        //renderGame(msg.payload);
-        updateGameState(clientState, msg.payload);
+        renderMiniGame(msg.payload);
+        //updateGameState(clientState, msg.payload);
     } else if (msg.type === "chat") {
         const chatBox = document.getElementById("chat");
 
@@ -315,7 +315,8 @@ ws.addEventListener("message", (e) => {
     } else if (msg.type === "startgame") {
         console.log("startgame message:", msg)
         updateClientGameState(msg.payload);
-        setShowing("game"); // trigger: exit miniGameLoop and start full game
+        box.innerHTML = "";
+        startSequenceClient();
     } else if (msg.type === "gamestate") {
         updateClientGameState(msg.payload);
     }
@@ -340,63 +341,36 @@ window.addEventListener("beforeunload", () => {
     }
 });
 
-export function miniGameLoop() {
+function renderMiniGame(players) {    
+    if (!box) return;
 
-    const box = document.getElementById("game");
-    requestAnimationFrame(renderGame);
-
-    function renderGame(timestamp) {
-        if (Object.keys(clientState).length === 0) {
-            return;
-        }
-
-        if (!box) return;
-
-        if (showing === "game") {
-            box.innerHTML = "";
-            startSequenceClient();
-            return;
-        }
-
-        // Update the game area size to match current dimensions
-        const dimensions = getGameAreaDimensions();
-        box.style.width = `${dimensions.width}px`;
-        box.style.height = `${dimensions.height}px`;
+    // Update the game area size to match current dimensions
+    const dimensions = getGameAreaDimensions();
+    box.style.width = `${dimensions.width}px`;
+    box.style.height = `${dimensions.height}px`;
 
 
-        box.innerHTML = "";
-        const colors = ["#145214", "#c00", "#113377", "#111"]; // Colors for players
-        for (const id in clientState) {
-            const p = clientState[id];
-            const d = document.createElement("div");
-            d.className = `player player-color-${id}`;
-            d.style.left = `${p.x * 20}px`;
-            d.style.top = `${p.y * 20}px`;
-            d.style.background = colors[id - 1] || "#888";
-            d.style.color = "#fff";
-            d.style.fontWeight = "bold";
-            d.style.fontSize = "2em";
-            d.style.display = "flex";
-            d.style.alignItems = "center";
-            d.style.justifyContent = "center";
-            d.textContent = p.direction === "left" ? "<" : ">";
-            d.title = p.nickname;
-            // d.textContent = p.nickname;
-            box.appendChild(d);
-        }
-
-        requestAnimationFrame(renderGame);
+    box.innerHTML = "";
+    for (const id in players) {
+        const p = players[id];
+        const d = document.createElement("div");
+        d.className = `player player-color-${id}`;
+        d.style.left = `${p.x * 20}px`;
+        d.style.top = `${p.y * 20}px`;
+        d.textContent = p.direction === "left" ? "<" : ">";
+        d.title = p.nickname;
+        box.appendChild(d);
     }
 }
 
-document.addEventListener("DOMContentLoaded", setupChatHandlers);
-
-setupChatHandlers();
+//document.addEventListener("DOMContentLoaded", setupChatHandlers);     // run setupChatHandlers with one or the other
+setupChatHandlers();                                                    // run setupChatHandlers with one or the other
 
 function setupChatHandlers() {
     const sendButton = document.getElementById("send");
     const chatInput = document.getElementById("chatInput");
     const chatBox = document.getElementById("chat");
+    box = document.getElementById("game");
 
     if (sendButton && chatInput) {
         sendButton.onclick = () => {
