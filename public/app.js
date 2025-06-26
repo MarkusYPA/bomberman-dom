@@ -30,31 +30,18 @@ function StartScreen() {
 // PlayerBoard component that only re-renders when players state changes
 const PlayerBoardComponent = createReactiveComponent(
     () => {
-        // Get current dimensions for responsive width
-        const isLargeScreen = window.matchMedia('(min-width: 1200px)').matches;
-        const isTablet = window.matchMedia('(max-width: 768px)').matches;
-        
-        let width = '500px';
-        if (isLargeScreen) {
-            width = '600px';
-        } else if (isTablet) {
-            width = '90vw';
-        }
-        
         return createVNode('div', { 
-            class: 'scoreboard',
-            style: `width: ${width}; max-width: 600px;`
-        },
-            createVNode('h2', { style: 'margin: 0 0 8px 0;' }, 'Scoreboard'),
+            class: `scoreboard scoreboard-width`
+            },
+            createVNode('h2', {}, 'Scoreboard'),
             ...[1, 2, 3, 4].map(i => {
                 const player = state.players[i];
                 return createVNode('div', {
-                    class: `scoreboard-player player-color-${i}`,
-                    style: `opacity: ${player ? 1 : 1.0};`
+                    class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
                 },
-                    createVNode('span', {}, `Player ${i}`),
-                    createVNode('span', { style: 'margin-left: 10px; font-size: 0.95em; font-weight: normal;' },
-                        player ? player.nickname : '(empty)'
+                    // createVNode('span', {}, `Player ${i}`),
+                    createVNode('span', { class: 'player-nickname' },
+                        player ? player.nickname : `Player ${i}`
                     )
                 );
             })
