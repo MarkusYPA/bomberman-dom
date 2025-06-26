@@ -58,13 +58,10 @@ function runGame() {
     function gameLoop(timestamp) {
         if (!gameLost) {
             state.players.forEach(p => {
-                //p.movePlayer(speed, inputs);
-                try {
-                    p.movePlayer(speed, heldInputs.get(p.id));
-                } catch (error) {
-                    console.log(error)
-                    return;
-                }
+                const input = heldInputs.get(p.id);
+                p.movePlayer(speed, input);
+                input.bomb = false;
+                //console.log("player held inputs:", heldInputs.get(p.id));
             })
 
             // broadcast only updates to state (no solidWalls, no surroundingWalls, no weakWalls, no powerups)

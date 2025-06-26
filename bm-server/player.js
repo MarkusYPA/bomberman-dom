@@ -50,7 +50,7 @@ export class Player {
         if (this.alive && this.bombAmount > 0 && (!levelMap[row][col] || levelMap[row][col] === this.name)) {    // || levelMap[row][col] === "player")
 
             const bomb = new Bomb();
-            bomb.drop(row, col, this.bombPower, this.name);
+            bomb.drop(row, col, this.bombPower);
             this.bombAmount--;
             let countNow = timedCount;
             const timedBombsBack = new Timer(() => {
