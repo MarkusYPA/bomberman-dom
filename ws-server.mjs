@@ -320,6 +320,7 @@ export function tickGame() {
 function startGameImmediately() {
     resetLobbyTimer();
     resetCountdown();
+    broadcast({ type: "state", payload: game.getState() });
     broadcast({ type: "lobbyFinished" });
     broadcast({ type: "countdownFinished" });
     stopMiniGame();
