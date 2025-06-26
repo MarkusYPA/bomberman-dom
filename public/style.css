@@ -1,13 +1,13 @@
 body {
   font-family: 'Courier New', 'Monaco', 'Lucida Console', monospace;
-  background-image: url('background03.jpg');
+  background-image: url('assets/background03.jpg');
   background-size: cover;
   color: #2a1810;
 }
 
 .game-area {
-  width: 500px;
-  height: 400px;
+  width: 600px;
+  height: 450px;
   border: 1px solid #000;
   position: relative;
   margin-top: 20px;
@@ -18,7 +18,7 @@ body {
   width: 650px;
   height: 550px;
   margin: 70px 50px 70px 50px;
-  background-image: url("images/bluegrass.jpg");
+  background-image: url("assets/images/bluegrass.jpg");
 }
 
 /* Retro orange */
@@ -59,78 +59,82 @@ body {
 
   will-change: transform;
   /* to own layer => GPU acceleration */
-  background-image: url("images/nalleRight3.png");
+  background-image: url("assets/images/bear-orange-right.png");
   background-size: contain;
   z-index: 10;
 }
 
 .player.id1 {
-  background-image: url('images/bear-orange-right.png');
+  background-image: url('assets/images/bear-orange-right.png');
 }
 
 .player.id2 {
-  background-image: url('images/bear-green-right.png');
+  background-image: url('assets/images/bear-green-right.png');
 }
 
 .player.id3 {
-  background-image: url('images/bear-yellow-right.png');
+  background-image: url('assets/images/bear-yellow-right.png');
 }
 
 .player.id4 {
-  background-image: url('images/bear-red-right.png');
+  background-image: url('assets/images/bear-red-right.png');
 }
 
 .player.id1.left {
-  background-image: url('images/bear-orange-left.png');
+  background-image: url('assets/images/bear-orange-left.png');
 }
 
 .player.id2.left {
-  background-image: url('images/bear-green-left.png');
+  background-image: url('assets/images/bear-green-left.png');
 }
 
 .player.id3.left {
-  background-image: url('images/bear-yellow-left.png');
+  background-image: url('assets/images/bear-yellow-left.png');
 }
 
 .player.id4.left {
-  background-image: url('images/bear-red-left.png');
+  background-image: url('assets/images/bear-red-left.png');
 }
 
 
-.player.dead {
-  background-image: url("images/nalleDead.png");
+.player.dead,
+.player.id1.dead,
+.player.id2.dead,
+.player.id3.dead,
+.player.id4.dead {
+  background-image: url("assets/images/nalleDead.png");
 }
 
 .player.id1.invulnerable {
-  background-image: url('images/bear-orange-right-iv.png');
+  background-image: url('assets/images/bear-orange-right-iv.png');
 }
 
 .player.id1.left.invulnerable {
-  background-image: url('images/bear-orange-left-iv.png');
+  background-image: url('assets/images/bear-orange-left-iv.png');
 }
 
 .player.id2.invulnerable {
-  background-image: url('images/bear-green-right-iv.png');
+  background-image: url('assets/images/bear-green-right-iv.png');
 }
 
 .player.id2.left.invulnerable {
-  background-image: url('images/bear-green-left-iv.png');
+  background-image: url('assets/images/bear-green-left-iv.png');
 }
 
 .player.id3.invulnerable {
-  background-image: url('images/bear-yellow-right-iv.png');
+  background-image: url('assets/images/bear-yellow-right-iv.png');
 }
 
 .player.id3.left.invulnerable {
-  background-image: url('images/bear-yellow-left-iv.png');
+  background-image: url('assets/images/bear-yellow-left-iv.png');
 }
 
 .player.id4.invulnerable {
-  background-image: url('images/bear-red-right-iv.png');
+  background-image: url('assets/images/bear-red-right-iv.png');
 }
 
 .player.id4.left.invulnerable {
-  background-image: url('images/bear-red-left-iv.png');
+  background-image: url('assets/images/bear-red-left-iv.png');
 }
 
 .wall {
@@ -139,26 +143,26 @@ body {
 }
 
 .level-1.wall.solid {
-  background-image: url("images/solidwall.svg")
+  background-image: url("assets/images/solidwall.svg")
 }
 
 .level-1.wall.weak {
-  background-image: url("images/weakwall02.svg");
+  background-image: url("assets/images/weakwall02.svg");
 }
 
 .level-1.wall.burning {
-  background-image: url("images/burningwall.svg");
+  background-image: url("assets/images/burningwall.svg");
 }
 
 .bomb {
   position: absolute;
-  background-image: url("images/bomb.svg");
+  background-image: url("assets/images/bomb.svg");
   background-size: cover;
   z-index: 4;
 }
 
 .bomb.glowing {
-  background-image: url("images/bomborange.svg");
+  background-image: url("assets/images/bomborange.svg");
 }
 
 .flame {
@@ -167,35 +171,35 @@ body {
 }
 
 .flame.horizontal {
-  background-image: url("images/flamehor.svg");
+  background-image: url("assets/images/flamehor.svg");
   background-size: cover;
 }
 
 .flame.left {
-  background-image: url("images/flameendl.svg");
+  background-image: url("assets/images/flameendl.svg");
   background-size: cover;
   z-index: 0;
 }
 
 .flame.right {
-  background-image: url("images/flameendr.svg");
+  background-image: url("assets/images/flameendr.svg");
   background-size: cover;
   z-index: 0;
 }
 
 .flame.vertical {
-  background-image: url("images/flamevert.svg");
+  background-image: url("assets/images/flamevert.svg");
   background-size: cover;
 }
 
 .flame.up {
-  background-image: url("images/flameendu.svg");
+  background-image: url("assets/images/flameendu.svg");
   background-size: cover;
   z-index: 0;
 }
 
 .flame.down {
-  background-image: url("images/flameendd.svg");
+  background-image: url("assets/images/flameendd.svg");
   background-size: cover;
   z-index: 0;
 }
@@ -206,12 +210,12 @@ body {
 }
 
 .bombup {
-  background-image: url("images/bombup.svg");
+  background-image: url("assets/images/bombup.svg");
   background-size: cover;
 }
 
 .flameup {
-  background-image: url("images/flameup.svg");
+  background-image: url("assets/images/flameup.svg");
   background-size: cover;
 }
 
@@ -934,11 +938,11 @@ button:active {
   }
 
   /* Game Area Responsive */
-  .game-area {
+  /* .game-area {
     width: 90vw;
     max-width: 500px;
     height: 300px;
-  }
+  } */
 
   /* Scoreboard Responsive */
   .scoreboard {
@@ -1032,9 +1036,9 @@ button:active {
     height: 250px;
   }
 
-  .game-area {
+  /* .game-area {
     height: 250px;
-  }
+  } */
 
   .chat-area {
     padding: 12px;
@@ -1088,10 +1092,10 @@ button:active {
     height: 450px;
   }
 
-  .game-area {
+  /* .game-area {
     width: 600px;
     height: 480px;
-  }
+  } */
 
   .scoreboard {
     width: 600px;

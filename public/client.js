@@ -94,49 +94,6 @@ function createNicknameModal() {
 const nickname = await createNicknameModal();
 const ws = new WebSocket(`ws://${location.host}`);
 
-// Function to get current game area dimensions
-function getGameAreaDimensions() {
-    // Check if we're on mobile, tablet, or desktop based on CSS media queries
-    const isLargeScreen = window.matchMedia('(min-width: 1200px)').matches;
-    const isTablet = window.matchMedia('(max-width: 768px)').matches;
-    const isMobile = window.matchMedia('(max-width: 480px)').matches;
-
-    if (isLargeScreen) {
-        return { width: 600, height: 480 };
-    } else if (isMobile) {
-        const vw = Math.min(window.innerWidth * 0.95, 500);
-        return { width: vw, height: 250 };
-    } else if (isTablet) {
-        const vw = Math.min(window.innerWidth * 0.9, 500);
-        return { width: vw, height: 300 };
-    } else {
-        return { width: 500, height: 400 }; // Default
-    }
-}
-
-// Function to update game dimensions when screen size changes
-function updateGameDimensions() {
-    if (ws.readyState === WebSocket.OPEN) {
-        const dimensions = getGameAreaDimensions();
-        ws.send(JSON.stringify({
-            type: "updateDimensions",
-            dimensions: dimensions
-        }));
-    }
-}
-
-// Listen for window resize events
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(updateGameDimensions, 100);
-});
-
-// Listen for orientation change on mobile devices
-window.addEventListener('orientationchange', () => {
-    setTimeout(updateGameDimensions, 500); // Wait for orientation change to complete
-});
-
 // Function to show error messages elegantly
 function showErrorMessage(message) {
     const errorContainer = document.getElementById("error-container");
@@ -194,11 +151,11 @@ function showNewMessageIndicator() {
 }
 
 ws.addEventListener("open", () => {
-    const dimensions = getGameAreaDimensions();
+    //const dimensions = getGameAreaDimensions();
     ws.send(JSON.stringify({
         type: "join",
         nickname: nickname,
-        dimensions: dimensions
+        //dimensions: dimensions
     }));
 });
 
@@ -300,11 +257,11 @@ ws.addEventListener("message", (e) => {
         showErrorMessage(msg.message);
         // Prompt user to enter a different nickname
         createNicknameModal().then(newNickname => {
-            const dimensions = getGameAreaDimensions();
+            //const dimensions = getGameAreaDimensions();
             ws.send(JSON.stringify({
                 type: "join",
                 nickname: newNickname,
-                dimensions: dimensions
+                //dimensions: dimensions
             }));
         });
     } else if (msg.type === "error") {
@@ -342,13 +299,7 @@ window.addEventListener("beforeunload", () => {
 
 function renderMiniGame(players) {
     if (!box) return;
-
-    // Update the game area size to match current dimensions
-    const dimensions = getGameAreaDimensions();
-    box.style.width = `${dimensions.width}px`;
-    box.style.height = `${dimensions.height}px`;
-
-
+    
     box.innerHTML = "";
     for (const id in players) {
         const p = players[id];

@@ -43,7 +43,7 @@ const PlayerBoardComponent = createReactiveComponent(
         
         return createVNode('div', { 
             class: 'scoreboard',
-            style: `width: ${width}; max-width: 600px;`
+            style: `width: ${width}px; max-width: 600px;`,
         },
             createVNode('h2', { style: 'margin: 0 0 8px 0;' }, 'Scoreboard'),
             ...[1, 2, 3, 4].map(i => {

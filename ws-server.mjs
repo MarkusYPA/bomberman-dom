@@ -191,11 +191,6 @@ export function handleUpgrade(req, socket) {
                         }
                     }
 
-                    // Update game dimensions if provided
-                    if (obj.dimensions) {
-                        game.setDimensions(obj.dimensions.width, obj.dimensions.height);
-                    }
-
                     clients.set(socket, { id, nickname: obj.nickname });
                     const added = game.addPlayer(id, obj.nickname);
                     if (!added) {
@@ -217,13 +212,6 @@ export function handleUpgrade(req, socket) {
 
                     const sender = clients.get(socket)?.nickname || "???";
                     broadcast({ type: "chat", nickname: sender, playerId: id, message: sender + " joined the game!" });
-                }
-
-                if (obj.type === "updateDimensions" && id) {
-                    // Update game dimensions when screen size changes
-                    if (obj.dimensions) {
-                        game.setDimensions(obj.dimensions.width, obj.dimensions.height);
-                    }
                 }
 
                 if (obj.type === "input" && id) {
