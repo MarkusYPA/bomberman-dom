@@ -1,4 +1,3 @@
-
 // alternative to setTimeout() with pause, resume and cancel
 export class Timer {
     constructor(callback, delay) {

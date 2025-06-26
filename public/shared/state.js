@@ -12,8 +12,8 @@ export const clientGameState = {
     players: [],
 
     level: 1,
-    finishing: false,
-    finished: false,
+/*     finishing: false,
+    finished: false, */
 };
 
 /**

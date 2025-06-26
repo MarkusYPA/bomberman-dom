@@ -3,22 +3,15 @@ import { gridStep, mult } from "../shared/config.js";
 export function resizeGameContainer(level = 1) {
     const gameContainer = document.getElementById("game");
 
-    // Decide one square is 50px wide
-    gameContainer.style.height = 550 + "px";
-    gameContainer.style.width = 650 + "px";
+    // one square or gridStep 50px 
+    gameContainer.style.height = gridStep * 11 + "px";
+    gameContainer.style.width = gridStep * 13 + "px";
 
-    const bounds = gameContainer.getBoundingClientRect();
-    gameContainer.style.left = 100 + 'px';
-    gameContainer.style.top = 100 + 'px';
-
-
-    // Remove the previous level class if it exists
+    // remove the previous level class if it exists
     gameContainer.classList.remove(`level-${level - 1}`);
 
-    // Apply the level class to the game container
+    // apply the level class to the game container
     gameContainer.classList.add(`level-${level}`);
-
-    return bounds;
 };
 
 export function makeTextBar() {
@@ -36,10 +29,10 @@ export function makeTextBar() {
         textbar.style.top = `${gameArea.top - gridStep}px`;
         textbar.style.padding = `${pad * mult}px`;
 
-        // four smaller bits to display info
+        // two smaller bits to display info
         const infos = [];
-        const ids = ["levelinfo", "livesinfo"]; //, "scoreinfo", "timeinfo"];
-        const placeholders = ["Level: 1", "Lives: X"]; //, "Score: 0", "00:00"]
+        const ids = ["levelinfo", "livesinfo"];
+        const placeholders = ["Level: 1", "Lives: X"];
         for (let i = 0; i < 2; i++) {
             let info = document.createElement('div');
             info.classList.add("infobox");
@@ -54,12 +47,11 @@ export function makeTextBar() {
             infos.push(info);
         }
 
-        //infos[3].style.justifyContent = "center";
         document.body.appendChild(textbar);
-
         return infos;
     } else {
         // recalculate text bar size and position in case window was resized
+        // remnant from old game?
         oldTextBar.style.height = `${gridStep - pad * 2 * mult}px`;
         oldTextBar.style.width = `${gridStep * 13 - pad * 2 * mult}px`;
         oldTextBar.style.left = `${gameArea.left}px`;
@@ -69,8 +61,6 @@ export function makeTextBar() {
         return [
             document.getElementById("levelinfo"),
             document.getElementById("livesinfo"),
-            //document.getElementById("scoreinfo"),
-            //document.getElementById("timeinfo")
         ];
     };
 }

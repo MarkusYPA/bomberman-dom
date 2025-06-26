@@ -1,8 +1,6 @@
-//import { Finish } from "../finish.js";
-import { setUpGame, makeWalls, makeLevelMap } from "./initialize.js";
-//import { inputs } from "../shared/inputs.js";
+import { makeWalls, makeLevelMap, createPlayer } from "./initialize.js";
 import { clearTempsState, getNarrowState, state } from "../bm-server-shared/state.js";
-import { gridStep, interval, mult, speed } from "../bm-server-shared/config.js";
+import { interval, speed } from "../bm-server-shared/config.js";
 import { broadcast, heldInputs } from "../ws-server.mjs";
 
 export let bounds;
@@ -19,7 +17,7 @@ let gameLost;
 let gameIntervalId;
 
 export function nextLevel() {
-    state.level++;
+    //state.level++;
     state.solidWalls = [];
     state.weakWalls.clear();
     bombs.clear();
@@ -29,9 +27,14 @@ export function nextLevel() {
     stopGame();
 };
 
-export function startSequence(playerName = "", id = 1) {
+export function startSequence(clients) {    // (playerName = "", id = 1) 
     state.players.length = 0;
-    state.players.push(setUpGame(playerName, id));  // This will be a loop, adding several players
+
+    /* clients.values().forEach((c) => {
+        state.players.push(createPlayer(c.nickname, c.id));     // bomb ownership breaks (no collision until player is away from it)
+    }) */
+    const clientArr = Array.from(clients.values());
+    state.players.push(createPlayer(clientArr[0].nickname, clientArr[0].id));
 
     bounds = { left: 0, right: 650, top: 0, bottom: 550, width: 650, height: 550 };
     levelMap = makeLevelMap();
@@ -57,13 +60,12 @@ function runGame() {
                 try {
                     p.movePlayer(speed, heldInputs.get(p.id));
                 } catch (error) {
-                    console.log(heldInputs, p.id, heldInputs.get(p.id))
                     console.log(error)
                     return;
                 }
             })
 
-            // broadcast narrower state (no solidWalls, no surroundingWalls, no weakWalls, no powerups)
+            // broadcast only updates to state (no solidWalls, no surroundingWalls, no weakWalls, no powerups)
             broadcast({ type: "gamestate", payload: getNarrowState(state) });
             clearTempsState();
         }

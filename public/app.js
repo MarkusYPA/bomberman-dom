@@ -96,9 +96,9 @@ function update(changedPath) {
     }
 }
 
-// Prevent default behavior for arrow keys to avoid page scrolling
+// Prevent default behavior for arrow keys and space to avoid page scrolling
 window.addEventListener("keydown", function (e) {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ", "Space"].includes(e.key)) {
         e.preventDefault();
     };
 });

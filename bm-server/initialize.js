@@ -5,14 +5,29 @@ import { SolidWall, WeakWall } from "./walls.js";
 import { state } from "../bm-server-shared/state.js";
 import { gridStep, halfStep, mult } from "../bm-server-shared/config.js";
 
-export function setUpGame(playerName, id = 1) {
+export function createPlayer(playerName, id = 1) {
     const playerSpeed = 4.5 * mult;
     const playerSize = 55 * mult;
-    const playerX = halfStep - (playerSize / 2); // put player to top left
-    const playerY = halfStep - (playerSize / 2);
+
+    let playerX = halfStep - (playerSize / 2); // player to top left
+    let playerY = halfStep - (playerSize / 2);
+
+    if (id === 2) {
+        playerX = halfStep - (playerSize / 2) + 12 * gridStep; // bottom right
+        playerY = halfStep - (playerSize / 2) + 10 * gridStep;
+    }
+
+    if (id === 3) {
+        playerX = halfStep - (playerSize / 2) + 12 * gridStep; // top right
+        playerY = halfStep - (playerSize / 2);
+    }
+
+    if (id === 4) {
+        playerX = halfStep - (playerSize / 2); // bottom left
+        playerY = halfStep - (playerSize / 2) + 10 * gridStep;
+    }
 
     const player = new Player(playerSize, playerSpeed, playerX, playerY, playerName, id);
-
     return player;
 };
 
@@ -65,21 +80,26 @@ export function makeWalls(level) {
     };
 
     // place weak walls randomly
-    while (state.weakWalls.size < 45) {
+    while (state.weakWalls.size < 42) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
-        // don't replace content or put anything in the top left and bottom right corners
-        if (levelMap[mapY][mapX] || (mapX < 2 && mapY < 2) || (mapX > 10 && mapY > 8)) {
+        // don't replace content or put walls in corners
+        if (levelMap[mapY][mapX] ||
+            (mapX < 2 && mapY < 2) ||
+            (mapX > 10 && mapY > 8) ||
+            (mapX > 10 && mapY < 2) ||
+            (mapX < 2 && mapY > 8)
+        ) {
             continue;
         };
 
         const x = gridStep * mapX;
         const y = gridStep * mapY;
         const name = `weakWall${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
-        const newWeak = new WeakWall(x, y, gridStep, level, name);    
+        const newWeak = new WeakWall(x, y, gridStep, level, name);
 
-        state.weakWalls.set(name, newWeak);   
+        state.weakWalls.set(name, newWeak);
         levelMap[mapY][mapX] = name;
     };
 

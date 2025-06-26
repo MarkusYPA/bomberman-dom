@@ -60,6 +60,10 @@ function startCountdown() {
             clearInterval(countdownTimer);
             countdownTimer = null;
             broadcast({ type: "countdownFinished" }); // Notify clients that countdown is finished
+
+            // stop minigame and start bomberman
+            stopMiniGame();
+            startSequence(clients);
         }
     }, 1000);
 }
@@ -90,7 +94,7 @@ export function handleUpgrade(req, socket) {
                 socket.destroy();
                 return;
             }
-            
+
             // Send ping frame (opcode 9)
             try {
                 const pingFrame = Buffer.from([0x89, 0x00]); // Ping with no payload
@@ -125,14 +129,14 @@ export function handleUpgrade(req, socket) {
             try {
                 const fin = (buffer[offset] & 0x80) !== 0;
                 const opcode = buffer[offset] & 0x0f;
-                
+
                 // Handle pong frames (opcode 10)
                 if (opcode === 10) {
                     lastPongTime = Date.now();
                     offset += 2; // Skip pong frame
                     continue;
                 }
-                
+
                 if (opcode !== 1) break; // Only handle text frames
 
                 let len = buffer[offset + 1] & 127;
@@ -178,7 +182,7 @@ export function handleUpgrade(req, socket) {
                         socket.write(duplicateMsg);
                         return; // Don't close connection, just return and wait for new join attempt
                     }
-                    
+
                     // Find first available ID between 1-4
                     const usedIds = new Set([...clients.values()].map(client => client.id));
                     for (let i = 1; i <= 4; i++) {
@@ -187,12 +191,12 @@ export function handleUpgrade(req, socket) {
                             break;
                         }
                     }
-                    
+
                     // Update game dimensions if provided
                     if (obj.dimensions) {
                         game.setDimensions(obj.dimensions.width, obj.dimensions.height);
                     }
-                    
+
                     clients.set(socket, { id, nickname: obj.nickname });
                     const added = game.addPlayer(id, obj.nickname);
                     if (!added) {
@@ -229,16 +233,8 @@ export function handleUpgrade(req, socket) {
                 }
 
                 if (obj.type === "chat" && id) {
-
                     const sender = clients.get(socket)?.nickname || "???";
-
-                    if (obj.message === "start game") {
-                        // logic for stoppping minigame, telling client to do the same, and starting the real game.
-                        stopMiniGame();
-                        startSequence(sender, id);  // this should be run with all connected players eventually
-                    } else {                        
-                        broadcast({ type: "chat", nickname: sender, playerId: id, message: obj.message });
-                    }
+                    broadcast({ type: "chat", nickname: sender, playerId: id, message: obj.message });
                 }
 
                 offset = dataEnd;
@@ -269,7 +265,6 @@ export function handleUpgrade(req, socket) {
     socket.on("error", (err) => {
         console.log(`Socket error for client ${id}: ${err.code} - ${err.message}`);
         cleanup();
-
 
         // Reset countdown whenever the number of players changes
         updateCountdown();

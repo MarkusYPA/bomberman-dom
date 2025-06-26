@@ -1,4 +1,4 @@
-import { createVNode, mount } from "./framework/mini.js";
+import { mount } from "./framework/mini.js";
 import { state } from "./framework/state.js";
 import { startSequenceClient } from "./bomberman/runGame.js"
 import { updateClientGameState } from "./shared/state.js";
@@ -251,9 +251,7 @@ ws.addEventListener("message", (e) => {
         updateCountdown();
     } else if (msg.type === "state") {
         state.players = msg.payload; // Update state with players
-        //console.log(msg.payload)
         renderMiniGame(msg.payload);
-        //updateGameState(clientState, msg.payload);
     } else if (msg.type === "chat") {
         const chatBox = document.getElementById("chat");
 
@@ -313,9 +311,10 @@ ws.addEventListener("message", (e) => {
         // Display error message to user
         showErrorMessage(msg.message);
     } else if (msg.type === "startgame") {
-        console.log("startgame message:", msg)
+        state.gameRunning = true;               // to adjust game-area size
         updateClientGameState(msg.payload);
         box.innerHTML = "";
+
         startSequenceClient();
     } else if (msg.type === "gamestate") {
         updateClientGameState(msg.payload);
@@ -341,7 +340,7 @@ window.addEventListener("beforeunload", () => {
     }
 });
 
-function renderMiniGame(players) {    
+function renderMiniGame(players) {
     if (!box) return;
 
     // Update the game area size to match current dimensions
