@@ -317,9 +317,19 @@ export function tickGame() {
     const state = { type: "state", payload: game.getState() };
     broadcast(state);
 }
+function startGameImmediately() {
+    resetLobbyTimer();
+    resetCountdown();
+    broadcast({ type: "lobbyFinished" });
+    broadcast({ type: "countdownFinished" });
+    stopMiniGame();
+    startSequence(clients);
+}
 
 function updateCountdown() {
-    if (clients.size >= 2) {
+    if (clients.size >= 4) {
+        startGameImmediately();
+    } else if (clients.size >= 2) {
         if (!lobbyTimer && !lobbyTimeLeft && !countdownTimer) {
             startLobbyTimer();
         }
