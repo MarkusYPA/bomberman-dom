@@ -1,6 +1,6 @@
 import { mount } from "./framework/mini.js";
 import { state } from "./framework/state.js";
-import { startSequenceClient } from "./bomberman/runGame.js"
+import { setMoving, startSequenceClient } from "./bomberman/runGame.js"
 import { updateClientGameState } from "./shared/state.js";
 import { CountdownComponent } from "./app.js";
 
@@ -182,9 +182,13 @@ function sendHeld() {
 
 document.addEventListener("keydown", (e) => {
     if (keyMap[e.key]) {
-        if (!held.has(keyMap[e.key])) {
-            held.add(keyMap[e.key]);
+        const action = keyMap[e.key]
+        if (!held.has(action)) {
+            held.add(action);
             sendHeld();
+        }
+        if (action === "left" || action === "right" || action === "up" || action === "down") {
+            setMoving(true);
         }
     }
 });
@@ -194,6 +198,9 @@ document.addEventListener("keyup", (e) => {
         if (held.has(keyMap[e.key])) {
             held.delete(keyMap[e.key]);
             sendHeld();
+        }
+        if (!(held.has("left") || held.has("right") || held.has("up") || held.has("down"))) {
+            setMoving(false);
         }
     }
 });
@@ -299,7 +306,7 @@ window.addEventListener("beforeunload", () => {
 
 function renderMiniGame(players) {
     if (!box) return;
-    
+
     box.innerHTML = "";
     for (const id in players) {
         const p = players[id];

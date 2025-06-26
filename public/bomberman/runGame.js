@@ -28,7 +28,12 @@ export function setMoving(moving) {
 
     if (isMoving && !wasMoving) {
         walkingSound.play();
-    } else if (!isMoving && wasMoving) {
+    } else if ((!isMoving && wasMoving)) {
+        walkingSound.pause();
+        walkingSound.currentTime = 0;
+    }
+
+    if (thisPlayer && !thisPlayer.alive) {
         walkingSound.pause();
         walkingSound.currentTime = 0;
     }
@@ -93,9 +98,7 @@ function runGame() {
     requestAnimationFrame(gameLoop);
 
     function gameLoop(timestamp) {
-        /* if (clientGameState.finishing) finishLevel.play();
-
-        if (clientGameState.finished === true) {
+        /* if (clientGameState.finished === true) {
             clientGameState.finished = false;
             nextLevel();
             return
@@ -104,7 +107,7 @@ function runGame() {
         updatePlayers(clientGameState.players);
         if (oldlives !== thisPlayer.lives) {
             updateLivesInfo(thisPlayer.lives);
-            if (thisPlayer.lives === 0) {                
+            if (thisPlayer.lives === 0) {
                 // remove player from game on serverside
             }
         }
