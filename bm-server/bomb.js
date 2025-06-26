@@ -1,5 +1,5 @@
 import { Flame } from "./flames.js";
-import { bombs, bombTime, levelMap, flames, timedEvents, powerUpMap } from "./game.js";
+import { bombs, bombTime, levelMap, flames, timedEvents, powerUpMap, playerNames } from "./game.js";
 import { Timer } from "./timer.js";
 import { state } from "../bm-server-shared/state.js";
 import { gridStep, halfStep, mult } from "../bm-server-shared/config.js";
@@ -84,7 +84,13 @@ export class Bomb {
         this.x = this.mapCol * gridStep + halfStep - size / 2;
         this.y = this.mapRow * gridStep + halfStep - size / 2;
         this.size = size;
-        this.owner = playerName;
+        //this.owner = playerName;
+        //this.owners = { [playerName]: true };
+        this.owners = {};
+        playerNames.forEach( n => {
+            this.owners[n] = true;
+        })
+        
         this.power = power;
         this.bounds = { left: this.x, right: this.x + this.size, top: this.y, bottom: this.y + this.size }
         this.name = `bomb${this.mapCol}${this.mapRow}`;
@@ -229,7 +235,7 @@ export class Bomb {
 
     destroyWall(row, col) {
         let name = levelMap[row][col];
-        state.collapsingWalls.push(name);        
+        state.collapsingWalls.push(name);
 
         const timedDeleteWall = new Timer(() => {
             state.weakWalls.delete(name);
