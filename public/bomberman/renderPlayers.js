@@ -1,4 +1,4 @@
-import { playerId, setThisPlayer } from "./runGame.js";
+import { newLives, playerId, setNewLives, setThisPlayer } from "./runGame.js";
 import { playerBombDeath, playerDeath, playerDeath2 } from "./sounds.js";
 
 const gameContainer = document.getElementById("game");
@@ -22,11 +22,14 @@ export function addPlayers(players) {
 }
 
 export function updatePlayers(players) {
+    const lives = [];
 
     players.forEach(player => {
         if (player.id === playerId) {
             setThisPlayer(player);
         }
+
+        lives.push(player.lives);
 
         const p = domPlayers.get(player.name);
 
@@ -54,6 +57,8 @@ export function updatePlayers(players) {
             p.classList.remove("dead")
         }
     })
+
+    setNewLives(lives);
 }
 
 export function removePlayers(players) {

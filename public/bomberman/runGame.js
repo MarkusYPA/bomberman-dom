@@ -10,8 +10,10 @@ import { addPlayers, updatePlayers } from "./renderPlayers.js";
 export let playerId = "";
 export let thisPlayer;
 let levelinfo;
-let livesinfo;
-let oldlives;
+//let livesinfo;
+let livesinfos = [];
+const oldlives = [];
+export const newLives = [];
 export const clientEvents = new Map();
 let isMoving = false;
 let wasMoving = false;
@@ -24,6 +26,11 @@ export function setPlayerId(id) {
 // update local player info (for lives mostly)
 export function setThisPlayer(player) {
     thisPlayer = player;
+}
+
+export function setNewLives(nl) {
+    newLives.length = 0;
+    nl.forEach(l => newLives.push(l));
 }
 
 // Walking sounds controlled from inputlisteners
@@ -57,13 +64,16 @@ export function restartGame() {
     location.reload();
 };
 
-export function updateLivesInfo(lives) {
-    oldlives = lives;
-    let livesText = '';
-    for (let i = 0; i < lives; i++) {
-        livesText += `❤️`;
-    };
-    livesinfo.textContent = 'Lives: ' + livesText;
+export function updateLivesInfo(players) {
+    oldlives.length = 0;
+    players.forEach((p, i) => {
+        oldlives.push(p.lives);
+        let livesText = '';
+        for (let i = 0; i < p.lives; i++) {
+            livesText += `❤️`;
+        };
+        livesinfos[i].textContent = `${p.name}: `+ livesText;
+    })
 }
 
 function updateLevelInfo(level) {
@@ -71,14 +81,13 @@ function updateLevelInfo(level) {
 }
 
 export function startSequenceClient() {
-    thisPlayer = clientGameState.players[playerId-1];
+    thisPlayer = clientGameState.players[playerId - 1];
 
     let tasks = [
         () => { resizeGameContainer() },
         () => {
-            [levelinfo, livesinfo] = makeTextBar();
-            updateLivesInfo(thisPlayer.lives);
-            updateLevelInfo(clientGameState.level);
+            livesinfos = makeTextBar();
+            updateLivesInfo(clientGameState.players);
         },
 
         // Render dom elements
@@ -110,7 +119,8 @@ function runGame() {
 
         updatePlayers(clientGameState.players);
         if (oldlives !== thisPlayer.lives) {
-            updateLivesInfo(thisPlayer.lives);
+            //updateLivesInfo(thisPlayer.lives);
+            updateLivesInfo(clientGameState.players);
             if (thisPlayer.lives === 0) {
                 // remove player from game on serverside
             }

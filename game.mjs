@@ -23,9 +23,9 @@ export default class Game {
         this.maxY = (this.dimensions.height - this.playerSize) / this.gridSize;
         this.corners = {
             1: { x: this.minX, y: this.minY }, // Top-left
-            2: { x: this.maxX, y: this.minY }, // Top-right
-            3: { x: this.minX, y: this.maxY }, // Bottom-left
-            4: { x: this.maxX, y: this.maxY }  // Bottom-right
+            2: { x: this.maxX, y: this.maxY },  // Bottom-right
+            3: { x: this.maxX, y: this.minY }, // Top-right
+            4: { x: this.minX, y: this.maxY }, // Bottom-left
         };
     }
 
