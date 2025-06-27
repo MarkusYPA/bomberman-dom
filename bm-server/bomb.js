@@ -1,5 +1,5 @@
 import { Flame } from "./flames.js";
-import { bombs, bombTime, levelMap, flames, timedEvents, powerUpMap } from "./game.js";
+import { bombs, bombTime, levelMap, flames, timedEvents, powerUpMap, playerNames } from "./game.js";
 import { Timer } from "./timer.js";
 import { state } from "../bm-server-shared/state.js";
 import { gridStep, halfStep, mult } from "../bm-server-shared/config.js";
@@ -77,27 +77,30 @@ function timeFlame(flame) {
 
 
 export class Bomb {
-    setValues(size, row, col, power, playerName) {
+    setValues(size, row, col, power) {
         // Align dropped bomb to grid
         this.mapCol = col;
         this.mapRow = row;
         this.x = this.mapCol * gridStep + halfStep - size / 2;
         this.y = this.mapRow * gridStep + halfStep - size / 2;
         this.size = size;
-        this.owner = playerName;
+        this.owners = {};
+        playerNames.forEach( n => { // add all players as owners, each is removed when they don't collide 
+            this.owners[n] = true;
+        })
         this.power = power;
         this.bounds = { left: this.x, right: this.x + this.size, top: this.y, bottom: this.y + this.size }
         this.name = `bomb${this.mapCol}${this.mapRow}`;
     }
 
-    constructor(size = mult * 60, row = 0, col = 0, power = 1, playerName = '') {
-        this.setValues(size, row, col, power, playerName)
+    constructor(size = mult * 60, row = 0, col = 0, power = 1) {
+        this.setValues(size, row, col, power)
         this.active = false;
         this.glowing = false;
     };
 
-    drop(row, col, power, playerName) {
-        this.setValues(this.size, row, col, power, playerName)
+    drop(row, col, power) {
+        this.setValues(this.size, row, col, power)
         this.active = true;
         bombs.set(this.name, this);      // add bomb to map for collision checks
         state.newBombs.set(this.name, this);
@@ -229,7 +232,7 @@ export class Bomb {
 
     destroyWall(row, col) {
         let name = levelMap[row][col];
-        state.collapsingWalls.push(name);        
+        state.collapsingWalls.push(name);
 
         const timedDeleteWall = new Timer(() => {
             state.weakWalls.delete(name);

@@ -6,13 +6,12 @@ export default class Game {
         this.players = {}; // id -> { nickname, x, y }
         this.playerSize = 40; // Player size in pixels
         this.gridSize = 20; // Grid size for movement calculations
-        
-        // Default dimensions (will be updated based on client)
+
         this.dimensions = {
-            width: 500,
-            height: 400
+            width: 600,
+            height: 450
         };
-        
+
         this.updateBoundaries();
     }
 
@@ -24,30 +23,17 @@ export default class Game {
         this.maxY = (this.dimensions.height - this.playerSize) / this.gridSize;
         this.corners = {
             1: { x: this.minX, y: this.minY }, // Top-left
-            2: { x: this.maxX, y: this.minY }, // Top-right
-            3: { x: this.minX, y: this.maxY }, // Bottom-left
-            4: { x: this.maxX, y: this.maxY }  // Bottom-right
+            2: { x: this.maxX, y: this.maxY },  // Bottom-right
+            3: { x: this.maxX, y: this.minY }, // Top-right
+            4: { x: this.minX, y: this.maxY }, // Bottom-left
         };
-    }
-
-    setDimensions(width, height) {
-        this.dimensions.width = width;
-        this.dimensions.height = height;
-        this.updateBoundaries();
-        
-        // Clamp existing players to new boundaries
-        for (const id in this.players) {
-            const p = this.players[id];
-            p.x = Math.max(this.minX, Math.min(this.maxX, p.x));
-            p.y = Math.max(this.minY, Math.min(this.maxY, p.y));
-        }
     }
 
     addPlayer(id, nickname) {
         if (Object.keys(this.players).length >= 4) return false;
         // Place each player in a different corner based on join order
         const { x, y } = this.corners[id];
-        this.players[id] = { nickname, x, y, direction: "right" };
+        this.players[id] = { nickname, x, y, direction: "right" };      
         return true;
     }
 
@@ -75,6 +61,7 @@ export default class Game {
         p.x = Math.max(this.minX, Math.min(this.maxX, p.x));
         p.y = Math.max(this.minY, Math.min(this.maxY, p.y));
     }
+
     getState() {
         return this.players;
     }

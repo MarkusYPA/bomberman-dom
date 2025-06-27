@@ -7,18 +7,30 @@ import { drawBombs, clearBombs } from "./renderBombs.js";
 import { drawFlames } from "./renderFlames.js"
 import { addPlayers, updatePlayers } from "./renderPlayers.js";
 
-export let playerName = "Player1";
+export let playerId = "";
 export let thisPlayer;
 let levelinfo;
-let livesinfo;
-let oldlives;
+//let livesinfo;
+let livesinfos = [];
+const oldlives = [];
+export const newLives = [];
 export const clientEvents = new Map();
 let isMoving = false;
 let wasMoving = false;
 
+
+export function setPlayerId(id) {
+    playerId = id;
+}
+
 // update local player info (for lives mostly)
 export function setThisPlayer(player) {
     thisPlayer = player;
+}
+
+export function setNewLives(nl) {
+    newLives.length = 0;
+    nl.forEach(l => newLives.push(l));
 }
 
 // Walking sounds controlled from inputlisteners
@@ -28,7 +40,12 @@ export function setMoving(moving) {
 
     if (isMoving && !wasMoving) {
         walkingSound.play();
-    } else if (!isMoving && wasMoving) {
+    } else if ((!isMoving && wasMoving)) {
+        walkingSound.pause();
+        walkingSound.currentTime = 0;
+    }
+
+    if (thisPlayer && !thisPlayer.alive) {
         walkingSound.pause();
         walkingSound.currentTime = 0;
     }
@@ -47,13 +64,16 @@ export function restartGame() {
     location.reload();
 };
 
-export function updateLivesInfo(lives) {
-    oldlives = lives;
-    let livesText = '';
-    for (let i = 0; i < lives; i++) {
-        livesText += `❤️`;
-    };
-    livesinfo.textContent = 'Lives: ' + livesText;
+export function updateLivesInfo(players) {
+    oldlives.length = 0;
+    players.forEach((p, i) => {
+        oldlives.push(p.lives);
+        let livesText = '';
+        for (let i = 0; i < p.lives; i++) {
+            livesText += `❤️`;
+        };
+        livesinfos[i].textContent = `${p.name}: `+ livesText;
+    })
 }
 
 function updateLevelInfo(level) {
@@ -61,15 +81,13 @@ function updateLevelInfo(level) {
 }
 
 export function startSequenceClient() {
-    thisPlayer = clientGameState.players[0];
-    playerName = thisPlayer.name;
+    thisPlayer = clientGameState.players[playerId - 1];
 
     let tasks = [
         () => { resizeGameContainer() },
         () => {
-            [levelinfo, livesinfo] = makeTextBar();
-            updateLivesInfo(thisPlayer.lives);
-            updateLevelInfo(clientGameState.level);
+            livesinfos = makeTextBar();
+            updateLivesInfo(clientGameState.players);
         },
 
         // Render dom elements
@@ -93,9 +111,7 @@ function runGame() {
     requestAnimationFrame(gameLoop);
 
     function gameLoop(timestamp) {
-        /* if (clientGameState.finishing) finishLevel.play();
-
-        if (clientGameState.finished === true) {
+        /* if (clientGameState.finished === true) {
             clientGameState.finished = false;
             nextLevel();
             return
@@ -103,8 +119,9 @@ function runGame() {
 
         updatePlayers(clientGameState.players);
         if (oldlives !== thisPlayer.lives) {
-            updateLivesInfo(thisPlayer.lives);
-            if (thisPlayer.lives === 0) {                
+            //updateLivesInfo(thisPlayer.lives);
+            updateLivesInfo(clientGameState.players);
+            if (thisPlayer.lives === 0) {
                 // remove player from game on serverside
             }
         }

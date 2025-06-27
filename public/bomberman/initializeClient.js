@@ -15,7 +15,8 @@ export function resizeGameContainer(level = 1) {
 };
 
 export function makeTextBar() {
-    const gameArea = document.getElementById("game").getBoundingClientRect();
+    const gameBox = document.getElementById("game")
+    const gameArea = gameBox.getBoundingClientRect();
     let oldTextBar = document.querySelector(".textbar");
 
     const pad = 10;
@@ -25,15 +26,16 @@ export function makeTextBar() {
         textbar.classList.add("textbar");
         textbar.style.height = `${gridStep - pad * 2 * mult}px`;
         textbar.style.width = `${gridStep * 13 - pad * 2 * mult}px`;
-        textbar.style.left = `${gameArea.left}px`;
-        textbar.style.top = `${gameArea.top - gridStep}px`;
+        //textbar.style.left = `${gameArea.left}px`;
+        //textbar.style.top = `${gameArea.top - gridStep}px`;
+        textbar.style.top = `${-gridStep}px`;
         textbar.style.padding = `${pad * mult}px`;
 
-        // two smaller bits to display info
+        // smaller bits to display info
         const infos = [];
-        const ids = ["levelinfo", "livesinfo"];
-        const placeholders = ["Level: 1", "Lives: X"];
-        for (let i = 0; i < 2; i++) {
+        const ids = ["livesinfo1", "livesinfo2", "livesinfo3", "livesinfo4"];
+
+        for (let i = 0; i < 4; i++) {
             let info = document.createElement('div');
             info.classList.add("infobox");
             info.style.margin = `${pad * mult}px`;
@@ -41,13 +43,13 @@ export function makeTextBar() {
             info.style.borderWidth = `${mult * 2}px`;
             info.style.borderRadius = `${pad * mult}px`;
             info.id = ids[i];
-            info.textContent = placeholders[i];
+            info.textContent = "";
             info.style.fontSize = `${18 * mult}px`;
             textbar.appendChild(info);
             infos.push(info);
         }
 
-        document.body.appendChild(textbar);
+        gameBox.appendChild(textbar);
         return infos;
     } else {
         // recalculate text bar size and position in case window was resized

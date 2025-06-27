@@ -1,6 +1,5 @@
 import { createHash } from "crypto";
 import Game from "./game.mjs";
-import { start } from "repl";
 import { stopMiniGame } from "./server.mjs";
 import { startSequence } from "./bm-server/game.js";
 
@@ -9,10 +8,11 @@ const clients = new Map(); // socket -> { id, nickname }
 export const heldInputs = new Map(); // id -> Set of held directions
 
 let countdownTimer = null;
-let countdown = 10;
+let countdown = 1; // 10
 let lobbyTimer = null;
 let lobbyTimeLeft = null;
-const LOBBY_DURATION = 20;
+
+const LOBBY_DURATION = 2; //20
 
 function encodeMessage(str) {
     const json = Buffer.from(str);
@@ -230,11 +230,6 @@ export function handleUpgrade(req, socket) {
                         }
                     }
 
-                    // Update game dimensions if provided
-                    if (obj.dimensions) {
-                        game.setDimensions(obj.dimensions.width, obj.dimensions.height);
-                    }
-
                     clients.set(socket, { id, nickname: obj.nickname });
                     const added = game.addPlayer(id, obj.nickname);
                     if (!added) {
@@ -248,6 +243,13 @@ export function handleUpgrade(req, socket) {
                     }
                     heldInputs.set(id, new Set());
 
+                    // Send the assigned player id to the client
+                    const idMsg = encodeMessage(JSON.stringify({
+                        type: "playerId",
+                        id
+                    }));
+                    socket.write(idMsg);
+
                     // Reset countdown whenever the number of players changes
                     updateCountdown();
 
@@ -256,13 +258,6 @@ export function handleUpgrade(req, socket) {
 
                     const sender = clients.get(socket)?.nickname || "???";
                     broadcast({ type: "chat", nickname: sender, playerId: id, message: sender + " joined the game!" });
-                }
-
-                if (obj.type === "updateDimensions" && id) {
-                    // Update game dimensions when screen size changes
-                    if (obj.dimensions) {
-                        game.setDimensions(obj.dimensions.width, obj.dimensions.height);
-                    }
                 }
 
                 if (obj.type === "input" && id) {

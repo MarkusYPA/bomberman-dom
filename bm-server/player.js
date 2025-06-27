@@ -3,7 +3,6 @@ import { bombTime, bombs, bounds, flames, timedEvents, levelMap, setGameLost } f
 import { Timer } from "./timer.js";
 import { state } from "../bm-server-shared/state.js";
 import { gridStep, mult } from "../bm-server-shared/config.js";
-//import { playFinishAnimation } from "../finish.js";
 
 let timedCount = 0;
 
@@ -48,10 +47,10 @@ export class Player {
         const row = Math.floor((this.y + this.size / 2) / gridStep);
         const col = Math.floor((this.x + this.size / 2) / gridStep);
 
-        if (this.alive && this.bombAmount > 0 && (!levelMap[row][col] || levelMap[row][col] === "player")) {
+        if (this.alive && this.bombAmount > 0 && (!levelMap[row][col] || levelMap[row][col] === this.name)) {    // || levelMap[row][col] === "player")
 
             const bomb = new Bomb();
-            bomb.drop(row, col, this.bombPower, 'player');
+            bomb.drop(row, col, this.bombPower);
             this.bombAmount--;
             let countNow = timedCount;
             const timedBombsBack = new Timer(() => {
@@ -158,18 +157,20 @@ export class Player {
             // bomb collisions
             const collidingBombs = [];
             for (const bomb of bombs.values()) {
-                if (bomb.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
+                if (bomb.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) { // is collision check outcome equal to inputs?
                     collidingBombs.push(bomb);
                 } else {
                     // erase owner when player no longer on top of bomb
-                    bomb.owner = '';
+                    //bomb.owner = '';
+                    delete bomb.owners[this.name];
                 };
             };
 
             // adjust next coordinates based on collisions to bombs
             for (const bomb of collidingBombs) {
-                // No collision if bomb has owner
-                if (!bomb.owner) {
+                // No collision if bomb has this owner
+                //if (!bomb.owner) {
+                if (!bomb.owners[this.name]) {
                     [newX, newY] = bomb.checkCollision(newX, newY, this.size);
                 };
             };

@@ -11,6 +11,7 @@ export const bombs = new Map();         // for player collisions
 export const bombTime = 2500;
 export const flames = new Map();        // for player collisions
 export const timedEvents = new Map();
+export const playerNames = [];
 
 //export let finish;
 let gameLost;
@@ -27,14 +28,13 @@ export function nextLevel() {
     stopGame();
 };
 
-export function startSequence(clients) {    // (playerName = "", id = 1) 
+export function startSequence(clients) {
     state.players.length = 0;
 
-    /* clients.values().forEach((c) => {
+    clients.values().forEach((c) => {
         state.players.push(createPlayer(c.nickname, c.id));     // bomb ownership breaks (no collision until player is away from it)
-    }) */
-    const clientArr = Array.from(clients.values());
-    state.players.push(createPlayer(clientArr[0].nickname, clientArr[0].id));
+        playerNames.push(c.nickname);
+    })
 
     bounds = { left: 0, right: 650, top: 0, bottom: 550, width: 650, height: 550 };
     levelMap = makeLevelMap();
@@ -56,13 +56,9 @@ function runGame() {
     function gameLoop(timestamp) {
         if (!gameLost) {
             state.players.forEach(p => {
-                //p.movePlayer(speed, inputs);
-                try {
-                    p.movePlayer(speed, heldInputs.get(p.id));
-                } catch (error) {
-                    console.log(error)
-                    return;
-                }
+                const input = heldInputs.get(p.id);
+                p.movePlayer(speed, input);
+                input.bomb = false;
             })
 
             // broadcast only updates to state (no solidWalls, no surroundingWalls, no weakWalls, no powerups)
