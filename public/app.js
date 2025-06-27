@@ -11,7 +11,7 @@ function StartScreen() {
         createVNode('h1', {}, 'Bomber Bear Multiplayer'),
         createVNode('button', {
             onclick: async () => {
-                state.screen = 'game';
+                state.screen = 'lobby';
                 // Dynamically import client.js as a module
                 await new Promise(requestAnimationFrame)
                 await import('./client.js');
@@ -33,7 +33,7 @@ function StartScreen() {
 }
 
 // PlayerBoard component that only re-renders when players state changes
-const PlayerBoardComponent = createReactiveComponent(
+export const PlayerBoardComponent = createReactiveComponent(
     () => {
         return createVNode('div', {
             class: `scoreboard scoreboard-width`
@@ -54,6 +54,16 @@ const PlayerBoardComponent = createReactiveComponent(
     },
     ['players'] // Only watch the 'players' path
 );
+
+function LobbyScreen() {
+    return createVNode('div', { id: 'lobby-menu', class: 'lobby-menu' },
+        createVNode('h2', {}, 'Lobby: Waiting for players...'),
+        createVNode('div', { id: 'lobby-board-container' }), // Show players in lobby
+        createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()),
+        createVNode('div', { id: 'countdown-container' }, CountdownComponent()),
+        createVNode('div', { id: 'lobby', class: 'lobby-area' }), // Mini-game area
+    );
+}
 
 function GameScreen() {
     return createVNode('div', { class: 'game-root' },
@@ -84,6 +94,7 @@ export function LobbyTimerComponent() {
 
 function App() {
     if (state.screen === 'start') return StartScreen();
+    if (state.screen === 'lobby') return LobbyScreen();
     if (state.screen === 'game') return GameScreen();
     return createVNode('div', {}, 'Game loading...');
 }
@@ -92,6 +103,20 @@ function App() {
 function update(changedPath) {
     if (!changedPath || changedPath === 'screen') {
         mount(document.body, App());
+
+        // Always mount PlayerBoardComponent in the correct container for the current screen
+        if (state.screen === 'lobby') {
+            const lobbyBoard = document.getElementById('lobby-board-container');
+            if (lobbyBoard) {
+                PlayerBoardComponent.mount(lobbyBoard);
+            }
+        }
+        if (state.screen === 'game') {
+            const playerBoard = document.getElementById('player-board-container');
+            if (playerBoard) {
+                PlayerBoardComponent.mount(playerBoard);
+            }
+        }
     }
 }
 

@@ -4,6 +4,7 @@ import { playerId, setMoving, setPlayerId, setThisPlayer, startSequenceClient } 
 import { updateClientGameState } from "./shared/state.js";
 import { CountdownComponent } from "./app.js";
 import { LobbyTimerComponent } from "./app.js";
+import { PlayerBoardComponent } from "./app.js";
 
 let box // game area
 // Function to create beautiful nickname modal
@@ -208,6 +209,23 @@ document.addEventListener("keyup", (e) => {
     }
 });
 
+if (state.screen === 'lobby') {
+    const lobbyBoard = document.getElementById('lobby-board-container');
+    if (lobbyBoard) {
+        PlayerBoardComponent.mount(lobbyBoard);
+    }
+    // Add this to trigger mini-game rendering after DOM is ready
+    setTimeout(() => {
+        const lobbyBox = document.getElementById('lobby');
+        if (lobbyBox) {
+            // Import renderMiniGame from client.js
+            import('./client.js').then(mod => {
+                mod.renderMiniGame(state.players);
+            });
+        }
+    }, 0);
+}
+
 ws.addEventListener("message", (e) => {
     const msg = JSON.parse(e.data);
     if (msg.type === "lobby") {
@@ -220,6 +238,7 @@ ws.addEventListener("message", (e) => {
         state.countdownTime = msg.time;
         updateCountdown();
     } else if (msg.type === "countdownFinished") {
+        state.screen = "game"; // Switch to game screen
         state.countdownTime = null;
         updateCountdown();
     } else if (msg.type === "state") {
@@ -227,6 +246,9 @@ ws.addEventListener("message", (e) => {
         renderMiniGame(msg.payload);
     } else if (msg.type === "chat") {
         const chatBox = document.getElementById("chat");
+        if (chatBox) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
 
         // Check if user is at the bottom before adding message
         const isAtBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1;
@@ -371,3 +393,4 @@ function setupChatHandlers() {
     }
 
 }
+export { renderMiniGame }
