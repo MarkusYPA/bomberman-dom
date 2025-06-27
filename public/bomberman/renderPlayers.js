@@ -46,7 +46,7 @@ export function updatePlayers(players) {
             p.classList.remove('left')
         }
 
-        if (player.dead) {
+        if (!player.alive) {
             if (!p.classList.contains('dead')) {
                 if (player.killer === 'bomb') playerBombDeath.play()
                 if (player.killer === 'enemy1') playerDeath.play()

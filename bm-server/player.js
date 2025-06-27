@@ -1,5 +1,5 @@
 import { Bomb } from './bomb.js'
-import { bombTime, bombs, bounds, flames, timedEvents, levelMap, setGameLost } from './game.js'
+import { bombTime, bombs, bounds, flames, timedEvents, levelMap } from './game.js'
 import { Timer } from './timer.js'
 import { state } from '../bm-server-shared/state.js'
 import { gridStep, mult } from '../bm-server-shared/config.js'
@@ -17,8 +17,6 @@ export class Player {
         this.name = name
         this.id = id
         this.left = false
-        this.dead = false
-
         this.lives = 3
         this.alive = true
         this.bombAmount = 1
@@ -70,24 +68,17 @@ export class Player {
     }
 
     die() {
-        this.dead = true
         this.alive = false
         this.lives--
-
-        //levelMap[0][0] = 'player';  // make sure enemies don't walk over player
-
         const countNow = timedCount
         const timedResurrection = new Timer(() => {
             this.killer = ''
             if (this.lives > 0) {
                 this.x = this.startX
                 this.y = this.startY
-                this.dead = false
                 this.alive = true
                 this.invulnerability()
-            } else {
-                // setGameLost(); // Stop game loop updates
-            };
+            }
             timedEvents.delete(`resurrection${countNow}`)
         }, 2000)
         timedEvents.set(`resurrection${countNow}`, timedResurrection)
