@@ -1,4 +1,4 @@
-import { playerName, setThisPlayer } from "./runGame.js";
+import { playerId, setThisPlayer } from "./runGame.js";
 import { playerBombDeath, playerDeath, playerDeath2 } from "./sounds.js";
 
 const gameContainer = document.getElementById("game");
@@ -24,7 +24,7 @@ export function addPlayers(players) {
 export function updatePlayers(players) {
 
     players.forEach(player => {
-        if (player.name === playerName) {
+        if (player.id === playerId) {
             setThisPlayer(player);
         }
 

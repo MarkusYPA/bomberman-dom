@@ -28,7 +28,7 @@ export function nextLevel() {
     stopGame();
 };
 
-export function startSequence(clients) {    // (playerName = "", id = 1) 
+export function startSequence(clients) {
     state.players.length = 0;
 
     clients.values().forEach((c) => {

@@ -7,7 +7,7 @@ import { drawBombs, clearBombs } from "./renderBombs.js";
 import { drawFlames } from "./renderFlames.js"
 import { addPlayers, updatePlayers } from "./renderPlayers.js";
 
-export let playerName = "Player1";
+export let playerId = "";
 export let thisPlayer;
 let levelinfo;
 let livesinfo;
@@ -15,6 +15,11 @@ let oldlives;
 export const clientEvents = new Map();
 let isMoving = false;
 let wasMoving = false;
+
+
+export function setPlayerId(id) {
+    playerId = id;
+}
 
 // update local player info (for lives mostly)
 export function setThisPlayer(player) {
@@ -66,8 +71,7 @@ function updateLevelInfo(level) {
 }
 
 export function startSequenceClient() {
-    thisPlayer = clientGameState.players[0];
-    playerName = thisPlayer.name;
+    thisPlayer = clientGameState.players[playerId-1];
 
     let tasks = [
         () => { resizeGameContainer() },

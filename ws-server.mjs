@@ -204,6 +204,13 @@ export function handleUpgrade(req, socket) {
                     }
                     heldInputs.set(id, new Set());
 
+                    // Send the assigned player id to the client
+                    const idMsg = encodeMessage(JSON.stringify({
+                        type: "playerId",
+                        id
+                    }));
+                    socket.write(idMsg);
+
                     // Reset countdown whenever the number of players changes
                     updateCountdown();
 

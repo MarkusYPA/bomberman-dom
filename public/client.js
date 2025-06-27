@@ -1,6 +1,6 @@
 import { mount } from "./framework/mini.js";
 import { state } from "./framework/state.js";
-import { setMoving, startSequenceClient } from "./bomberman/runGame.js"
+import { playerId, setMoving, setPlayerId, setThisPlayer, startSequenceClient } from "./bomberman/runGame.js"
 import { updateClientGameState } from "./shared/state.js";
 import { CountdownComponent } from "./app.js";
 
@@ -282,6 +282,8 @@ ws.addEventListener("message", (e) => {
         startSequenceClient();
     } else if (msg.type === "gamestate") {
         updateClientGameState(msg.payload);
+    } else if (msg.type === "playerId") {
+        setPlayerId(msg.id);
     }
 });
 
