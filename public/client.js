@@ -209,22 +209,18 @@ document.addEventListener("keyup", (e) => {
     }
 });
 
-if (state.screen === 'lobby') {
-    const lobbyBoard = document.getElementById('lobby-board-container');
-    if (lobbyBoard) {
-        PlayerBoardComponent.mount(lobbyBoard);
-    }
-    // Add this to trigger mini-game rendering after DOM is ready
-    setTimeout(() => {
-        const lobbyBox = document.getElementById('lobby');
-        if (lobbyBox) {
-            // Import renderMiniGame from client.js
-            import('./client.js').then(mod => {
-                mod.renderMiniGame(state.players);
-            });
-        }
-    }, 0);
-}
+
+    // // Add this to trigger mini-game rendering after DOM is ready
+    // setTimeout(() => {
+    //     const lobbyBox = document.getElementById('lobby');
+    //     if (lobbyBox) {
+    //         // Import renderMiniGame from client.js
+    //         import('./client.js').then(mod => {
+    //             mod.renderMiniGame(state.players);
+    //         });
+    //     }
+    // }, 0);
+
 
 ws.addEventListener("message", (e) => {
     const msg = JSON.parse(e.data);
@@ -308,7 +304,11 @@ ws.addEventListener("message", (e) => {
     } else if (msg.type === "startgame") {
         state.gameRunning = true;               // to adjust game-area size
         updateClientGameState(msg.payload);
-        box.innerHTML = "";
+        // Ensure box is assigned to the game area element before using it
+        box = document.getElementById("game");
+        if (box) {
+            box.innerHTML = "";
+        }
 
         startSequenceClient();
     } else if (msg.type === "gamestate") {

@@ -128,4 +128,4 @@ window.addEventListener("keydown", function (e) {
 });
 
 subscribe(update, ['screen']); // Only watch for screen changes
-update();
+update(); // Initial render
