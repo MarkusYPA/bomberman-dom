@@ -14,25 +14,25 @@ export const state = {
     level: 1,
 /*     finishing: false,
     finished: false, */
-};
+}
 
 // Destructure to omit unwanted properties
 export function getNarrowState() {
     const {
-        solidWalls,
-        surroundingWalls,
-        weakWalls,
-        powerups,
+        solidWalls: _solidWalls,
+        surroundingWalls: _surroundingWalls,
+        weakWalls: _weakWalls,
+        powerups: _powerups,
         ...narrowState
-    } = state;
-    return narrowState;
+    } = state
+    return narrowState
 }
 
 export function clearTempsState() {
-    state.collapsingWalls = [];
-    state.newBombs.clear();
-    state.removedBombs.clear();
-    state.newFlames.clear();
-    state.pickedItems = [];
-    state.burningItems = [];
+    state.collapsingWalls = []
+    state.newBombs.clear()
+    state.removedBombs.clear()
+    state.newFlames.clear()
+    state.pickedItems = []
+    state.burningItems = []
 }
