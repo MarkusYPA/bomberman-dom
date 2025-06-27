@@ -10,8 +10,8 @@ import { addPlayers, updatePlayers } from './renderPlayers.js'
 export let playerId = ''
 export let thisPlayer
 let livesinfos = []
-const oldlives = []
-export const newLives = []
+let oldlives = ''
+export let newLives = ''
 export const clientEvents = new Map()
 let isMoving = false
 let wasMoving = false
@@ -27,8 +27,8 @@ export function setThisPlayer(player) {
 }
 
 export function setNewLives(nl) {
-    newLives.length = 0
-    nl.forEach(l => newLives.push(l))
+    newLives = ''
+    nl.forEach(l => newLives += l)
 }
 
 // Walking sounds controlled from inputlisteners
@@ -63,9 +63,9 @@ export function restartGame() {
 };
 
 export function updateLivesInfo(players) {
-    oldlives.length = 0
+    oldlives = ''
     players.forEach((p, i) => {
-        oldlives.push(p.lives)
+        oldlives += p.lives
         let livesText = ''
         for (let i = 0; i < p.lives; i++) {
             livesText += '❤️'
@@ -112,12 +112,8 @@ function runGame() {
         }; */
 
         updatePlayers(clientGameState.players)
-        if (oldlives !== thisPlayer.lives) {
-            //updateLivesInfo(thisPlayer.lives);
+        if (oldlives !== newLives) {
             updateLivesInfo(clientGameState.players)
-            if (thisPlayer.lives === 0) {
-                // remove player from game on serverside
-            }
         }
 
         if (clientGameState.collapsingWalls.length > 0) {

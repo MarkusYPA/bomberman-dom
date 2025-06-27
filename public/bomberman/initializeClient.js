@@ -22,12 +22,10 @@ export function makeTextBar() {
     const pad = 10
     if (!oldTextBar) {
         // one bar to contain all text
-        let textbar = document.createElement('div')
+        const textbar = document.createElement('div')
         textbar.classList.add('textbar')
         textbar.style.height = `${gridStep - pad * 2 * mult}px`
         textbar.style.width = `${gridStep * 13 - pad * 2 * mult}px`
-        //textbar.style.left = `${gameArea.left}px`;
-        //textbar.style.top = `${gameArea.top - gridStep}px`;
         textbar.style.top = `${-gridStep}px`
         textbar.style.padding = `${pad * mult}px`
 
@@ -36,7 +34,7 @@ export function makeTextBar() {
         const ids = ['livesinfo1', 'livesinfo2', 'livesinfo3', 'livesinfo4']
 
         for (let i = 0; i < 4; i++) {
-            let info = document.createElement('div')
+            const info = document.createElement('div')
             info.classList.add('infobox')
             info.style.margin = `${pad * mult}px`
             info.style.padding = `${pad * mult}px`

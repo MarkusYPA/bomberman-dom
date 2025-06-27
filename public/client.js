@@ -4,6 +4,7 @@ import { setMoving, setPlayerId, startSequenceClient } from './bomberman/runGame
 import { updateClientGameState } from './shared/state.js'
 import { CountdownComponent } from './app.js'
 import { LobbyTimerComponent } from './app.js'
+import { endGraphic } from './bomberman/endGraphics.js'
 
 let box // game area
 // Function to create beautiful nickname modal
@@ -273,26 +274,27 @@ ws.addEventListener('message', (e) => {
         showErrorMessage(msg.message)
         // Prompt user to enter a different nickname
         createNicknameModal().then(newNickname => {
-            //const dimensions = getGameAreaDimensions();
             ws.send(JSON.stringify({
                 type: 'join',
                 nickname: newNickname,
-                //dimensions: dimensions
             }))
         })
     } else if (msg.type === 'error') {
         // Display error message to user
         showErrorMessage(msg.message)
     } else if (msg.type === 'startgame') {
-        state.gameRunning = true               // to adjust game-area size
         updateClientGameState(msg.payload)
         box.innerHTML = ''
-
         startSequenceClient()
     } else if (msg.type === 'gamestate') {
         updateClientGameState(msg.payload)
     } else if (msg.type === 'playerId') {
         setPlayerId(msg.id)
+    } else if (msg.type === 'endgame') {
+        endGraphic(msg.winner)
+    } else if (msg.type === 'back to lobby') {
+        // replace full game with minigame:
+        // create stopSequenceClient()
     }
 })
 

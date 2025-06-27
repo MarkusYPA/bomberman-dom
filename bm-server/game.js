@@ -52,7 +52,7 @@ function endSequence(){
     // Broadcast winner or empty object
     const winner = state.players.filter(p => p.lives !== 0)
     setTimeout(()=> {
-        broadcast({ type: 'conclusion', winner})
+        broadcast({ type: 'endgame', winner})
 
         // Show result, then return to lobby
         setTimeout(()=> {
@@ -66,7 +66,7 @@ function endSequence(){
 
             ended = true    // exits game loop
             broadcast({ type: 'back to lobby'})
-        }, 2500)
+        }, 5000)
     }, 3500) // bombtime + flame time + 500
 }
 
@@ -86,13 +86,11 @@ function runGame() {
         clearTempsState()
 
         if (!ending && state.players.filter(p => p.lives !== 0).length < 2) {
-            console.log('ending', Date.now())
             ending = true
             endSequence() 
         }
 
         if (ended) {
-            console.log('ended', Date.now())
             ending = false
             ended = false
             startMiniGame()
