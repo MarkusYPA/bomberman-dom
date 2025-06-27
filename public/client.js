@@ -338,6 +338,8 @@ window.addEventListener("beforeunload", () => {
 });
 
 function renderMiniGame(players) {
+        const areaId = state.screen === 'lobby' ? 'lobby' : 'game';
+        const box = document.getElementById(areaId);
     if (!box) return;
 
     box.innerHTML = "";
