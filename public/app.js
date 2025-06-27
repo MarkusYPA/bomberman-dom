@@ -1,59 +1,59 @@
-import { createVNode, mount } from './framework/mini.js';
-import { state, subscribe, createReactiveComponent } from './framework/state.js';
+import { createVNode, mount } from './framework/mini.js'
+import { state, subscribe, createReactiveComponent } from './framework/state.js'
 
-state.screen = 'start';
-state.players = {}; // This can be kept for compatibility, but not used for rendering
-state.countdownTime = null; // Initialize countdown time
-state.lobbyTime = null;
+state.screen = 'start'
+state.players = {} // This can be kept for compatibility, but not used for rendering
+state.countdownTime = null // Initialize countdown time
+state.lobbyTime = null
 
 function StartScreen() {
     return createVNode('div', { id: 'start-menu', class: 'start-menu' },
         createVNode('h1', {}, 'Bomber Bear Multiplayer'),
         createVNode('button', {
             onclick: async () => {
-                state.screen = 'game';
+                state.screen = 'game'
                 // Dynamically import client.js as a module
                 await new Promise(requestAnimationFrame)
-                await import('./client.js');
+                await import('./client.js')
 
                 // Mount the PlayerBoard component after game screen is rendered
                 setTimeout(() => {
-                    const container = document.getElementById('player-board-container');
+                    const container = document.getElementById('player-board-container')
                     if (container && !container.hasChildNodes()) {
-                        PlayerBoardComponent.mount(container);
+                        PlayerBoardComponent.mount(container)
                     }
-                    const lobbyContainer = document.getElementById('lobby-timer-container');
+                    const lobbyContainer = document.getElementById('lobby-timer-container')
                     if (lobbyContainer) {
-                        mount(lobbyContainer, LobbyTimerComponent());
+                        mount(lobbyContainer, LobbyTimerComponent())
                     }
-                }, 0);
+                }, 0)
             }
         }, 'Start Game')
-    );
+    )
 }
 
 // PlayerBoard component that only re-renders when players state changes
 const PlayerBoardComponent = createReactiveComponent(
     () => {
         return createVNode('div', {
-            class: `scoreboard scoreboard-width`
+            class: 'scoreboard scoreboard-width'
         },
-            createVNode('h2', {}, 'Scoreboard'),
-            ...[1, 2, 3, 4].map(i => {
-                const player = state.players[i];
-                return createVNode('div', {
-                    class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
-                },
-                    // createVNode('span', {}, `Player ${i}`),
-                    createVNode('span', { class: 'player-nickname' },
-                        player ? player.nickname : `Player ${i}`
-                    )
-                );
-            })
-        );
+        createVNode('h2', {}, 'Scoreboard'),
+        ...[1, 2, 3, 4].map(i => {
+            const player = state.players[i]
+            return createVNode('div', {
+                class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
+            },
+            // createVNode('span', {}, `Player ${i}`),
+            createVNode('span', { class: 'player-nickname' },
+                player ? player.nickname : `Player ${i}`
+            )
+            )
+        })
+        )
     },
     ['players'] // Only watch the 'players' path
-);
+)
 
 function GameScreen() {
     return createVNode('div', { class: 'game-root' },
@@ -67,40 +67,40 @@ function GameScreen() {
             createVNode('input', { id: 'chatInput', placeholder: 'Type a message...' }),
             createVNode('button', { id: 'send' }, 'Send')
         )
-    );
+    )
 }
 export function CountdownComponent() {
     if (state.countdownTime === null) {
-        return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, '');
+        return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, '')
     }
-    return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, `Game starts in: ${state.countdownTime}s`);
+    return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, `Game starts in: ${state.countdownTime}s`)
 }
 export function LobbyTimerComponent() {
     if (state.lobbyTime === null) {
-        return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, '');
+        return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, '')
     }
-    return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, `Lobby: Game starts in ${state.lobbyTime}s`);
+    return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, `Lobby: Game starts in ${state.lobbyTime}s`)
 }
 
 function App() {
-    if (state.screen === 'start') return StartScreen();
-    if (state.screen === 'game') return GameScreen();
-    return createVNode('div', {}, 'Game loading...');
+    if (state.screen === 'start') return StartScreen()
+    if (state.screen === 'game') return GameScreen()
+    return createVNode('div', {}, 'Game loading...')
 }
 
 // Only re-render the entire app when the screen changes
 function update(changedPath) {
     if (!changedPath || changedPath === 'screen') {
-        mount(document.body, App());
+        mount(document.body, App())
     }
 }
 
 // Prevent default behavior for arrow keys and space to avoid page scrolling
-window.addEventListener("keydown", function (e) {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ", "Space"].includes(e.key)) {
-        e.preventDefault();
+window.addEventListener('keydown', function (e) {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Space'].includes(e.key)) {
+        e.preventDefault()
     };
-});
+})
 
-subscribe(update, ['screen']); // Only watch for screen changes
-update();
+subscribe(update, ['screen']) // Only watch for screen changes
+update()
