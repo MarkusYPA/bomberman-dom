@@ -118,11 +118,15 @@ function showErrorMessage(message) {
 
 function updateCountdown() {
     const countdownElement = document.getElementById('countdown-container');
-    mount(countdownElement, CountdownComponent());
+    if (countdownElement) {
+        mount(countdownElement, CountdownComponent());
+    }
 }
 function updateLobbyTimer() {
     const lobbyElement = document.getElementById('lobby-timer-container');
-    mount(lobbyElement, LobbyTimerComponent());
+    if (lobbyElement) {
+        mount(lobbyElement, LobbyTimerComponent());
+    }
 }
 // Function to show new message indicator
 function showNewMessageIndicator() {
@@ -208,18 +212,6 @@ document.addEventListener("keyup", (e) => {
         }
     }
 });
-
-
-    // // Add this to trigger mini-game rendering after DOM is ready
-    // setTimeout(() => {
-    //     const lobbyBox = document.getElementById('lobby');
-    //     if (lobbyBox) {
-    //         // Import renderMiniGame from client.js
-    //         import('./client.js').then(mod => {
-    //             mod.renderMiniGame(state.players);
-    //         });
-    //     }
-    // }, 0);
 
 
 ws.addEventListener("message", (e) => {
@@ -358,7 +350,7 @@ function renderMiniGame(players) {
 //document.addEventListener("DOMContentLoaded", setupChatHandlers);     // run setupChatHandlers with one or the other
 setupChatHandlers();                                                    // run setupChatHandlers with one or the other
 
-function setupChatHandlers() {
+export function setupChatHandlers() {
     const sendButton = document.getElementById("send");
     const chatInput = document.getElementById("chatInput");
     const chatBox = document.getElementById("chat");
@@ -390,9 +382,7 @@ function setupChatHandlers() {
                 indicator.remove();
             }
         });
-    } else {
-        setTimeout(setupChatHandlers, 100); // Retry if elements not found
-    }
 
+    }
 }
 export { renderMiniGame }

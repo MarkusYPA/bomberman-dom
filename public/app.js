@@ -1,5 +1,6 @@
 import { createVNode, mount } from './framework/mini.js';
 import { state, subscribe, createReactiveComponent } from './framework/state.js';
+import { setupChatHandlers } from './client.js';
 
 state.screen = 'start';
 state.players = {}; // This can be kept for compatibility, but not used for rendering
@@ -16,17 +17,6 @@ function StartScreen() {
                 await new Promise(requestAnimationFrame)
                 await import('./client.js');
 
-                // Mount the PlayerBoard component after game screen is rendered
-                setTimeout(() => {
-                    const container = document.getElementById('player-board-container');
-                    if (container && !container.hasChildNodes()) {
-                        PlayerBoardComponent.mount(container);
-                    }
-                    const lobbyContainer = document.getElementById('lobby-timer-container');
-                    if (lobbyContainer) {
-                        mount(lobbyContainer, LobbyTimerComponent());
-                    }
-                }, 0);
             }
         }, 'Start Game')
     );
@@ -72,11 +62,6 @@ function GameScreen() {
         createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()), // Lobby timer
         createVNode('div', { id: 'countdown-container' }, CountdownComponent()), // Countdown timer
         createVNode('div', { id: 'game', class: 'game-area' }),
-        createVNode('div', { class: 'chat-area' },
-            createVNode('div', { id: 'chat', class: 'chat-box' }),
-            createVNode('input', { id: 'chatInput', placeholder: 'Type a message...' }),
-            createVNode('button', { id: 'send' }, 'Send')
-        )
     );
 }
 export function CountdownComponent() {
@@ -93,10 +78,23 @@ export function LobbyTimerComponent() {
 }
 
 function App() {
-    if (state.screen === 'start') return StartScreen();
-    if (state.screen === 'lobby') return LobbyScreen();
-    if (state.screen === 'game') return GameScreen();
-    return createVNode('div', {}, 'Game loading...');
+    let screenContent;
+    if (state.screen === 'start') screenContent = StartScreen();
+    else if (state.screen === 'lobby') screenContent = LobbyScreen();
+    else if (state.screen === 'game') screenContent = GameScreen();
+    else screenContent = createVNode('div', {}, 'Game loading...');
+
+    // Only show chat in lobby and game screens
+    const showChat = state.screen === 'lobby' || state.screen === 'game';
+
+    return createVNode('div', { id: 'app-root' },
+        screenContent,
+        showChat && createVNode('div', { class: 'chat-area' },
+            createVNode('div', { id: 'chat', class: 'chat-box' }),
+            createVNode('input', { id: 'chatInput', placeholder: 'Type a message...' }),
+            createVNode('button', { id: 'send' }, 'Send')
+        )
+    );
 }
 
 // Only re-render the entire app when the screen changes
@@ -117,6 +115,7 @@ function update(changedPath) {
                 PlayerBoardComponent.mount(playerBoard);
             }
         }
+        setupChatHandlers();
     }
 }
 
