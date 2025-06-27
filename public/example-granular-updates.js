@@ -1,9 +1,9 @@
 // Example demonstrating granular state updates
-import { createVNode, mount } from './framework/mini.js';
-import { state, subscribe, createReactiveComponent, computed } from './framework/state.js';
+import { createVNode } from './framework/mini.js'
+import { state, createReactiveComponent, computed } from './framework/state.js'
 
 // Example state structure
-state.counter = 0;
+state.counter = 0
 state.user = {
     name: 'John',
     email: 'john@example.com',
@@ -11,11 +11,11 @@ state.user = {
         theme: 'dark',
         notifications: true
     }
-};
+}
 state.todos = [
     { id: 1, text: 'Learn reactive state', completed: false },
     { id: 2, text: 'Build awesome app', completed: false }
-];
+]
 
 // Example 1: Component that only updates when counter changes
 const CounterComponent = createReactiveComponent(
@@ -26,7 +26,7 @@ const CounterComponent = createReactiveComponent(
         }, 'Increment')
     ),
     ['counter'] // Only watches counter changes
-);
+)
 
 // Example 2: Component that only updates when user.name changes
 const UserNameComponent = createReactiveComponent(
@@ -38,7 +38,7 @@ const UserNameComponent = createReactiveComponent(
         })
     ),
     ['user.name'] // Only watches user.name changes
-);
+)
 
 // Example 3: Component that updates when any user property changes
 const UserProfileComponent = createReactiveComponent(
@@ -49,13 +49,13 @@ const UserProfileComponent = createReactiveComponent(
         createVNode('p', {}, `Theme: ${state.user.preferences.theme}`)
     ),
     ['user'] // Watches any changes under 'user'
-);
+)
 
 // Example 4: Computed value that updates when todos change
 const completedTodosCount = computed(
     () => state.todos.filter(todo => todo.completed).length,
     ['todos']
-);
+)
 
 const TodoStatsComponent = createReactiveComponent(
     () => createVNode('div', {},
@@ -65,7 +65,7 @@ const TodoStatsComponent = createReactiveComponent(
         createVNode('p', {}, `Remaining: ${state.todos.length - completedTodosCount.value}`)
     ),
     ['todos'] // Watches todos array changes
-);
+)
 
 // Example 5: Component that watches multiple specific paths
 const MultiWatchComponent = createReactiveComponent(
@@ -74,22 +74,22 @@ const MultiWatchComponent = createReactiveComponent(
         createVNode('p', {}, `Counter: ${state.counter}, Theme: ${state.user.preferences.theme}`)
     ),
     ['counter', 'user.preferences.theme'] // Watches multiple specific paths
-);
+)
 
 // Demo function to show selective updates
 function runDemo() {
-    const container = document.createElement('div');
-    document.body.appendChild(container);
+    const container = document.createElement('div')
+    document.body.appendChild(container)
     
     // Mount all components
-    CounterComponent.mount(container);
-    UserNameComponent.mount(container);
-    UserProfileComponent.mount(container);
-    TodoStatsComponent.mount(container);
-    MultiWatchComponent.mount(container);
+    CounterComponent.mount(container)
+    UserNameComponent.mount(container)
+    UserProfileComponent.mount(container)
+    TodoStatsComponent.mount(container)
+    MultiWatchComponent.mount(container)
     
     // Add some test buttons
-    const testContainer = document.createElement('div');
+    const testContainer = document.createElement('div')
     testContainer.innerHTML = `
         <h2>Test Buttons</h2>
         <button onclick="window.testCounter()">Update Counter</button>
@@ -97,21 +97,21 @@ function runDemo() {
         <button onclick="window.testUserEmail()">Update User Email</button>
         <button onclick="window.testTheme()">Toggle Theme</button>
         <button onclick="window.testTodos()">Add Todo</button>
-    `;
-    document.body.appendChild(testContainer);
+    `
+    document.body.appendChild(testContainer)
     
     // Test functions
-    window.testCounter = () => state.counter++;
-    window.testUserName = () => state.user.name = 'Jane';
-    window.testUserEmail = () => state.user.email = 'jane@example.com';
-    window.testTheme = () => state.user.preferences.theme = state.user.preferences.theme === 'dark' ? 'light' : 'dark';
-    window.testTodos = () => state.todos.push({ id: Date.now(), text: 'New todo', completed: false });
+    window.testCounter = () => state.counter++
+    window.testUserName = () => state.user.name = 'Jane'
+    window.testUserEmail = () => state.user.email = 'jane@example.com'
+    window.testTheme = () => state.user.preferences.theme = state.user.preferences.theme === 'dark' ? 'light' : 'dark'
+    window.testTodos = () => state.todos.push({ id: Date.now(), text: 'New todo', completed: false })
     
-    console.log('Demo ready! Click the test buttons to see selective updates.');
-    console.log('Only the relevant components will re-render when their watched state changes.');
+    console.log('Demo ready! Click the test buttons to see selective updates.')
+    console.log('Only the relevant components will re-render when their watched state changes.')
 }
 
 // Uncomment to run the demo
 // runDemo();
 
-export { runDemo };
+export { runDemo }

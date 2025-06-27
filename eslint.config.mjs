@@ -12,10 +12,16 @@ export default defineConfig([
             semi: ['error', 'never'], // No semicolons (change to "always" to enforce them)
             indent: ['error', 4], // 2 or 4 spaces or "tab"
             quotes: ['error', 'single'],
+            'no-unused-vars': ['error', { 
+                varsIgnorePattern: '^_', 
+                argsIgnorePattern: '^_' 
+            }],
         }
     },
     {
         files: ['**/*.{js,mjs,cjs}'],
-        languageOptions: { globals: globals.browser }, // Allows 'window', 'document', etc.
+        languageOptions: { globals: { ...globals.browser, ...globals.node } }, // Both browser and Node.js globals
     },
 ])
+
+// Run ESLint on all files with: npx eslint . --fix
