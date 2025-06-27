@@ -86,20 +86,11 @@ export class Player {
                 this.alive = true;
                 this.invulnerability();
             } else {
-                setGameLost(); // Stop game loop updates
+                // setGameLost(); // Stop game loop updates
             };
             timedEvents.delete(`resurrection${countNow}`)
         }, 2000);
         timedEvents.set(`resurrection${countNow}`, timedResurrection)
-
-        // Block enemies for 2 seconds after resurrection
-        /* const timedEnemyBlock = new Timer(() => {
-            if (this.lives > 0) {
-                levelMap[0][0] = '';
-            }
-            timedEvents.delete(`enemyBlock${countNow}`)
-        }, 4000); */
-        //timedEvents.set(`enemyBlock${countNow}`, timedEnemyBlock)
         
         timedCount++;
     };
@@ -161,7 +152,6 @@ export class Player {
                     collidingBombs.push(bomb);
                 } else {
                     // erase owner when player no longer on top of bomb
-                    //bomb.owner = '';
                     delete bomb.owners[this.name];
                 };
             };
@@ -169,7 +159,6 @@ export class Player {
             // adjust next coordinates based on collisions to bombs
             for (const bomb of collidingBombs) {
                 // No collision if bomb has this owner
-                //if (!bomb.owner) {
                 if (!bomb.owners[this.name]) {
                     [newX, newY] = bomb.checkCollision(newX, newY, this.size);
                 };
