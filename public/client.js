@@ -3,9 +3,9 @@ import { state } from "./framework/state.js";
 import { playerId, setMoving, setPlayerId, setThisPlayer, startSequenceClient } from "./bomberman/runGame.js"
 import { updateClientGameState } from "./shared/state.js";
 import { CountdownComponent } from "./app.js";
+import { LobbyTimerComponent } from "./app.js";
 
 let box // game area
-
 // Function to create beautiful nickname modal
 function createNicknameModal() {
     return new Promise((resolve) => {
@@ -119,7 +119,10 @@ function updateCountdown() {
     const countdownElement = document.getElementById('countdown-container');
     mount(countdownElement, CountdownComponent());
 }
-
+function updateLobbyTimer() {
+    const lobbyElement = document.getElementById('lobby-timer-container');
+    mount(lobbyElement, LobbyTimerComponent());
+}
 // Function to show new message indicator
 function showNewMessageIndicator() {
     const chatBox = document.getElementById("chat");
@@ -207,7 +210,13 @@ document.addEventListener("keyup", (e) => {
 
 ws.addEventListener("message", (e) => {
     const msg = JSON.parse(e.data);
-    if (msg.type === "countdown") {
+    if (msg.type === "lobby") {
+        state.lobbyTime = msg.time;
+        updateLobbyTimer();
+    } else if (msg.type === "lobbyFinished") {
+        state.lobbyTime = null;
+        updateLobbyTimer();
+    } else if (msg.type === "countdown") {
         state.countdownTime = msg.time;
         updateCountdown();
     } else if (msg.type === "countdownFinished") {

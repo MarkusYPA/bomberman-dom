@@ -9,6 +9,9 @@ export const heldInputs = new Map(); // id -> Set of held directions
 
 let countdownTimer = null;
 let countdown = 10;
+let lobbyTimer = null;
+let lobbyTimeLeft = null;
+const LOBBY_DURATION = 20;
 
 function encodeMessage(str) {
     const json = Buffer.from(str);
@@ -63,6 +66,41 @@ function startCountdown() {
             // stop minigame and start bomberman
             stopMiniGame();
             startSequence(clients);
+        }
+    }, 1000);
+}
+function resetLobbyTimer() {
+    if (lobbyTimer) {
+        clearInterval(lobbyTimer);
+        lobbyTimer = null;
+    }
+    lobbyTimeLeft = null;
+    broadcast({ type: "lobby", time: null });
+}
+
+function startLobbyTimer() {
+    resetLobbyTimer();
+    lobbyTimeLeft = LOBBY_DURATION;
+    broadcast({ type: "lobby", time: lobbyTimeLeft });
+
+    lobbyTimer = setInterval(() => {
+        if (clients.size === 4) {
+            clearInterval(lobbyTimer);
+            lobbyTimer = null;
+            lobbyTimeLeft = null;
+            broadcast({ type: "lobbyFinished" });
+            startCountdown();
+            return;
+        }
+        lobbyTimeLeft--;
+        if (lobbyTimeLeft > 0) {
+            broadcast({ type: "lobby", time: lobbyTimeLeft });
+        } else {
+            clearInterval(lobbyTimer);
+            lobbyTimer = null;
+            lobbyTimeLeft = null;
+            broadcast({ type: "lobbyFinished" });
+            startCountdown();
         }
     }, 1000);
 }
@@ -275,9 +313,18 @@ export function tickGame() {
 }
 
 function updateCountdown() {
-    if (clients.size >= 2) {
-        startCountdown();
+    if (clients.size >= 4) {
+        // Stop lobby timer if running, start countdown immediately
+        resetLobbyTimer();
+        if (!countdownTimer) {
+            startCountdown();
+        }
+    } else if (clients.size >= 2) {
+        if (!lobbyTimer && !lobbyTimeLeft && !countdownTimer) {
+            startLobbyTimer();
+        }
     } else {
+        resetLobbyTimer();
         resetCountdown();
     }
 }

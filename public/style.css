@@ -251,17 +251,45 @@ body {
   box-sizing: border-box;
 }
 
+.scoreboard-width {
+  width: 500px;
+  max-width: 600px;
+}
+
+@media (min-width: 1200px) {
+  .scoreboard-width {
+    width: 600px;
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .scoreboard-width {
+    width: 90vw;
+    max-width: 600px;
+  }
+}
+
 .scoreboard-player {
+  opacity: 1;
+  transition: opacity 0.2s;
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.1em;
-  margin: 2px 0;
   padding: 6px 12px;
+  margin: 2px 0;
   border-radius: 6px;
   font-weight: bold;
-  opacity: 1;
-  transition: opacity 0.2s;
+}
+
+.scoreboard-player.inactive {
+  opacity: 0.5;
+}
+
+.player-nickname {
+  margin-left: 10px;
+  font-size: 0.95em;
+  font-weight: normal;
 }
 
 .chat-area {
@@ -511,7 +539,14 @@ button:active {
   animation: slideIn 0.3s ease-out;
 }
 
-.countdown-timer {
+.countdown-timer{
+  font-size: 24px;
+  font-weight: bold;
+  color: orange;
+  text-align: center;
+  margin-top: 20px;
+}
+.lobby-timer{
   font-size: 24px;
   font-weight: bold;
   color: orange;
