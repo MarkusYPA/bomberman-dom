@@ -2,10 +2,10 @@ import { createVNode, mount } from './framework/mini.js';
 import { state, subscribe, createReactiveComponent } from './framework/state.js';
 import { setupChatHandlers, startClient } from './client.js';
 
-state.screen = 'start';
-state.players = {}; // This can be kept for compatibility, but not used for rendering
-state.countdownTime = null; // Initialize countdown time
-state.lobbyTime = null;
+state.screen = 'start'
+state.players = {} // This can be kept for compatibility, but not used for rendering
+state.countdownTime = null // Initialize countdown time
+state.lobbyTime = null
 
 function StartScreen() {
     return createVNode('div', { id: 'start-menu', class: 'start-menu' },
@@ -16,31 +16,31 @@ function StartScreen() {
                 state.screen = 'lobby';
             }
         }, 'Start Game')
-    );
+    )
 }
 
 // PlayerBoard component that only re-renders when players state changes
 export const PlayerBoardComponent = createReactiveComponent(
     () => {
         return createVNode('div', {
-            class: `scoreboard scoreboard-width`
+            class: 'scoreboard scoreboard-width'
         },
-            createVNode('h2', {}, 'Scoreboard'),
-            ...[1, 2, 3, 4].map(i => {
-                const player = state.players[i];
-                return createVNode('div', {
-                    class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
-                },
-                    // createVNode('span', {}, `Player ${i}`),
-                    createVNode('span', { class: 'player-nickname' },
-                        player ? player.nickname : `Player ${i}`
-                    )
-                );
-            })
-        );
+        createVNode('h2', {}, 'Scoreboard'),
+        ...[1, 2, 3, 4].map(i => {
+            const player = state.players[i]
+            return createVNode('div', {
+                class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
+            },
+            // createVNode('span', {}, `Player ${i}`),
+            createVNode('span', { class: 'player-nickname' },
+                player ? player.nickname : `Player ${i}`
+            )
+            )
+        })
+        )
     },
     ['players'] // Only watch the 'players' path
-);
+)
 
 function LobbyScreen() {
     return createVNode('div', { id: 'lobby-menu', class: 'lobby-menu' },
@@ -69,23 +69,23 @@ function GameScreen() {
 }
 export function CountdownComponent() {
     if (state.countdownTime === null) {
-        return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, '');
+        return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, '')
     }
-    return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, `Game starts in: ${state.countdownTime}s`);
+    return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, `Game starts in: ${state.countdownTime}s`)
 }
 export function LobbyTimerComponent() {
     if (state.lobbyTime === null) {
-        return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, '');
+        return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, '')
     }
-    return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, `Lobby: Game starts in ${state.lobbyTime}s`);
+    return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, `Lobby: Game starts in ${state.lobbyTime}s`)
 }
 
 function App() {
     let screenContent;
-    if (state.screen === 'start') screenContent = StartScreen();
+    if (state.screen === 'start') screenContent = StartScreen()
     else if (state.screen === 'lobby') screenContent = LobbyScreen();
-    else if (state.screen === 'game') screenContent = GameScreen();
-    else screenContent = createVNode('div', {}, 'Game loading...');
+    else if (state.screen === 'game') screenContent = GameScreen()
+    else screenContent = createVNode('div', {}, 'Game loading...')
 
     // Only show chat in lobby and game screens
     const showChat = state.screen === 'lobby' || state.screen === 'game';
@@ -103,7 +103,7 @@ function App() {
 // Only re-render the entire app when the screen changes
 function update(changedPath) {
     if (!changedPath || changedPath === 'screen') {
-        mount(document.body, App());
+        mount(document.body, App())
 
         // Always mount PlayerBoardComponent in the correct container for the current screen
         if (state.screen === 'lobby') {
@@ -123,11 +123,11 @@ function update(changedPath) {
 }
 
 // Prevent default behavior for arrow keys and space to avoid page scrolling
-window.addEventListener("keydown", function (e) {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ", "Space"].includes(e.key)) {
-        e.preventDefault();
+window.addEventListener('keydown', function (e) {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Space'].includes(e.key)) {
+        e.preventDefault()
     };
-});
+})
 
-subscribe(update, ['screen']); // Only watch for screen changes
-update(); // Initial render
+subscribe(update, ['screen']) // Only watch for screen changes
+update();
