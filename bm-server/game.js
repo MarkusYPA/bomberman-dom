@@ -1,7 +1,8 @@
 import { makeWalls, makeLevelMap, createPlayer } from './initialize.js'
 import { clearTempsState, getNarrowState, state } from '../bm-server-shared/state.js'
 import { interval, speed } from '../bm-server-shared/config.js'
-import { broadcast, heldInputs } from '../ws-server.mjs'
+import { broadcast, heldInputs, updateCountdown } from '../ws-server.mjs'
+import { startMiniGame } from '../server.mjs'
 
 export let bounds
 export let levelMap                    // for placing elements, wall collapses
@@ -13,9 +14,9 @@ export const flames = new Map()        // for player collisions
 export const timedEvents = new Map()
 export const playerNames = []
 
-//export let finish;
-let gameLost
 let gameIntervalId
+let ending = false
+let ended = false
 
 export function nextLevel() {
     //state.level++;
@@ -46,26 +47,56 @@ export function startSequence(clients) {
     runGame()
 }
 
-export function setGameLost() {
-    gameLost = true
+function endSequence(){
+    setTimeout(()=> {
+        // Broadcast winner or empty object
+        const winner = state.players.filter(p => p.lives !== 0)
+        broadcast({ type: 'endgame', winner})
+
+        // Show result, then return to lobby
+        setTimeout(()=> {
+            state.players.length = 0
+            state.solidWalls.length = 0
+            state.surroundingWalls.length = 0
+            state.weakWalls.clear()
+            state.powerups.clear()
+            levelMap = []
+            powerUpMap = []
+
+            ended = true    // exits game loop
+            broadcast({ type: 'back to lobby'})
+            updateCountdown()
+        }, 5000)
+    }, 3500) // bombtime + flame time + 500
 }
 
 function runGame() {
     gameIntervalId = setInterval(gameLoop, interval)
 
     function gameLoop() {
-        if (!gameLost) {
-            state.players.forEach(p => {
-                const input = heldInputs.get(p.id)
-                p.movePlayer(speed, input)
-                input.bomb = false
-            })
+        state.players.forEach(p => {
+            const input = heldInputs.get(p.id)
+            if (ending) input.bomb = false     // don't allow bomb drops when end sequence has started
+            p.movePlayer(speed, input)
+            input.bomb = false
+        })
 
-            // broadcast only updates to state (no solidWalls, no surroundingWalls, no weakWalls, no powerups)
-            broadcast({ type: 'gamestate', payload: getNarrowState(state) })
-            clearTempsState()
+        // broadcast only updates to state (no solidWalls, no surroundingWalls, no weakWalls, no powerups)
+        broadcast({ type: 'gamestate', payload: getNarrowState(state) })
+        clearTempsState()
+
+        if (!ending && state.players.filter(p => p.lives !== 0).length < 2) {
+            ending = true
+            endSequence() 
         }
-    };
+
+        if (ended) {
+            ending = false
+            ended = false
+            startMiniGame()
+            stopGame()  // exit main game loop
+        }
+    }    
 };
 
 function stopGame() {

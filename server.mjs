@@ -47,11 +47,16 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason)
 })
 
-// Server side game loop. Starts running from the get go.
-let miniGameIntervalId = setInterval(tickGame, interval)
+
+let miniGameIntervalId = ''
+export function startMiniGame(){
+    miniGameIntervalId = setInterval(tickGame, interval)
+}
+
+// Start server side mini game loop right away.
+startMiniGame()
 
 export function stopMiniGame() {
-    //console.log("stopping minigame", miniGameIntervalId)
     if (miniGameIntervalId) {
         clearInterval(miniGameIntervalId)
         miniGameIntervalId = null

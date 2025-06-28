@@ -3,8 +3,8 @@ import { state, subscribe, createReactiveComponent } from './framework/state.js'
 import { setupChatHandlers, startClient } from './client.js'
 
 state.screen = 'start'
-state.players = {} // This can be kept for compatibility, but not used for rendering
-state.countdownTime = null // Initialize countdown time
+state.players = {}          // This can be kept for compatibility, but not used for rendering
+state.countdownTime = null  // Initialize countdown time
 state.lobbyTime = null
 
 function StartScreen() {
@@ -31,7 +31,10 @@ export const PlayerBoardComponent = createReactiveComponent(
             return createVNode('div', {
                 class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
             },
-            // createVNode('span', {}, `Player ${i}`),
+            // display player points
+            createVNode('span', { class: 'player-points' },
+                player ? player.points ? player.points: '0' : ''
+            ),
             createVNode('span', { class: 'player-nickname' },
                 player ? player.nickname : `Player ${i}`
             )
@@ -67,12 +70,14 @@ function GameScreen() {
         }, 'Leave Game')
     )
 }
+
 export function CountdownComponent() {
     if (state.countdownTime === null) {
         return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, '')
     }
     return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, `Game starts in: ${state.countdownTime}s`)
 }
+
 export function LobbyTimerComponent() {
     if (state.lobbyTime === null) {
         return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, '')

@@ -315,7 +315,7 @@ export function tickGame() {
     broadcast(state)
 }
 
-function updateCountdown() {
+export function updateCountdown() {
     if (clients.size >= 4) {
         // Stop lobby timer if running, start countdown immediately
         resetLobbyTimer()
