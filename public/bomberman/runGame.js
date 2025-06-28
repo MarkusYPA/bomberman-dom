@@ -1,4 +1,4 @@
-import { clientGameState } from '../shared/state.js'
+import { clearClientGameState, clientGameState } from '../shared/state.js'
 import { walkingSound } from './sounds.js'
 import { makeTextBar, resizeGameContainer } from './initializeClient.js'
 import { drawSolidWalls, drawWeakWalls, collapseWeakWall } from './renderWalls.js'
@@ -15,7 +15,7 @@ export let newLives = ''
 export const clientEvents = new Map()
 let isMoving = false
 let wasMoving = false
-
+let gameRunning = false
 
 export function setPlayerId(id) {
     playerId = id
@@ -101,15 +101,26 @@ export function startSequenceClient() {
     requestAnimationFrame(processNextTask)
 }
 
+export function stopSequenceClient() {
+    // stop game
+    gameRunning = false
+
+    // clear state?
+    clearClientGameState()
+    
+    // start minigame ? Will it start automatically with server ws:s?
+    
+}
+
 function runGame() {
+    gameRunning = true
     requestAnimationFrame(gameLoop)
 
     function gameLoop() {
-        /* if (clientGameState.finished === true) {
-            clientGameState.finished = false;
-            nextLevel();
+        if (!gameRunning) {
+            console.log('exiting client game loop')
             return
-        }; */
+        }
 
         updatePlayers(clientGameState.players)
         if (oldlives !== newLives) {

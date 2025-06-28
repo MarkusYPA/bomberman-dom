@@ -12,8 +12,6 @@ export const clientGameState = {
     players: [],
 
     level: 1,
-/*     finishing: false,
-    finished: false, */
 }
 
 /**
@@ -65,4 +63,22 @@ export function updateClientGameState(update) {
             }
         }
     })
+}
+
+/**
+ * Resets all values in clientGameState to their initial state.
+ */
+export function clearClientGameState() {
+    clientGameState.solidWalls = []
+    clientGameState.surroundingWalls = []
+    clientGameState.weakWalls = new Map()
+    clientGameState.collapsingWalls = []
+    clientGameState.newBombs = new Map()
+    clientGameState.removedBombs = new Map()
+    clientGameState.newFlames = new Map()
+    clientGameState.powerups = new Map()
+    clientGameState.pickedItems = []
+    clientGameState.burningItems = []
+    clientGameState.players = []
+    clientGameState.level = 1
 }

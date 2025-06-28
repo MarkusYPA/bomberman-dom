@@ -1,7 +1,7 @@
 import { makeWalls, makeLevelMap, createPlayer } from './initialize.js'
 import { clearTempsState, getNarrowState, state } from '../bm-server-shared/state.js'
 import { interval, speed } from '../bm-server-shared/config.js'
-import { broadcast, heldInputs } from '../ws-server.mjs'
+import { broadcast, heldInputs, updateCountdown } from '../ws-server.mjs'
 import { startMiniGame } from '../server.mjs'
 
 export let bounds
@@ -48,10 +48,9 @@ export function startSequence(clients) {
 }
 
 function endSequence(){
-
-    // Broadcast winner or empty object
-    const winner = state.players.filter(p => p.lives !== 0)
     setTimeout(()=> {
+        // Broadcast winner or empty object
+        const winner = state.players.filter(p => p.lives !== 0)
         broadcast({ type: 'endgame', winner})
 
         // Show result, then return to lobby
@@ -66,6 +65,7 @@ function endSequence(){
 
             ended = true    // exits game loop
             broadcast({ type: 'back to lobby'})
+            updateCountdown()
         }, 5000)
     }, 3500) // bombtime + flame time + 500
 }

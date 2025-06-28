@@ -12,7 +12,8 @@ function StartScreen() {
         createVNode('button', {
             onclick: async () => {
                 state.screen = 'game'
-                // Dynamically import client.js as a module
+
+                // Dynamically import client.js as a module: executes all top-level code in it
                 await new Promise(requestAnimationFrame)
                 await import('./client.js')
 
@@ -44,7 +45,6 @@ const PlayerBoardComponent = createReactiveComponent(
             return createVNode('div', {
                 class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
             },
-            // createVNode('span', {}, `Player ${i}`),
             createVNode('span', { class: 'player-nickname' },
                 player ? player.nickname : `Player ${i}`
             )
@@ -69,12 +69,14 @@ function GameScreen() {
         )
     )
 }
+
 export function CountdownComponent() {
     if (state.countdownTime === null) {
         return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, '')
     }
     return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, `Game starts in: ${state.countdownTime}s`)
 }
+
 export function LobbyTimerComponent() {
     if (state.lobbyTime === null) {
         return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, '')

@@ -1,12 +1,13 @@
 import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
-import { setMoving, setPlayerId, startSequenceClient } from './bomberman/runGame.js'
+import { setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
 import { updateClientGameState } from './shared/state.js'
 import { CountdownComponent } from './app.js'
 import { LobbyTimerComponent } from './app.js'
 import { endGraphic } from './bomberman/endGraphics.js'
 
 let box // game area
+
 // Function to create beautiful nickname modal
 function createNicknameModal() {
     return new Promise((resolve) => {
@@ -120,10 +121,12 @@ function updateCountdown() {
     const countdownElement = document.getElementById('countdown-container')
     mount(countdownElement, CountdownComponent())
 }
+
 function updateLobbyTimer() {
     const lobbyElement = document.getElementById('lobby-timer-container')
     mount(lobbyElement, LobbyTimerComponent())
 }
+
 // Function to show new message indicator
 function showNewMessageIndicator() {
     const chatBox = document.getElementById('chat')
@@ -223,8 +226,8 @@ ws.addEventListener('message', (e) => {
     } else if (msg.type === 'countdownFinished') {
         state.countdownTime = null
         updateCountdown()
-    } else if (msg.type === 'state') {
-        state.players = msg.payload // Update state with players
+    } else if (msg.type === 'state') {  // for mini game
+        state.players = msg.payload // Update mini game state with players
         renderMiniGame(msg.payload)
     } else if (msg.type === 'chat') {
         const chatBox = document.getElementById('chat')
@@ -293,8 +296,9 @@ ws.addEventListener('message', (e) => {
     } else if (msg.type === 'endgame') {
         endGraphic(msg.winner)
     } else if (msg.type === 'back to lobby') {
-        // replace full game with minigame:
-        // create stopSequenceClient()
+        box.innerHTML = ''          // clear main game graphics
+        box.className = 'game-area' // restore default class
+        stopSequenceClient()
     }
 })
 
