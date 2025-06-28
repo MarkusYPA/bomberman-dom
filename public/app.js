@@ -59,6 +59,12 @@ function GameScreen() {
         createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()), // Lobby timer
         createVNode('div', { id: 'countdown-container' }, CountdownComponent()), // Countdown timer
         createVNode('div', { id: 'game', class: 'game-area' }),
+        createVNode('button', {
+            id: 'leave-game',
+            onclick: () => {
+                state.screen = 'lobby';
+            }
+        }, 'Leave Game')
     );
 }
 export function CountdownComponent() {
