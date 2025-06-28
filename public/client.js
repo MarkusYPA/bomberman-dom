@@ -216,7 +216,6 @@ document.addEventListener('keyup', (e) => {
 function updatePoints(winner) {
     if (winner.length > 0) {
         const id = String(winner[0].id)
-
         if (clientGameState.points[id]) {
             clientGameState.points[id] += 1
         } else {
@@ -226,7 +225,7 @@ function updatePoints(winner) {
 
     for (const[id, points] of Object.entries(clientGameState.points)){
         state.players[id].points = points
-    }
+    }    
 }
 
 ws.addEventListener('message', (e) => {
