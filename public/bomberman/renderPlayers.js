@@ -1,12 +1,12 @@
 import { playerId, setNewLives, setThisPlayer } from './runGame.js'
 import { playerBombDeath, playerDeath, playerDeath2 } from './sounds.js'
 
-const domPlayers = new Map();
+const domPlayers = new Map()
 
 // first draw, adding dom elements
 export function addPlayers(players) {
-const gameContainer = document.getElementById("game");
-if (!gameContainer) return;
+    const gameContainer = document.getElementById('game')
+    if (!gameContainer) return
     players.forEach(player => {
         const domPlayer = document.createElement('div')
 

@@ -1,6 +1,6 @@
-import { createVNode, mount } from './framework/mini.js';
-import { state, subscribe, createReactiveComponent } from './framework/state.js';
-import { setupChatHandlers, startClient } from './client.js';
+import { createVNode, mount } from './framework/mini.js'
+import { state, subscribe, createReactiveComponent } from './framework/state.js'
+import { setupChatHandlers, startClient } from './client.js'
 
 state.screen = 'start'
 state.players = {} // This can be kept for compatibility, but not used for rendering
@@ -12,8 +12,8 @@ function StartScreen() {
         createVNode('h1', {}, 'Bomber Bear Multiplayer'),
         createVNode('button', {
             onclick: async () => {
-                await startClient();
-                state.screen = 'lobby';
+                await startClient()
+                state.screen = 'lobby'
             }
         }, 'Start Game')
     )
@@ -49,23 +49,23 @@ function LobbyScreen() {
         createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()),
         createVNode('div', { id: 'countdown-container' }, CountdownComponent()),
         createVNode('div', { id: 'lobby', class: 'lobby-area' }), // Mini-game area
-    );
+    )
 }
 
 function GameScreen() {
     return createVNode('div', { class: 'game-root' },
         createVNode('div', { id: 'error-container', class: 'error-container' }),
         createVNode('div', { id: 'player-board-container' }), // Empty container for PlayerBoard
-        createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()), // Lobby timer
-        createVNode('div', { id: 'countdown-container' }, CountdownComponent()), // Countdown timer
+        // createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()), // Lobby timer
+        // createVNode('div', { id: 'countdown-container' }, CountdownComponent()), // Countdown timer
         createVNode('div', { id: 'game', class: 'game-area' }),
         createVNode('button', {
             id: 'leave-game',
             onclick: () => {
-                state.screen = 'lobby';
+                state.screen = 'lobby'
             }
         }, 'Leave Game')
-    );
+    )
 }
 export function CountdownComponent() {
     if (state.countdownTime === null) {
@@ -81,14 +81,14 @@ export function LobbyTimerComponent() {
 }
 
 function App() {
-    let screenContent;
+    let screenContent
     if (state.screen === 'start') screenContent = StartScreen()
-    else if (state.screen === 'lobby') screenContent = LobbyScreen();
+    else if (state.screen === 'lobby') screenContent = LobbyScreen()
     else if (state.screen === 'game') screenContent = GameScreen()
     else screenContent = createVNode('div', {}, 'Game loading...')
 
     // Only show chat in lobby and game screens
-    const showChat = state.screen === 'lobby' || state.screen === 'game';
+    const showChat = state.screen === 'lobby' || state.screen === 'game'
 
     return createVNode('div', { id: 'app-root' },
         screenContent,
@@ -97,7 +97,7 @@ function App() {
             createVNode('input', { id: 'chatInput', placeholder: 'Type a message...' }),
             createVNode('button', { id: 'send' }, 'Send')
         )
-    );
+    )
 }
 
 // Only re-render the entire app when the screen changes
@@ -107,18 +107,18 @@ function update(changedPath) {
 
         // Always mount PlayerBoardComponent in the correct container for the current screen
         if (state.screen === 'lobby') {
-            const lobbyBoard = document.getElementById('lobby-board-container');
+            const lobbyBoard = document.getElementById('lobby-board-container')
             if (lobbyBoard) {
-                PlayerBoardComponent.mount(lobbyBoard);
+                PlayerBoardComponent.mount(lobbyBoard)
             }
         }
         if (state.screen === 'game') {
-            const playerBoard = document.getElementById('player-board-container');
+            const playerBoard = document.getElementById('player-board-container')
             if (playerBoard) {
-                PlayerBoardComponent.mount(playerBoard);
+                PlayerBoardComponent.mount(playerBoard)
             }
         }
-        setupChatHandlers();
+        setupChatHandlers()
     }
 }
 
@@ -130,4 +130,4 @@ window.addEventListener('keydown', function (e) {
 })
 
 subscribe(update, ['screen']) // Only watch for screen changes
-update();
+update()

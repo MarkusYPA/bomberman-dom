@@ -2,11 +2,11 @@ import { Timer } from './timerClient.js'
 import { clientEvents } from './runGame.js'
 import { gridStep, halfStep } from '../shared/config.js'
 
-let timedCount = 0;
+let timedCount = 0
 
 export function drawFlames(flames) {
-const gameContainer = document.getElementById("game");
-if (!gameContainer) return;
+    const gameContainer = document.getElementById('game')
+    if (!gameContainer) return
     flames.forEach((flame) => {
         switch (flame.direction) {
         case 'H':
