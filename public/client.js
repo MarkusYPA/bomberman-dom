@@ -4,11 +4,11 @@ import { playerId, setMoving, setPlayerId, setThisPlayer, startSequenceClient } 
 import { updateClientGameState } from "./shared/state.js";
 import { CountdownComponent } from "./app.js";
 import { LobbyTimerComponent } from "./app.js";
-import { PlayerBoardComponent } from "./app.js";
 
 let box // game area
 let ws; // WebSocket connection
 let nickname;
+
 // Function to create beautiful nickname modal
 function createNicknameModal() {
     return new Promise((resolve) => {
@@ -93,10 +93,6 @@ function createNicknameModal() {
     });
 }
 
-// Get nickname using beautiful modal
-// const nickname = await createNicknameModal();
-// const ws = new WebSocket(`ws://${location.host}`);
-
 // Function to show error messages elegantly
 function showErrorMessage(message) {
     const errorContainer = document.getElementById("error-container");
@@ -159,15 +155,6 @@ function showNewMessageIndicator() {
         }
     }, 3000);
 }
-
-// ws.addEventListener("open", () => {
-//     //const dimensions = getGameAreaDimensions();
-//     ws.send(JSON.stringify({
-//         type: "join",
-//         nickname: nickname,
-//         //dimensions: dimensions
-//     }));
-// });
 
 // Track held keys
 const held = new Set();
@@ -358,9 +345,6 @@ function renderMiniGame(players) {
         box.appendChild(d);
     }
 }
-
-//document.addEventListener("DOMContentLoaded", setupChatHandlers);     // run setupChatHandlers with one or the other
-// setupChatHandlers();                                                    // run  with one or the other
 
 export function setupChatHandlers() {
     const sendButton = document.getElementById("send");
