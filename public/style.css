@@ -318,6 +318,10 @@ body {
   opacity: 0.5;
 }
 
+.player-points {
+  width: 25px;
+}
+
 .player-nickname {
   margin-left: 10px;
   font-size: 0.95em;

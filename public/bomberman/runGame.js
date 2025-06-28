@@ -32,30 +32,40 @@ export function setNewLives(nl) {
 }
 
 // Walking sounds controlled from inputlisteners
+let playPromise = null
+
+// Walking sounds controlled from inputlisteners
 export function setMoving(moving) {
     wasMoving = isMoving
     isMoving = moving
 
-    if (isMoving && !wasMoving) {
-        walkingSound.play()
-    } else if ((!isMoving && wasMoving)) {
-        walkingSound.pause()
-        walkingSound.currentTime = 0
+    if (thisPlayer && !thisPlayer.alive) {
+        if (!walkingSound.paused) {
+            walkingSound.pause()
+            walkingSound.currentTime = 0
+        }
+        return
     }
 
-    if (thisPlayer && !thisPlayer.alive) {
-        walkingSound.pause()
-        walkingSound.currentTime = 0
+    if (isMoving && !wasMoving) {
+        playPromise = walkingSound.play().catch((err) => {
+            if (err.name !== 'AbortError') {
+                console.error('walk sound play error:', err)
+            }
+        })
+    } else if (!isMoving && wasMoving) {
+        // If play was initiated and hasn't resolved yet, wait for it to finish before pausing
+        if (playPromise) {
+            playPromise.finally(() => {
+                walkingSound.pause()
+                walkingSound.currentTime = 0
+            })
+        } else {
+            walkingSound.pause()
+            walkingSound.currentTime = 0
+        }
     }
 }
-
-/* export function nextLevel() {
-    document.getElementById("game").replaceChildren();
-    startSequenceClient();
-    updateLevelInfo(clientGameState.level);
-    updateLivesInfo(thisPlayer.lives);
-    toggleFinished();
-}; */
 
 
 export function restartGame() {
@@ -111,7 +121,7 @@ function runGame() {
     gameRunning = true
     requestAnimationFrame(gameLoop)
 
-    function gameLoop() {
+    function gameLoop(_timestamp) {
         if (!gameRunning) {
             console.log('exiting client game loop')
             return

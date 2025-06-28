@@ -2,8 +2,8 @@ import { createVNode, mount } from './framework/mini.js'
 import { state, subscribe, createReactiveComponent } from './framework/state.js'
 
 state.screen = 'start'
-state.players = {} // This can be kept for compatibility, but not used for rendering
-state.countdownTime = null // Initialize countdown time
+state.players = {}          // This can be kept for compatibility, but not used for rendering
+state.countdownTime = null  // Initialize countdown time
 state.lobbyTime = null
 
 function StartScreen() {
@@ -45,6 +45,10 @@ const PlayerBoardComponent = createReactiveComponent(
             return createVNode('div', {
                 class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
             },
+            // display player points
+            createVNode('span', { class: 'player-points' },
+                player ? player.points ? player.points: '0' : ''
+            ),
             createVNode('span', { class: 'player-nickname' },
                 player ? player.nickname : `Player ${i}`
             )

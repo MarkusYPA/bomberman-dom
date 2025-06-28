@@ -12,6 +12,8 @@ export const clientGameState = {
     players: [],
 
     level: 1,
+
+    points: {},
 }
 
 /**
@@ -31,7 +33,7 @@ export function updateClientGameState(update) {
     if (update.weakWalls && typeof update.weakWalls === 'object' && Object.keys(update.weakWalls).length > 0) {
         clientGameState.weakWalls = new Map(Object.entries(update.weakWalls))
     }
-    
+
     // Convert incoming object to Map for powerups
     if (update.powerups && typeof update.powerups === 'object' && Object.keys(update.powerups).length > 0) {
         clientGameState.powerups = new Map(Object.entries(update.powerups))
@@ -65,9 +67,7 @@ export function updateClientGameState(update) {
     })
 }
 
-/**
- * Resets all values in clientGameState to their initial state.
- */
+// resets values in clientGameState
 export function clearClientGameState() {
     clientGameState.solidWalls = []
     clientGameState.surroundingWalls = []
