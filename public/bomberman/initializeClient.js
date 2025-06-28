@@ -14,7 +14,7 @@ export function resizeGameContainer(level = 1) {
     gameContainer.classList.add(`level-${level}`)
 };
 
-export function makeTextBar() {
+export function makeTextBar(players) {
     const gameBox = document.getElementById('game')
     const gameArea = gameBox.getBoundingClientRect()
     let oldTextBar = document.querySelector('.textbar')
@@ -36,6 +36,9 @@ export function makeTextBar() {
         for (let i = 0; i < 4; i++) {
             const info = document.createElement('div')
             info.classList.add('infobox')
+            if (i > players.length -1) {
+                info.style.visibility = 'hidden'
+            }
             info.style.margin = `${pad * mult}px`
             info.style.padding = `${pad * mult}px`
             info.style.borderWidth = `${mult * 2}px`

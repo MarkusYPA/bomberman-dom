@@ -30,7 +30,6 @@ export function updatePlayers(players) {
         }
 
         lives.push(player.lives)
-
         const p = domPlayers.get(player.name)
 
         p.style.transform = `translate(${player.x}px, ${player.y}px)`

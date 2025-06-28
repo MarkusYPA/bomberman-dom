@@ -10,8 +10,8 @@ import { addPlayers, updatePlayers } from './renderPlayers.js'
 export let playerId = ''
 export let thisPlayer
 let livesinfos = []
-let oldlives = ''
-export let newLives = ''
+let oldlives = 0
+export let newLives = 0
 export const clientEvents = new Map()
 let isMoving = false
 let wasMoving = false
@@ -27,7 +27,7 @@ export function setThisPlayer(player) {
 }
 
 export function setNewLives(nl) {
-    newLives = ''
+    newLives = 0
     nl.forEach(l => newLives += l)
 }
 
@@ -63,7 +63,7 @@ export function restartGame() {
 };
 
 export function updateLivesInfo(players) {
-    oldlives = ''
+    oldlives = 0
     players.forEach((p, i) => {
         oldlives += p.lives
         let livesText = ''
@@ -80,7 +80,7 @@ export function startSequenceClient() {
     let tasks = [
         () => { resizeGameContainer() },
         () => {
-            livesinfos = makeTextBar()
+            livesinfos = makeTextBar(clientGameState.players)
             updateLivesInfo(clientGameState.players)
         },
 
@@ -101,15 +101,10 @@ export function startSequenceClient() {
     requestAnimationFrame(processNextTask)
 }
 
-export function stopSequenceClient() {
-    // stop game
-    gameRunning = false
-
-    // clear state?
-    clearClientGameState()
-    
-    // start minigame ? Will it start automatically with server ws:s?
-    
+export function stopSequenceClient() {    
+    gameRunning = false     // exit game loop    
+    clearClientGameState()  // clear state
+    // minigame will run and update with websockets messages
 }
 
 function runGame() {
