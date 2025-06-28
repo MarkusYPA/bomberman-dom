@@ -1,6 +1,6 @@
 import { createVNode, mount } from './framework/mini.js';
 import { state, subscribe, createReactiveComponent } from './framework/state.js';
-import { setupChatHandlers } from './client.js';
+import { setupChatHandlers, startClient } from './client.js';
 
 state.screen = 'start';
 state.players = {}; // This can be kept for compatibility, but not used for rendering
@@ -12,11 +12,8 @@ function StartScreen() {
         createVNode('h1', {}, 'Bomber Bear Multiplayer'),
         createVNode('button', {
             onclick: async () => {
+                await startClient();
                 state.screen = 'lobby';
-                // Dynamically import client.js as a module
-                await new Promise(requestAnimationFrame)
-                await import('./client.js');
-
             }
         }, 'Start Game')
     );
