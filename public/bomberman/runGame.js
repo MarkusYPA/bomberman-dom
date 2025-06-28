@@ -1,4 +1,4 @@
-import { clientGameState } from '../shared/state.js'
+import { clearClientGameState, clientGameState } from '../shared/state.js'
 import { walkingSound } from './sounds.js'
 import { makeTextBar, resizeGameContainer } from './initializeClient.js'
 import { drawSolidWalls, drawWeakWalls, collapseWeakWall } from './renderWalls.js'
@@ -10,12 +10,12 @@ import { addPlayers, updatePlayers } from './renderPlayers.js'
 export let playerId = ''
 export let thisPlayer
 let livesinfos = []
-const oldlives = []
-export const newLives = []
+let oldlives = 0
+export let newLives = 0
 export const clientEvents = new Map()
 let isMoving = false
 let wasMoving = false
-
+let gameRunning = false
 
 export function setPlayerId(id) {
     playerId = id
@@ -27,35 +27,45 @@ export function setThisPlayer(player) {
 }
 
 export function setNewLives(nl) {
-    newLives.length = 0
-    nl.forEach(l => newLives.push(l))
+    newLives = 0
+    nl.forEach(l => newLives += l)
 }
+
+// Walking sounds controlled from inputlisteners
+let playPromise = null
 
 // Walking sounds controlled from inputlisteners
 export function setMoving(moving) {
     wasMoving = isMoving
     isMoving = moving
 
-    if (isMoving && !wasMoving) {
-        walkingSound.play()
-    } else if ((!isMoving && wasMoving)) {
-        walkingSound.pause()
-        walkingSound.currentTime = 0
+    if (thisPlayer && !thisPlayer.alive) {
+        if (!walkingSound.paused) {
+            walkingSound.pause()
+            walkingSound.currentTime = 0
+        }
+        return
     }
 
-    if (thisPlayer && !thisPlayer.alive) {
-        walkingSound.pause()
-        walkingSound.currentTime = 0
+    if (isMoving && !wasMoving) {
+        playPromise = walkingSound.play().catch((err) => {
+            if (err.name !== 'AbortError') {
+                console.error('walk sound play error:', err)
+            }
+        })
+    } else if (!isMoving && wasMoving) {
+        // If play was initiated and hasn't resolved yet, wait for it to finish before pausing
+        if (playPromise) {
+            playPromise.finally(() => {
+                walkingSound.pause()
+                walkingSound.currentTime = 0
+            })
+        } else {
+            walkingSound.pause()
+            walkingSound.currentTime = 0
+        }
     }
 }
-
-/* export function nextLevel() {
-    document.getElementById("game").replaceChildren();
-    startSequenceClient();
-    updateLevelInfo(clientGameState.level);
-    updateLivesInfo(thisPlayer.lives);
-    toggleFinished();
-}; */
 
 
 export function restartGame() {
@@ -63,9 +73,9 @@ export function restartGame() {
 };
 
 export function updateLivesInfo(players) {
-    oldlives.length = 0
+    oldlives = 0
     players.forEach((p, i) => {
-        oldlives.push(p.lives)
+        oldlives += p.lives
         let livesText = ''
         for (let i = 0; i < p.lives; i++) {
             livesText += '❤️'
@@ -80,7 +90,7 @@ export function startSequenceClient() {
     let tasks = [
         () => { resizeGameContainer() },
         () => {
-            livesinfos = makeTextBar()
+            livesinfos = makeTextBar(clientGameState.players)
             updateLivesInfo(clientGameState.players)
         },
 
@@ -101,23 +111,25 @@ export function startSequenceClient() {
     requestAnimationFrame(processNextTask)
 }
 
+export function stopSequenceClient() {    
+    gameRunning = false     // exit game loop    
+    clearClientGameState()  // clear state
+    // minigame will run and update with websockets messages
+}
+
 function runGame() {
+    gameRunning = true
     requestAnimationFrame(gameLoop)
 
-    function gameLoop() {
-        /* if (clientGameState.finished === true) {
-            clientGameState.finished = false;
-            nextLevel();
+    function gameLoop(_timestamp) {
+        if (!gameRunning) {
+            console.log('exiting client game loop')
             return
-        }; */
+        }
 
         updatePlayers(clientGameState.players)
-        if (oldlives !== thisPlayer.lives) {
-            //updateLivesInfo(thisPlayer.lives);
+        if (oldlives !== newLives) {
             updateLivesInfo(clientGameState.players)
-            if (thisPlayer.lives === 0) {
-                // remove player from game on serverside
-            }
         }
 
         if (clientGameState.collapsingWalls.length > 0) {

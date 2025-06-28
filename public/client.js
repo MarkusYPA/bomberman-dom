@@ -1,11 +1,13 @@
 import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
-import { setMoving, setPlayerId, startSequenceClient } from './bomberman/runGame.js'
-import { updateClientGameState } from './shared/state.js'
+import { setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
+import { clientGameState, updateClientGameState } from './shared/state.js'
 import { CountdownComponent } from './app.js'
 import { LobbyTimerComponent } from './app.js'
+import { endGraphic } from './bomberman/endGraphics.js'
 
 let box // game area
+
 // Function to create beautiful nickname modal
 function createNicknameModal() {
     return new Promise((resolve) => {
@@ -119,10 +121,12 @@ function updateCountdown() {
     const countdownElement = document.getElementById('countdown-container')
     mount(countdownElement, CountdownComponent())
 }
+
 function updateLobbyTimer() {
     const lobbyElement = document.getElementById('lobby-timer-container')
     mount(lobbyElement, LobbyTimerComponent())
 }
+
 // Function to show new message indicator
 function showNewMessageIndicator() {
     const chatBox = document.getElementById('chat')
@@ -208,6 +212,22 @@ document.addEventListener('keyup', (e) => {
     }
 })
 
+
+function updatePoints(winner) {
+    if (winner.length > 0) {
+        const id = String(winner[0].id)
+        if (clientGameState.points[id]) {
+            clientGameState.points[id] += 1
+        } else {
+            clientGameState.points[id] = 1
+        }
+    }
+
+    for (const[id, points] of Object.entries(clientGameState.points)){
+        state.players[id].points = points
+    }    
+}
+
 ws.addEventListener('message', (e) => {
     const msg = JSON.parse(e.data)
     if (msg.type === 'lobby') {
@@ -222,9 +242,20 @@ ws.addEventListener('message', (e) => {
     } else if (msg.type === 'countdownFinished') {
         state.countdownTime = null
         updateCountdown()
-    } else if (msg.type === 'state') {
-        state.players = msg.payload // Update state with players
-        renderMiniGame(msg.payload)
+    } else if (msg.type === 'state') {  // for mini game
+        // Only update on changes. Keep player points, payload doesn't contain them.
+        if (JSON.stringify(state.players) !== JSON.stringify(msg.payload)) {
+            for (const [id, playerInfo] of Object.entries(msg.payload)) {
+                if (state.players[id]) {
+                    for (const [key, val] of Object.entries(playerInfo)) {
+                        state.players[id][key] = val
+                    }
+                } else {
+                    state.players[id] = playerInfo
+                }
+            }
+            renderMiniGame(msg.payload)
+        }
     } else if (msg.type === 'chat') {
         const chatBox = document.getElementById('chat')
 
@@ -273,26 +304,29 @@ ws.addEventListener('message', (e) => {
         showErrorMessage(msg.message)
         // Prompt user to enter a different nickname
         createNicknameModal().then(newNickname => {
-            //const dimensions = getGameAreaDimensions();
             ws.send(JSON.stringify({
                 type: 'join',
                 nickname: newNickname,
-                //dimensions: dimensions
             }))
         })
     } else if (msg.type === 'error') {
         // Display error message to user
         showErrorMessage(msg.message)
     } else if (msg.type === 'startgame') {
-        state.gameRunning = true               // to adjust game-area size
         updateClientGameState(msg.payload)
         box.innerHTML = ''
-
         startSequenceClient()
     } else if (msg.type === 'gamestate') {
         updateClientGameState(msg.payload)
     } else if (msg.type === 'playerId') {
         setPlayerId(msg.id)
+    } else if (msg.type === 'endgame') {
+        endGraphic(msg.winner)
+        updatePoints(msg.winner)
+    } else if (msg.type === 'back to lobby') {
+        box.innerHTML = ''          // clear main game graphics
+        box.className = 'game-area' // restore default class
+        stopSequenceClient()
     }
 })
 

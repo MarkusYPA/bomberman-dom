@@ -43,6 +43,38 @@ body {
   background: #a4301e !important;
 }
 
+.win, .tie {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: absolute;
+    height: 450px;
+    aspect-ratio: 0.77643473;
+    width: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    color: #fff;
+    text-shadow: 0 2px 8px #000;
+    z-index: 100;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    pointer-events: none;
+    background-color: transparent;
+}
+
+.win {
+    background: url('assets/images/victory.svg') center/cover no-repeat;
+}
+
+.tie {
+    background: url('assets/images/tie.svg') center/cover no-repeat;
+}
+
 .player {
   position: absolute;
   width: 40px;
@@ -284,6 +316,10 @@ body {
 
 .scoreboard-player.inactive {
   opacity: 0.5;
+}
+
+.player-points {
+  width: 25px;
 }
 
 .player-nickname {
