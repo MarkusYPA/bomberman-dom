@@ -46,6 +46,13 @@ export function updatePlayers(players) {
             p.classList.remove('left')
         }
 
+        // Add ghost effect if player is out of lives
+        if (player.lives <= 0) {
+            p.classList.add('ghost')
+        } else {
+            p.classList.remove('ghost')
+        }
+
         if (!player.alive) {
             if (!p.classList.contains('dead')) {
                 if (player.killer === 'bomb') playerBombDeath.play()
