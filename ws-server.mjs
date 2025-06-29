@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import { Buffer } from 'buffer'
 import Game from './game.mjs'
 import { stopMiniGame } from './server.mjs'
-import { startSequence } from './bm-server/game.js'
+import { startSequence, removePlayerFromGame } from './bm-server/game.js'
 
 const game = new Game()
 const clients = new Map() // socket -> { id, nickname }
@@ -155,6 +155,7 @@ export function handleUpgrade(req, socket) {
         }
         if (id) {
             game.removePlayer(id)
+            removePlayerFromGame(id) // Also remove from bomberman game state
             heldInputs.delete(id)
             const sender = clients.get(socket)?.nickname || '???'
             if (sender && sender !== '???') {
