@@ -1,8 +1,9 @@
 import { placeBomb, tickingBomb } from './sounds.js'
 
-const gameContainer = document.getElementById('game')
 
 export function drawBombs(bombs) {
+    const gameContainer = document.getElementById('game')
+    if (!gameContainer) return
     bombs.forEach(bomb => {
         const domBomb = document.createElement('div')
 

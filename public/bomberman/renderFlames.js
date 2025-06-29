@@ -3,29 +3,29 @@ import { clientEvents } from './runGame.js'
 import { gridStep, halfStep } from '../shared/config.js'
 
 let timedCount = 0
-const gameContainer = document.getElementById('game')
 
 export function drawFlames(flames) {
-
+    const gameContainer = document.getElementById('game')
+    if (!gameContainer) return
     flames.forEach((flame) => {
         switch (flame.direction) {
         case 'H':
-            drawHorizontalFlame(flame)
+            drawHorizontalFlame(flame, gameContainer)
             break
         case 'V':
-            drawVerticalFlame(flame)
+            drawVerticalFlame(flame, gameContainer)
             break
         case 'L':
-            drawLeftFlameEnd(flame)
+            drawLeftFlameEnd(flame, gameContainer)
             break
         case 'R':
-            drawRightFlameEnd(flame)
+            drawRightFlameEnd(flame, gameContainer)
             break
         case 'U':
-            drawUpFlameEnd(flame)
+            drawUpFlameEnd(flame, gameContainer)
             break
         case 'D':
-            drawDownFlameEnd(flame)
+            drawDownFlameEnd(flame, gameContainer)
             break
         default:
             console.log('Bad flame direction:', flame)
@@ -51,7 +51,7 @@ function removeDomFlame(domFlame, flame) {
     timedCount++
 }
 
-function drawHorizontalFlame(flame) {
+function drawHorizontalFlame(flame, gameContainer) {
     const domFlame = document.createElement('div')
     generalFlameAttributes(domFlame, flame)
     domFlame.classList.add('horizontal')               // update css
@@ -62,7 +62,7 @@ function drawHorizontalFlame(flame) {
     removeDomFlame(domFlame, flame)
 };
 
-function drawVerticalFlame(flame) {
+function drawVerticalFlame(flame, gameContainer) {
     const domFlame = document.createElement('div')
     generalFlameAttributes(domFlame, flame)
     domFlame.classList.add('vertical')
@@ -74,7 +74,7 @@ function drawVerticalFlame(flame) {
 }
 
 
-function drawLeftFlameEnd(flame) {
+function drawLeftFlameEnd(flame, gameContainer) {
     const domFlame = document.createElement('div')
     generalFlameAttributes(domFlame, flame)
     domFlame.classList.add('left')
@@ -85,7 +85,7 @@ function drawLeftFlameEnd(flame) {
     removeDomFlame(domFlame, flame)
 }
 
-function drawRightFlameEnd(flame) {
+function drawRightFlameEnd(flame, gameContainer) {
     const domFlame = document.createElement('div')
     generalFlameAttributes(domFlame, flame)
     domFlame.classList.add('right')
@@ -97,7 +97,7 @@ function drawRightFlameEnd(flame) {
 }
 
 
-function drawUpFlameEnd(flame) {
+function drawUpFlameEnd(flame, gameContainer) {
     const domFlame = document.createElement('div')
     generalFlameAttributes(domFlame, flame)
     domFlame.classList.add('up')
@@ -108,7 +108,7 @@ function drawUpFlameEnd(flame) {
     removeDomFlame(domFlame, flame)
 }
 
-function drawDownFlameEnd(flame) {
+function drawDownFlameEnd(flame, gameContainer) {
     const domFlame = document.createElement('div')
     generalFlameAttributes(domFlame, flame)
     domFlame.classList.add('down')

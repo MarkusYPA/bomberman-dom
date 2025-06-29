@@ -5,7 +5,7 @@ body {
   color: #2a1810;
 }
 
-.game-area {
+.game-area, .lobby-area {
   width: 600px;
   height: 450px;
   border: 1px solid #000;

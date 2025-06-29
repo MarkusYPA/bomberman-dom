@@ -7,6 +7,9 @@ import { LobbyTimerComponent } from './app.js'
 import { endGraphic } from './bomberman/endGraphics.js'
 
 let box // game area
+let ws // WebSocket connection
+let nickname
+
 
 // Function to create beautiful nickname modal
 function createNicknameModal() {
@@ -92,10 +95,6 @@ function createNicknameModal() {
     })
 }
 
-// Get nickname using beautiful modal
-const nickname = await createNicknameModal()
-const ws = new WebSocket(`ws://${location.host}`)
-
 // Function to show error messages elegantly
 function showErrorMessage(message) {
     const errorContainer = document.getElementById('error-container')
@@ -119,12 +118,16 @@ function showErrorMessage(message) {
 
 function updateCountdown() {
     const countdownElement = document.getElementById('countdown-container')
-    mount(countdownElement, CountdownComponent())
+    if (countdownElement) {
+        mount(countdownElement, CountdownComponent())
+    }
 }
 
 function updateLobbyTimer() {
     const lobbyElement = document.getElementById('lobby-timer-container')
-    mount(lobbyElement, LobbyTimerComponent())
+    if (lobbyElement) {
+        mount(lobbyElement, LobbyTimerComponent())
+    }
 }
 
 // Function to show new message indicator
@@ -156,15 +159,6 @@ function showNewMessageIndicator() {
         }
     }, 3000)
 }
-
-ws.addEventListener('open', () => {
-    //const dimensions = getGameAreaDimensions();
-    ws.send(JSON.stringify({
-        type: 'join',
-        nickname: nickname,
-        //dimensions: dimensions
-    }))
-})
 
 // Track held keys
 const held = new Set()
@@ -211,8 +205,6 @@ document.addEventListener('keyup', (e) => {
         }
     }
 })
-
-
 function updatePoints(winner) {
     if (winner.length > 0) {
         const id = String(winner[0].id)
@@ -228,128 +220,155 @@ function updatePoints(winner) {
     }    
 }
 
-ws.addEventListener('message', (e) => {
-    const msg = JSON.parse(e.data)
-    if (msg.type === 'lobby') {
-        state.lobbyTime = msg.time
-        updateLobbyTimer()
-    } else if (msg.type === 'lobbyFinished') {
-        state.lobbyTime = null
-        updateLobbyTimer()
-    } else if (msg.type === 'countdown') {
-        state.countdownTime = msg.time
-        updateCountdown()
-    } else if (msg.type === 'countdownFinished') {
-        state.countdownTime = null
-        updateCountdown()
-    } else if (msg.type === 'state') {  // for mini game
-        // Only update on changes. Keep player points, payload doesn't contain them.
-        if (JSON.stringify(state.players) !== JSON.stringify(msg.payload)) {
-            for (const [id, playerInfo] of Object.entries(msg.payload)) {
-                if (state.players[id]) {
-                    for (const [key, val] of Object.entries(playerInfo)) {
-                        state.players[id][key] = val
+export async function startClient() {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close(1000, 'New session')
+    }
+    nickname = await createNicknameModal()
+    ws = new WebSocket(`ws://${location.host}`)
+
+    ws.addEventListener('open', () => {
+        ws.send(JSON.stringify({
+            type: 'join',
+            nickname: nickname,
+        }))
+    })
+
+
+
+
+    ws.addEventListener('message', (e) => {
+        const msg = JSON.parse(e.data)
+        if (msg.type === 'lobby') {
+            state.lobbyTime = msg.time
+            updateLobbyTimer()
+        } else if (msg.type === 'lobbyFinished') {
+            state.lobbyTime = null
+            updateLobbyTimer()
+        } else if (msg.type === 'countdown') {
+            state.countdownTime = msg.time
+            updateCountdown()
+        } else if (msg.type === 'countdownFinished') {
+            state.screen = 'game' // Switch to game screen
+            state.countdownTime = null
+            updateCountdown()
+        } else if (msg.type === 'state') {  // for mini game
+            // Only update on changes. Keep player points, payload doesn't contain them.
+            if (JSON.stringify(state.players) !== JSON.stringify(msg.payload)) {
+                for (const [id, playerInfo] of Object.entries(msg.payload)) {
+                    if (state.players[id]) {
+                        for (const [key, val] of Object.entries(playerInfo)) {
+                            state.players[id][key] = val
+                        }
+                    } else {
+                        state.players[id] = playerInfo
                     }
-                } else {
-                    state.players[id] = playerInfo
                 }
+                renderMiniGame(msg.payload)
             }
-            renderMiniGame(msg.payload)
-        }
-    } else if (msg.type === 'chat') {
-        const chatBox = document.getElementById('chat')
+        } else if (msg.type === 'chat') {
+            const chatBox = document.getElementById('chat')
+            if (chatBox) {
+                chatBox.scrollTop = chatBox.scrollHeight
+            }
 
-        // Check if user is at the bottom before adding message
-        const isAtBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1
+            // Check if user is at the bottom before adding message
+            const isAtBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1
 
-        // Create message container
-        const messageDiv = document.createElement('div')
-        const isOwnMessage = msg.nickname === nickname
-        messageDiv.className = `chat-message ${isOwnMessage ? 'own' : 'other'}`
+            // Create message container
+            const messageDiv = document.createElement('div')
+            const isOwnMessage = msg.nickname === nickname
+            messageDiv.className = `chat-message ${isOwnMessage ? 'own' : 'other'}`
 
-        // Create sender name (only show for other people's messages)
-        if (!isOwnMessage) {
-            const senderDiv = document.createElement('div')
-            senderDiv.className = 'message-sender'
-            senderDiv.textContent = msg.nickname
-            messageDiv.appendChild(senderDiv)
-        }
+            // Create sender name (only show for other people's messages)
+            if (!isOwnMessage) {
+                const senderDiv = document.createElement('div')
+                senderDiv.className = 'message-sender'
+                senderDiv.textContent = msg.nickname
+                messageDiv.appendChild(senderDiv)
+            }
 
-        // Create message bubble with player color
-        const bubbleDiv = document.createElement('div')
-        bubbleDiv.className = `message-bubble player-color-${msg.playerId}`
-        bubbleDiv.textContent = msg.message
-        messageDiv.appendChild(bubbleDiv)
+            // Create message bubble with player color
+            const bubbleDiv = document.createElement('div')
+            bubbleDiv.className = `message-bubble player-color-${msg.playerId}`
+            bubbleDiv.textContent = msg.message
+            messageDiv.appendChild(bubbleDiv)
 
-        // Create timestamp
-        const timestampDiv = document.createElement('div')
-        timestampDiv.className = 'message-timestamp'
-        const now = new Date()
-        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        timestampDiv.textContent = timeString
+            // Create timestamp
+            const timestampDiv = document.createElement('div')
+            timestampDiv.className = 'message-timestamp'
+            const now = new Date()
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            timestampDiv.textContent = timeString
 
-        messageDiv.appendChild(timestampDiv)
+            messageDiv.appendChild(timestampDiv)
 
-        chatBox.appendChild(messageDiv)
+            chatBox.appendChild(messageDiv)
 
-        if (isAtBottom) {
+            if (isAtBottom) {
             // User was at bottom, auto-scroll to show new message
-            chatBox.scrollTop = chatBox.scrollHeight
-        } else {
+                chatBox.scrollTop = chatBox.scrollHeight
+            } else {
             // User is reading older messages, show new message indicator
-            showNewMessageIndicator()
-        }
-    } else if (msg.type === 'duplicateNickname') {
+                showNewMessageIndicator()
+            }
+        } else if (msg.type === 'duplicateNickname') {
         // Show error message and prompt for new nickname
-        showErrorMessage(msg.message)
-        // Prompt user to enter a different nickname
-        createNicknameModal().then(newNickname => {
-            ws.send(JSON.stringify({
-                type: 'join',
-                nickname: newNickname,
-            }))
-        })
-    } else if (msg.type === 'error') {
+            showErrorMessage(msg.message)
+            // Prompt user to enter a different nickname
+            createNicknameModal().then(newNickname => {
+                ws.send(JSON.stringify({
+                    type: 'join',
+                    nickname: newNickname,
+                }))
+            })
+        } else if (msg.type === 'error') {
         // Display error message to user
-        showErrorMessage(msg.message)
-    } else if (msg.type === 'startgame') {
-        updateClientGameState(msg.payload)
-        box.innerHTML = ''
-        startSequenceClient()
-    } else if (msg.type === 'gamestate') {
-        updateClientGameState(msg.payload)
-    } else if (msg.type === 'playerId') {
-        setPlayerId(msg.id)
-    } else if (msg.type === 'endgame') {
-        endGraphic(msg.winner)
-        updatePoints(msg.winner)
-    } else if (msg.type === 'back to lobby') {
-        box.innerHTML = ''          // clear main game graphics
-        box.className = 'game-area' // restore default class
-        stopSequenceClient()
-    }
-})
+            showErrorMessage(msg.message)
+        } else if (msg.type === 'startgame') {
+            updateClientGameState(msg.payload)
+            // Ensure box is assigned to the game area element before using it
+            box = document.getElementById('game')
+            if (box) {
+                box.innerHTML = ''
+            }
+            startSequenceClient()
+        } else if (msg.type === 'gamestate') {
+            updateClientGameState(msg.payload)
+        } else if (msg.type === 'playerId') {
+            setPlayerId(msg.id)
+        } else if (msg.type === 'endgame') {
+            endGraphic(msg.winner)
+            updatePoints(msg.winner)
+        } else if (msg.type === 'back to lobby') {
+            box.innerHTML = ''          // clear main game graphics
+            box.className = 'game-area' // restore default class
+            stopSequenceClient()
+        }
+    })
 
-// Handle WebSocket close event
-ws.addEventListener('close', (event) => {
-    console.log('WebSocket connection closed:', event.code, event.reason)
-    showErrorMessage('Connection lost. Please refresh the page to reconnect.')
-})
+    // Handle WebSocket close event
+    ws.addEventListener('close', (event) => {
+        console.log('WebSocket connection closed:', event.code, event.reason)
+        showErrorMessage('Connection lost. Please refresh the page to reconnect.')
+    })
 
-// Handle WebSocket error event  
-ws.addEventListener('error', (error) => {
-    console.error('WebSocket error:', error)
-    showErrorMessage('Connection error occurred. Please check your internet connection.')
-})
+    // Handle WebSocket error event  
+    ws.addEventListener('error', (error) => {
+        console.error('WebSocket error:', error)
+        showErrorMessage('Connection error occurred. Please check your internet connection.')
+    })
 
-// Add beforeunload event to properly close connection when page is unloaded
-window.addEventListener('beforeunload', () => {
-    if (ws.readyState === WebSocket.OPEN) {
-        ws.close(1000, 'Page unload') // Normal closure
-    }
-})
-
+    // Add beforeunload event to properly close connection when page is unloaded
+    window.addEventListener('beforeunload', () => {
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.close(1000, 'Page unload') // Normal closure
+        }
+    })
+}
 function renderMiniGame(players) {
+    const areaId = state.screen === 'lobby' ? 'lobby' : 'game'
+    const box = document.getElementById(areaId)
     if (!box) return
 
     box.innerHTML = ''
@@ -365,10 +384,7 @@ function renderMiniGame(players) {
     }
 }
 
-//document.addEventListener("DOMContentLoaded", setupChatHandlers);     // run setupChatHandlers with one or the other
-setupChatHandlers()                                                    // run setupChatHandlers with one or the other
-
-function setupChatHandlers() {
+export function setupChatHandlers() {
     const sendButton = document.getElementById('send')
     const chatInput = document.getElementById('chatInput')
     const chatBox = document.getElementById('chat')
@@ -400,8 +416,7 @@ function setupChatHandlers() {
                 indicator.remove()
             }
         })
-    } else {
-        setTimeout(setupChatHandlers, 100) // Retry if elements not found
-    }
 
+    }
 }
+export { renderMiniGame }
