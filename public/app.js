@@ -7,6 +7,7 @@ state.screen = 'start'
 state.players = {}          // This can be kept for compatibility, but not used for rendering
 state.countdownTime = null  // Initialize countdown time
 state.lobbyTime = null
+state.playerCount = 0 
 
 function StartScreen() {
     return createVNode('div', { id: 'start-menu', class: 'start-menu' },
@@ -53,6 +54,7 @@ function LobbyScreen() {
         createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()),
         createVNode('div', { id: 'countdown-container' }, CountdownComponent()),
         createVNode('div', { id: 'lobby', class: 'lobby-area' }), // Mini-game area
+        createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()) // Player count component
     )
 }
 
@@ -92,6 +94,12 @@ export function LobbyTimerComponent() {
         return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, '')
     }
     return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, `Lobby: Game starts in ${state.lobbyTime}s`)
+}
+
+export function PlayerCountComponent() {
+    return createVNode('div', { class: 'player-count' }, 
+        `Players in lobby: ${state.playerCount}/4`
+    )
 }
 
 function App() {

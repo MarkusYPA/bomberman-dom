@@ -1207,3 +1207,17 @@ button:active {
   filter: grayscale(1) blur(1px);
   pointer-events: none;
 }
+
+/* Player count styling */
+.player-count {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #ff8c00;
+  text-align: center;
+  margin: 10px 0;
+  padding: 8px 16px;
+  background: rgba(139, 69, 19, 0.2);
+  border: 2px solid #8b4513;
+  border-radius: 8px;
+  display: inline-block;
+}

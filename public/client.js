@@ -2,7 +2,7 @@ import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
 import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
 import { clearClientGameState, clientGameState, setPoints, updateClientGameState } from './shared/state.js'
-import { CountdownComponent } from './app.js'
+import { CountdownComponent, PlayerCountComponent } from './app.js'
 import { LobbyTimerComponent } from './app.js'
 import { endGraphic } from './bomberman/endGraphics.js'
 
@@ -223,6 +223,13 @@ function updatePoints(points) {
     }    
 }
 
+function updatePlayerCount() {
+    const playerCountElement = document.getElementById('player-count-container')
+    if (playerCountElement) {
+        mount(playerCountElement, PlayerCountComponent())
+    }
+}
+
 export async function startClient() {
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.close(1000, 'New session')
@@ -255,6 +262,9 @@ export async function startClient() {
             state.screen = 'game' // Switch to game screen
             state.countdownTime = null
             updateCountdown()
+        } else if (msg.type === 'playerCount') {
+            state.playerCount = msg.count
+            updatePlayerCount()
         } else if (msg.type === 'state') {  // for mini game
             // Only update on changes. Keep player points, payload doesn't contain them.
             if (JSON.stringify(state.players) !== JSON.stringify(msg.payload)) {
