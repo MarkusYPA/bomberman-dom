@@ -69,8 +69,10 @@ function startCountdown() {
             broadcast({ type: 'countdownFinished' }) // Notify clients that countdown is finished
 
             // stop minigame and start bomberman
-            stopMiniGame()
-            startSequence(clients)
+            if (!mainGameRunning) {
+                stopMiniGame()
+                startSequence(clients)
+            }
         }
     }, 1000)
 }

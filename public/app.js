@@ -1,6 +1,7 @@
 import { createVNode, mount } from './framework/mini.js'
 import { state, subscribe, createReactiveComponent } from './framework/state.js'
 import { setupChatHandlers, startClient } from './client.js'
+import { stopSequenceClient } from './bomberman/runGame.js'
 
 state.screen = 'start'
 state.players = {}          // This can be kept for compatibility, but not used for rendering
@@ -66,6 +67,7 @@ function GameScreen() {
             id: 'leave-game',
             onclick: () => {
                 state.screen = 'lobby'
+                stopSequenceClient()
             }
         }, 'Leave Game')
     )
@@ -135,4 +137,5 @@ window.addEventListener('keydown', function (e) {
 })
 
 subscribe(update, ['screen']) // Only watch for screen changes
+stopSequenceClient()
 update()
