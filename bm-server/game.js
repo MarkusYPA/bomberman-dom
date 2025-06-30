@@ -17,6 +17,7 @@ export const playerNames = []
 let gameIntervalId
 let ending = false
 let ended = false
+export let mainGameRunning = false
 
 export function nextLevel() {
     //state.level++;
@@ -29,8 +30,17 @@ export function nextLevel() {
     stopGame()
 };
 
+// start main game
 export function startSequence(clients) {
+    // Stop any existing game loop first
+    stopGame()
+    
+    // Reset all game state
+    mainGameRunning = true
     state.players.length = 0
+    playerNames.length = 0
+    ending = false
+    ended = false
 
     clients.values().forEach((c) => {
         state.players.push(createPlayer(c.nickname, c.id))     // bomb ownership breaks (no collision until player is away from it)
@@ -47,17 +57,25 @@ export function startSequence(clients) {
     runGame()
 }
 
+export function countPoints () {
+    const points = {}
+    clients.forEach(c => {
+        points[c.id] = c.points
+    })
+    return points
+}
+
+// end main game
 function endSequence() {
     setTimeout(() => {
         // Broadcast winner and points or undefined
         const winner = state.players.find(p => p.lives !== 0)
-        const points = {}
         clients.forEach(c => {
             if (c.id === winner.id) {
                 c.points++
             }
-            points[c.id] = c.points
         })
+        const points = countPoints()
         broadcast({ type: 'endgame', winner, points })
 
         // Show result, then return to lobby
@@ -72,17 +90,25 @@ function endSequence() {
 
             ended = true    // exits game loop
             broadcast({ type: 'back to lobby' })
+            mainGameRunning = false
             updateCountdown()
         }, 5000)
     }, 3500) // bombtime + flame time + 500
 }
 
 function runGame() {
+    // Make sure we don't have multiple game loops running
+    if (gameIntervalId) {
+        clearInterval(gameIntervalId)
+        gameIntervalId = null
+    }
+    
     gameIntervalId = setInterval(gameLoop, interval)
 
     function gameLoop() {
         state.players.forEach(p => {
             const input = heldInputs.get(p.id)
+            if (!input) return // Skip if player disconnected
             if (ending) input.bomb = false     // don't allow bomb drops when end sequence has started
             p.movePlayer(speed, input)
             input.bomb = false
@@ -110,5 +136,21 @@ function stopGame() {
     if (gameIntervalId) {
         clearInterval(gameIntervalId)
         gameIntervalId = null
+    }
+}
+
+// Add function to remove disconnected players from game state
+export function removePlayerFromGame(id) {
+    const playerIndex = state.players.findIndex(p => p.id === id)
+    if (playerIndex !== -1) {
+        state.players.splice(playerIndex, 1)
+    }
+    
+    // Also remove from playerNames
+    const nameIndex = playerNames.findIndex((name, index) => {
+        return state.players[index] && state.players[index].id === id
+    })
+    if (nameIndex !== -1) {
+        playerNames.splice(nameIndex, 1)
     }
 }

@@ -6,6 +6,7 @@ import { drawPowerUps, pickUpItem, burnItem } from './renderItems.js'
 import { drawBombs, clearBombs } from './renderBombs.js'
 import { drawFlames } from './renderFlames.js'
 import { addPlayers, updatePlayers } from './renderPlayers.js'
+import { state } from '../framework/state.js'
 
 export let playerId = ''
 export let thisPlayer
@@ -15,7 +16,7 @@ export let newLives = 0
 export const clientEvents = new Map()
 let isMoving = false
 let wasMoving = false
-let gameRunning = false
+export let gameRunning = false
 
 export function setPlayerId(id) {
     playerId = id
@@ -85,6 +86,7 @@ export function updateLivesInfo(players) {
 }
 
 export function startSequenceClient() {
+    //console.log('starting game')
     thisPlayer = clientGameState.players[playerId - 1]
 
     let tasks = [
@@ -111,9 +113,11 @@ export function startSequenceClient() {
     requestAnimationFrame(processNextTask)
 }
 
-export function stopSequenceClient() {    
+export function stopSequenceClient() {
+    //console.log('ending game')
     gameRunning = false     // exit game loop    
     clearClientGameState()  // clear state
+    state.screen = 'lobby'
     // minigame will run and update with websockets messages
 }
 
@@ -123,7 +127,7 @@ function runGame() {
 
     function gameLoop(_timestamp) {
         if (!gameRunning) {
-            console.log('exiting client game loop')
+            //console.log('exiting client game loop')
             return
         }
 

@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import { Buffer } from 'buffer'
 import Game from './game.mjs'
 import { stopMiniGame } from './server.mjs'
-import { startSequence } from './bm-server/game.js'
+import { countPoints, mainGameRunning, startSequence, removePlayerFromGame } from './bm-server/game.js'
 import { removePlayer } from './bm-server-shared/state.js'
 
 const game = new Game()
@@ -10,11 +10,11 @@ export const clients = new Map() // socket -> { id, nickname }
 export const heldInputs = new Map() // id -> Set of held directions
 
 let countdownTimer = null
-let countdown = 1 // 10
+let countdown = 2 // 10
 let lobbyTimer = null
 let lobbyTimeLeft = null
 
-const LOBBY_DURATION = 2 //20
+const LOBBY_DURATION = 3 //20
 
 function encodeMessage(str) {
     const json = Buffer.from(str)
@@ -55,7 +55,7 @@ function resetCountdown() {
     broadcast({ type: 'countdown', time: null })
 }
 
-function startCountdown() {
+function startCountdown() {    
     resetCountdown()
     let timeLeft = countdown
 
@@ -69,8 +69,11 @@ function startCountdown() {
             broadcast({ type: 'countdownFinished' }) // Notify clients that countdown is finished
 
             // stop minigame and start bomberman
-            stopMiniGame()
-            startSequence(clients)
+            if (!mainGameRunning) {
+                stopMiniGame()
+                //console.log('clients when starting game:', clients.values())
+                startSequence(clients)
+            }
         }
     }, 1000)
 }
@@ -155,14 +158,15 @@ export function handleUpgrade(req, socket) {
             pingInterval = null
         }
         if (id) {
-            game.removePlayer(id) // remove player from mini game
+            game.removePlayer(id)   // remove player from mini game
             removePlayer(id)        // remove player from main game
+            removePlayerFromGame(id) // Also remove from bomberman game state
             heldInputs.delete(id)
             const sender = clients.get(socket)?.nickname || '???'
             if (sender && sender !== '???') {
                 broadcast({ type: 'chat', nickname: sender, playerId: id, message: sender + ' left the game!' })
             }
-        }        
+        }
         clients.delete(socket)
     }
 
@@ -253,7 +257,6 @@ export function handleUpgrade(req, socket) {
                         id
                     }))
                     socket.write(idMsg)
-
                     // Reset countdown whenever the number of players changes
                     updateCountdown()
 
@@ -274,6 +277,24 @@ export function handleUpgrade(req, socket) {
                     broadcast({ type: 'chat', nickname: sender, playerId: id, message: obj.message })
                 }
 
+                if (obj.type === 'requestPoints') {
+                    const points = countPoints()
+                    broadcast({ type: 'points', points })
+                }
+
+                if (obj.type === 'requestPointsAndPlayers') {
+                    const points = countPoints()
+                    broadcast({ type: 'points', points, players: game.getState() })
+                }
+
+                if (obj.type === 'leaveGame') {
+                    removePlayer(id)        // remove player from main game
+                    const sender = clients.get(socket)?.nickname || '???'
+                    if (sender && sender !== '???') {
+                        broadcast({ type: 'chat', nickname: sender, playerId: id, message: sender + ' exited to lobby!' })
+                    }
+                }
+
                 offset = dataEnd
             } catch (e) {
                 console.error('Invalid WS data', e)
@@ -285,6 +306,8 @@ export function handleUpgrade(req, socket) {
     socket.on('close', () => {
         console.log(`Socket closed for client ${id}`)
         cleanup()
+        const points = countPoints()
+        broadcast({ type: 'points', points })
 
         // Reset countdown whenever the number of players changes
         updateCountdown()
@@ -293,6 +316,8 @@ export function handleUpgrade(req, socket) {
     socket.on('end', () => {
         console.log(`Socket ended for client ${id}`)
         cleanup()
+        const points = countPoints()
+        broadcast({ type: 'points', points })
 
         // Reset countdown whenever the number of players changes
         updateCountdown()
@@ -302,6 +327,8 @@ export function handleUpgrade(req, socket) {
     socket.on('error', (err) => {
         console.log(`Socket error for client ${id}: ${err.code} - ${err.message}`)
         cleanup()
+        const points = countPoints()
+        broadcast({ type: 'points', points })
 
         // Reset countdown whenever the number of players changes
         updateCountdown()
@@ -318,18 +345,21 @@ export function tickGame() {
 }
 
 export function updateCountdown() {
-    if (clients.size >= 4) {
-        // Stop lobby timer if running, start countdown immediately
-        resetLobbyTimer()
-        if (!countdownTimer) {
-            startCountdown()
+    if (!mainGameRunning) {
+        if (clients.size >= 4) {
+            // Stop lobby timer if running, start countdown immediately
+            resetLobbyTimer()
+            if (!countdownTimer) {
+                startCountdown()
+            }
+        } else if (clients.size >= 2) {
+            if (!lobbyTimer && !lobbyTimeLeft && !countdownTimer) {
+                startLobbyTimer()
+            }
+        } else {
+            resetLobbyTimer()
+            resetCountdown()
         }
-    } else if (clients.size >= 2) {
-        if (!lobbyTimer && !lobbyTimeLeft && !countdownTimer) {
-            startLobbyTimer()
-        }
-    } else {
-        resetLobbyTimer()
-        resetCountdown()
     }
+
 }

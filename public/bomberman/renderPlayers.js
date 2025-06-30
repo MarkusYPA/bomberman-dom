@@ -65,6 +65,15 @@ export function updatePlayers(players) {
         }
     })
 
+    // Remove DOM players that are no longer in the players array
+    const playerNames = new Set(players.map(p => p.name))
+    for (const [name, domPlayer] of domPlayers.entries()) {
+        if (!playerNames.has(name)) {
+            domPlayer.remove()
+            domPlayers.delete(name)
+        }
+    }
+
     setNewLives(lives)
 }
 

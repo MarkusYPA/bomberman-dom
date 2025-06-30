@@ -26,6 +26,11 @@ export function drawPowerUps(items) {
             domItem.dataset.sound = 'assets/sfx/flameUp.mp3'
         }
 
+        if (item.powerType === 'speed') {
+            domItem.classList.add('speedup')
+            domItem.dataset.sound = 'assets/sfx/bombUp.mp3' // Using bombUp sound as placeholder
+        }
+
         document.getElementById('game').appendChild(domItem)
     })
 }
