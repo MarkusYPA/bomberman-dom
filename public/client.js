@@ -1,7 +1,7 @@
 import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
 import { setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
-import { clientGameState, updateClientGameState } from './shared/state.js'
+import { clientGameState, setPoints, updateClientGameState } from './shared/state.js'
 import { CountdownComponent } from './app.js'
 import { LobbyTimerComponent } from './app.js'
 import { endGraphic } from './bomberman/endGraphics.js'
@@ -205,16 +205,12 @@ document.addEventListener('keyup', (e) => {
         }
     }
 })
-function updatePoints(winner) {
-    if (winner.length > 0) {
-        const id = String(winner[0].id)
-        if (clientGameState.points[id]) {
-            clientGameState.points[id] += 1
-        } else {
-            clientGameState.points[id] = 1
-        }
-    }
+function updatePoints(points) {
+    // update points in clientGameState
+    setPoints(points)
+    console.log('incoming points:', points)
 
+    // update points in framework state to trigger scoreboard re-render
     for (const[id, points] of Object.entries(clientGameState.points)){
         state.players[id].points = points
     }    
@@ -339,7 +335,7 @@ export async function startClient() {
             setPlayerId(msg.id)
         } else if (msg.type === 'endgame') {
             endGraphic(msg.winner)
-            updatePoints(msg.winner)
+            updatePoints(msg.points)
         } else if (msg.type === 'back to lobby') {
             box.innerHTML = ''          // clear main game graphics
             box.className = 'game-area' // restore default class

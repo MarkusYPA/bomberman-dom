@@ -34,3 +34,14 @@ export function clearTempsState() {
     state.pickedItems = []
     state.burningItems = []
 }
+
+// remove player from main game state  
+export function removePlayer(id) {
+    let index = 0
+    state.players.forEach((p, i) => {
+        if (p.id === id ) {
+            index = i
+        }
+    })
+    state.players.splice(index, 1)
+}

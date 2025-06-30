@@ -3,9 +3,10 @@ import { Buffer } from 'buffer'
 import Game from './game.mjs'
 import { stopMiniGame } from './server.mjs'
 import { startSequence } from './bm-server/game.js'
+import { removePlayer } from './bm-server-shared/state.js'
 
 const game = new Game()
-const clients = new Map() // socket -> { id, nickname }
+export const clients = new Map() // socket -> { id, nickname }
 export const heldInputs = new Map() // id -> Set of held directions
 
 let countdownTimer = null
@@ -154,13 +155,14 @@ export function handleUpgrade(req, socket) {
             pingInterval = null
         }
         if (id) {
-            game.removePlayer(id)
+            game.removePlayer(id) // remove player from mini game
+            removePlayer(id)        // remove player from main game
             heldInputs.delete(id)
             const sender = clients.get(socket)?.nickname || '???'
             if (sender && sender !== '???') {
                 broadcast({ type: 'chat', nickname: sender, playerId: id, message: sender + ' left the game!' })
             }
-        }
+        }        
         clients.delete(socket)
     }
 
@@ -232,7 +234,7 @@ export function handleUpgrade(req, socket) {
                         }
                     }
 
-                    clients.set(socket, { id, nickname: obj.nickname })
+                    clients.set(socket, { id, nickname: obj.nickname, points: 0 })
                     const added = game.addPlayer(id, obj.nickname)
                     if (!added) {
                         const errorMsg = encodeMessage(JSON.stringify({

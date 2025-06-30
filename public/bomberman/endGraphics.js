@@ -8,9 +8,9 @@ export function endGraphic(winner) {
     }
 
     const endDiv = document.createElement('div')
-    if (winner.length > 0) {
+    if (winner) {
         endDiv.classList.add('win')
-        endDiv.textContent = `${winner[0].name} won the round!`
+        endDiv.textContent = `${winner.name} won the round!`
     } else {
         endDiv.classList.add('tie')
         endDiv.textContent = 'The game ended in tie'

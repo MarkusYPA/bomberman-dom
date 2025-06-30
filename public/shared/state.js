@@ -13,7 +13,7 @@ export const clientGameState = {
 
     level: 1,
 
-    points: {},
+    points: {}, // id: points tally
 }
 
 /**
@@ -81,4 +81,8 @@ export function clearClientGameState() {
     clientGameState.burningItems = []
     clientGameState.players = []
     clientGameState.level = 1
+}
+
+export function setPoints(points) {
+    clientGameState.points = points
 }
