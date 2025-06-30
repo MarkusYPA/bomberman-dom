@@ -1,7 +1,7 @@
 import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
 import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
-import { clientGameState, setPoints, updateClientGameState } from './shared/state.js'
+import { clearClientGameState, clientGameState, setPoints, updateClientGameState } from './shared/state.js'
 import { CountdownComponent } from './app.js'
 import { LobbyTimerComponent } from './app.js'
 import { endGraphic } from './bomberman/endGraphics.js'
@@ -208,6 +208,7 @@ document.addEventListener('keyup', (e) => {
 function updatePoints(points) {
     // update points in clientGameState
     setPoints(points)
+
     // Remove players from state.players that aren't in clientGameState.points
     for (const id of Object.keys(state.players)) {
         if (!(id in clientGameState.points)) {
@@ -340,6 +341,7 @@ export async function startClient() {
         // Display error message to user
             showErrorMessage(msg.message)
         } else if (msg.type === 'startgame') {
+            clearClientGameState()  // make sure no old calls try to collapse walls
             updateClientGameState(msg.payload)
             // Ensure box is assigned to the game area element before using it
             box = document.getElementById('game')
@@ -348,6 +350,10 @@ export async function startClient() {
             }
             startSequenceClient()
         } else if (msg.type === 'gamestate') {
+            if (firstState) {
+                ws.send(JSON.stringify({ type: 'requestPointsAndPlayers' }))
+                firstState = false
+            }
             updateClientGameState(msg.payload)
         } else if (msg.type === 'playerId') {
             setPlayerId(msg.id)
@@ -363,6 +369,9 @@ export async function startClient() {
                 stopSequenceClient()
             }
         } else if (msg.type === 'points') {
+            if (msg.players) {
+                state.players = msg.players
+            }
             if (state.players) {
                 updatePoints(msg.points)
             }
@@ -388,6 +397,7 @@ export async function startClient() {
         }
     })
 }
+
 function renderMiniGame(players) {
     const areaId = state.screen === 'lobby' ? 'lobby' : 'game'
     const box = document.getElementById(areaId)
@@ -441,4 +451,9 @@ export function setupChatHandlers() {
 
     }
 }
+
+export function sendLeaveGame(){
+    ws.send(JSON.stringify({ type: 'leaveGame' }))
+}
+
 export { renderMiniGame }

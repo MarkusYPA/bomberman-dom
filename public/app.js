@@ -1,6 +1,6 @@
 import { createVNode, mount } from './framework/mini.js'
 import { state, subscribe, createReactiveComponent } from './framework/state.js'
-import { setupChatHandlers, startClient } from './client.js'
+import { sendLeaveGame, setupChatHandlers, startClient } from './client.js'
 import { stopSequenceClient } from './bomberman/runGame.js'
 
 state.screen = 'start'
@@ -66,7 +66,15 @@ function GameScreen() {
         createVNode('button', {
             id: 'leave-game',
             onclick: () => {
+                // version 1
+                //state.screen = 'lobby'
+
+                // version 2
+                //stopSequenceClient()
+
+                // v3: send ws mesg to server, telling to leave game?
                 stopSequenceClient()
+                sendLeaveGame()
             }
         }, 'Leave Game')
     )

@@ -38,10 +38,12 @@ export function clearTempsState() {
 // remove player from main game state  
 export function removePlayer(id) {
     let index = 0
+    let found = false
     state.players.forEach((p, i) => {
-        if (p.id === id ) {
+        if (p.id === id) {
             index = i
+            found = true
         }
     })
-    state.players.splice(index, 1)
+    if (found) state.players.splice(index, 1)
 }

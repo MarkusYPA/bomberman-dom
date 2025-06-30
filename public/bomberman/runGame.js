@@ -86,7 +86,7 @@ export function updateLivesInfo(players) {
 }
 
 export function startSequenceClient() {
-    console.log('starting game')
+    //console.log('starting game')
     thisPlayer = clientGameState.players[playerId - 1]
 
     let tasks = [
@@ -113,7 +113,8 @@ export function startSequenceClient() {
     requestAnimationFrame(processNextTask)
 }
 
-export function stopSequenceClient() {    
+export function stopSequenceClient() {
+    //console.log('ending game')
     gameRunning = false     // exit game loop    
     clearClientGameState()  // clear state
     state.screen = 'lobby'
@@ -126,7 +127,7 @@ function runGame() {
 
     function gameLoop(_timestamp) {
         if (!gameRunning) {
-            console.log('exiting client game loop')
+            //console.log('exiting client game loop')
             return
         }
 
