@@ -1,6 +1,6 @@
 import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
-import { setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
+import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
 import { clientGameState, setPoints, updateClientGameState } from './shared/state.js'
 import { CountdownComponent } from './app.js'
 import { LobbyTimerComponent } from './app.js'
@@ -352,14 +352,17 @@ export async function startClient() {
         } else if (msg.type === 'playerId') {
             setPlayerId(msg.id)
         } else if (msg.type === 'endgame') {
-            endGraphic(msg.winner)
+            if (gameRunning) {
+                endGraphic(msg.winner)
+            }
             updatePoints(msg.points)
         } else if (msg.type === 'back to lobby') {
-            box.innerHTML = ''          // clear main game graphics
-            box.className = 'game-area' // restore default class
-            stopSequenceClient()
+            if (gameRunning) {
+                box.innerHTML = ''          // clear main game graphics
+                box.className = 'game-area' // restore default class
+                stopSequenceClient()
+            }
         } else if (msg.type === 'points') {
-            //console.log('incoming points:', msg)
             if (state.players) {
                 updatePoints(msg.points)
             }

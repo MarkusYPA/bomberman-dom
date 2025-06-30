@@ -16,7 +16,7 @@ export let newLives = 0
 export const clientEvents = new Map()
 let isMoving = false
 let wasMoving = false
-let gameRunning = false
+export let gameRunning = false
 
 export function setPlayerId(id) {
     playerId = id
