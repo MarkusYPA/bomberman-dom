@@ -276,7 +276,6 @@ export async function startClient() {
 
                 if (firstState) {
                     ws.send(JSON.stringify({ type: 'requestPoints' }))
-                    console.log('requesting points')
                     firstState = false
                 }
 
