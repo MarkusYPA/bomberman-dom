@@ -208,6 +208,7 @@ document.addEventListener('keyup', (e) => {
 function updatePoints(points) {
     // update points in clientGameState
     setPoints(points)
+
     // Remove players from state.players that aren't in clientGameState.points
     for (const id of Object.keys(state.players)) {
         if (!(id in clientGameState.points)) {
@@ -275,6 +276,7 @@ export async function startClient() {
 
                 if (firstState) {
                     ws.send(JSON.stringify({ type: 'requestPoints' }))
+                    console.log('requesting points')
                     firstState = false
                 }
 
@@ -349,6 +351,10 @@ export async function startClient() {
             }
             startSequenceClient()
         } else if (msg.type === 'gamestate') {
+            if (firstState) {
+                ws.send(JSON.stringify({ type: 'requestPointsAndPlayers' }))
+                firstState = false
+            }
             updateClientGameState(msg.payload)
         } else if (msg.type === 'playerId') {
             setPlayerId(msg.id)
@@ -364,6 +370,9 @@ export async function startClient() {
                 stopSequenceClient()
             }
         } else if (msg.type === 'points') {
+            if (msg.players) {
+                state.players = msg.players
+            }
             if (state.players) {
                 updatePoints(msg.points)
             }

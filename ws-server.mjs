@@ -281,6 +281,11 @@ export function handleUpgrade(req, socket) {
                     broadcast({ type: 'points', points })
                 }
 
+                if (obj.type === 'requestPointsAndPlayers') {
+                    const points = countPoints()
+                    broadcast({ type: 'points', points, players: game.getState() })
+                }
+
                 if (obj.type === 'leaveGame') {
                     removePlayer(id)        // remove player from main game
                     const sender = clients.get(socket)?.nickname || '???'
