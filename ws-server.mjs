@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import { Buffer } from 'buffer'
 import Game from './game.mjs'
 import { stopMiniGame } from './server.mjs'
-import { startSequence } from './bm-server/game.js'
+import { mainGameRunning, startSequence } from './bm-server/game.js'
 import { removePlayer } from './bm-server-shared/state.js'
 
 const game = new Game()
@@ -10,11 +10,11 @@ export const clients = new Map() // socket -> { id, nickname }
 export const heldInputs = new Map() // id -> Set of held directions
 
 let countdownTimer = null
-let countdown = 1 // 10
+let countdown = 2 // 10
 let lobbyTimer = null
 let lobbyTimeLeft = null
 
-const LOBBY_DURATION = 2 //20
+const LOBBY_DURATION = 4 //20
 
 function encodeMessage(str) {
     const json = Buffer.from(str)
@@ -318,18 +318,21 @@ export function tickGame() {
 }
 
 export function updateCountdown() {
-    if (clients.size >= 4) {
+    if (!mainGameRunning) {
+        if (clients.size >= 4) {
         // Stop lobby timer if running, start countdown immediately
-        resetLobbyTimer()
-        if (!countdownTimer) {
-            startCountdown()
+            resetLobbyTimer()
+            if (!countdownTimer) {
+                startCountdown()
+            }
+        } else if (clients.size >= 2) {
+            if (!lobbyTimer && !lobbyTimeLeft && !countdownTimer) {
+                startLobbyTimer()
+            }
+        } else {
+            resetLobbyTimer()
+            resetCountdown()
         }
-    } else if (clients.size >= 2) {
-        if (!lobbyTimer && !lobbyTimeLeft && !countdownTimer) {
-            startLobbyTimer()
-        }
-    } else {
-        resetLobbyTimer()
-        resetCountdown()
     }
+
 }

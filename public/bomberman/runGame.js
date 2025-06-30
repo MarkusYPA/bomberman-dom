@@ -85,6 +85,7 @@ export function updateLivesInfo(players) {
 }
 
 export function startSequenceClient() {
+    console.log('starting game')
     thisPlayer = clientGameState.players[playerId - 1]
 
     let tasks = [

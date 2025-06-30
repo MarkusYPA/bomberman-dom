@@ -208,8 +208,6 @@ document.addEventListener('keyup', (e) => {
 function updatePoints(points) {
     // update points in clientGameState
     setPoints(points)
-    console.log('incoming points:', points)
-
     // update points in framework state to trigger scoreboard re-render
     for (const[id, points] of Object.entries(clientGameState.points)){
         state.players[id].points = points

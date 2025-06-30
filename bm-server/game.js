@@ -17,6 +17,7 @@ export const playerNames = []
 let gameIntervalId
 let ending = false
 let ended = false
+export let mainGameRunning = false
 
 export function nextLevel() {
     //state.level++;
@@ -29,7 +30,9 @@ export function nextLevel() {
     stopGame()
 };
 
+// start main game
 export function startSequence(clients) {
+    mainGameRunning = true
     state.players.length = 0
 
     clients.values().forEach((c) => {
@@ -47,6 +50,7 @@ export function startSequence(clients) {
     runGame()
 }
 
+// end main game
 function endSequence() {
     setTimeout(() => {
         // Broadcast winner and points or undefined
@@ -72,6 +76,7 @@ function endSequence() {
 
             ended = true    // exits game loop
             broadcast({ type: 'back to lobby' })
+            mainGameRunning = false
             updateCountdown()
         }, 5000)
     }, 3500) // bombtime + flame time + 500
