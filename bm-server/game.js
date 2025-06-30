@@ -1,7 +1,7 @@
 import { makeWalls, makeLevelMap, createPlayer } from './initialize.js'
 import { clearTempsState, getNarrowState, state } from '../bm-server-shared/state.js'
 import { interval, speed } from '../bm-server-shared/config.js'
-import { broadcast, heldInputs, updateCountdown } from '../ws-server.mjs'
+import { broadcast, clients, heldInputs, updateCountdown } from '../ws-server.mjs'
 import { startMiniGame } from '../server.mjs'
 
 export let bounds
@@ -17,6 +17,7 @@ export const playerNames = []
 let gameIntervalId
 let ending = false
 let ended = false
+export let mainGameRunning = false
 
 export function nextLevel() {
     //state.level++;
@@ -29,11 +30,13 @@ export function nextLevel() {
     stopGame()
 };
 
+// start main game
 export function startSequence(clients) {
     // Stop any existing game loop first
     stopGame()
     
     // Reset all game state
+    mainGameRunning = true
     state.players.length = 0
     playerNames.length = 0
     ending = false
@@ -54,14 +57,29 @@ export function startSequence(clients) {
     runGame()
 }
 
-function endSequence(){
-    setTimeout(()=> {
-        // Broadcast winner or empty object
-        const winner = state.players.filter(p => p.lives !== 0)
-        broadcast({ type: 'endgame', winner})
+export function countPoints () {
+    const points = {}
+    clients.forEach(c => {
+        points[c.id] = c.points
+    })
+    return points
+}
+
+// end main game
+function endSequence() {
+    setTimeout(() => {
+        // Broadcast winner and points or undefined
+        const winner = state.players.find(p => p.lives !== 0)
+        clients.forEach(c => {
+            if (c.id === winner.id) {
+                c.points++
+            }
+        })
+        const points = countPoints()
+        broadcast({ type: 'endgame', winner, points })
 
         // Show result, then return to lobby
-        setTimeout(()=> {
+        setTimeout(() => {
             state.players.length = 0
             state.solidWalls.length = 0
             state.surroundingWalls.length = 0
@@ -71,7 +89,8 @@ function endSequence(){
             powerUpMap = []
 
             ended = true    // exits game loop
-            broadcast({ type: 'back to lobby'})
+            broadcast({ type: 'back to lobby' })
+            mainGameRunning = false
             updateCountdown()
         }, 5000)
     }, 3500) // bombtime + flame time + 500
@@ -101,7 +120,7 @@ function runGame() {
 
         if (!ending && state.players.filter(p => p.lives !== 0).length < 2) {
             ending = true
-            endSequence() 
+            endSequence()
         }
 
         if (ended) {
@@ -110,7 +129,7 @@ function runGame() {
             startMiniGame()
             stopGame()  // exit main game loop
         }
-    }    
+    }
 };
 
 function stopGame() {

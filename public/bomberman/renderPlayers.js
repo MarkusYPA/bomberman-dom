@@ -46,6 +46,13 @@ export function updatePlayers(players) {
             p.classList.remove('left')
         }
 
+        // Add ghost effect if player is out of lives
+        if (player.lives <= 0) {
+            p.classList.add('ghost')
+        } else {
+            p.classList.remove('ghost')
+        }
+
         if (!player.alive) {
             if (!p.classList.contains('dead')) {
                 if (player.killer === 'bomb') playerBombDeath.play()
@@ -57,6 +64,15 @@ export function updatePlayers(players) {
             p.classList.remove('dead')
         }
     })
+
+    // Remove DOM players that are no longer in the players array
+    const playerNames = new Set(players.map(p => p.name))
+    for (const [name, domPlayer] of domPlayers.entries()) {
+        if (!playerNames.has(name)) {
+            domPlayer.remove()
+            domPlayers.delete(name)
+        }
+    }
 
     setNewLives(lives)
 }

@@ -1200,3 +1200,10 @@ button:active {
     font-size: 13px;
   }
 }
+
+/* Ghost Player style test */
+.player.ghost {
+  opacity: 0.5;
+  filter: grayscale(1) blur(1px);
+  pointer-events: none;
+}
