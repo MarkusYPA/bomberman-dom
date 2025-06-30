@@ -85,13 +85,15 @@ function createNicknameModal() {
             input.select()
         }, 100)
 
-        // Close on overlay click
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                resolve('Player') // Default nickname
-                document.body.removeChild(overlay)
-            }
-        })
+        // Do we wanna keep this?
+
+        // // Close on overlay click
+        // overlay.addEventListener('click', (e) => {
+        //     if (e.target === overlay) {
+        //         resolve('Player') // Default nickname
+        //         document.body.removeChild(overlay)
+        //     }
+        // })
     })
 }
 
