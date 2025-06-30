@@ -18,12 +18,12 @@ class PowerUp {
 
     checkCollision(playerX, playerY, playerSize) {
         return (!
-        (
-            playerX + playerSize < this.x ||
+            (
+                playerX + playerSize < this.x ||
                 playerX > this.x + this.size ||
                 playerY + playerSize < this.y ||
                 playerY > this.y + this.size
-        )
+            )
         )
     };
 
@@ -58,6 +58,16 @@ export class FlameUp extends PowerUp {
     constructor(x, y, size, nameOf, row, col) {
         super(x, y, size, nameOf, row, col)
         this.powerType = 'flame'
+    };
+    pickUp() {
+        super.pickUp()
+    };
+};
+
+export class SpeedUp extends PowerUp {
+    constructor(x, y, size, nameOf, row, col) {
+        super(x, y, size, nameOf, row, col)
+        this.powerType = 'speed'
     };
     pickUp() {
         super.pickUp()
