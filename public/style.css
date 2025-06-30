@@ -1235,7 +1235,7 @@ button:active {
   display: flex;
   flex-direction: row;
   flex: 1;
-  overflow: hidden;
+  overflow: scroll;
 }
 
 /* Game Header */
@@ -1304,8 +1304,12 @@ button:active {
   align-items: center;
 }
 
+.sidebar {
+  width: 25%;
+}
+
 .game-root > .sidebar {
-  flex: 0 0 350px;
+  flex: 1 0 350px;
   flex-direction: column;
   background: rgba(244, 241, 232, 0.95);
   border-top: 4px solid #8b4513;
@@ -1317,9 +1321,10 @@ button:active {
 
 /* Game Content Layout */
 .game-content {
-  overflow: hidden;
+  overflow: scroll;
   padding: 20px;
   background: rgba(0, 0, 0, 0.1);
+  width: 75%;
 }
 
 /* Main Game Board Section */
@@ -1450,7 +1455,7 @@ button:active {
   flex: 1;
   margin-bottom: 10px;
   height: auto;
-  min-height: 120px;
+  min-height: 350px;
 }
 
 /* Chat Input Container */
