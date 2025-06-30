@@ -17,6 +17,7 @@ export const playerNames = []
 let gameIntervalId
 let ending = false
 let ended = false
+export let mainGameRunning = false
 
 export function nextLevel() {
     //state.level++;
@@ -29,7 +30,9 @@ export function nextLevel() {
     stopGame()
 };
 
+// start main game
 export function startSequence(clients) {
+    mainGameRunning = true
     state.players.length = 0
 
     clients.values().forEach((c) => {
@@ -47,17 +50,25 @@ export function startSequence(clients) {
     runGame()
 }
 
+export function countPoints () {
+    const points = {}
+    clients.forEach(c => {
+        points[c.id] = c.points
+    })
+    return points
+}
+
+// end main game
 function endSequence() {
     setTimeout(() => {
         // Broadcast winner and points or undefined
         const winner = state.players.find(p => p.lives !== 0)
-        const points = {}
         clients.forEach(c => {
             if (c.id === winner.id) {
                 c.points++
             }
-            points[c.id] = c.points
         })
+        const points = countPoints()
         broadcast({ type: 'endgame', winner, points })
 
         // Show result, then return to lobby
@@ -72,6 +83,7 @@ function endSequence() {
 
             ended = true    // exits game loop
             broadcast({ type: 'back to lobby' })
+            mainGameRunning = false
             updateCountdown()
         }, 5000)
     }, 3500) // bombtime + flame time + 500

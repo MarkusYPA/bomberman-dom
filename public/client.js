@@ -1,6 +1,6 @@
 import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
-import { setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
+import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
 import { clientGameState, setPoints, updateClientGameState } from './shared/state.js'
 import { CountdownComponent } from './app.js'
 import { LobbyTimerComponent } from './app.js'
@@ -9,7 +9,7 @@ import { endGraphic } from './bomberman/endGraphics.js'
 let box // game area
 let ws // WebSocket connection
 let nickname
-
+let firstState = true
 
 // Function to create beautiful nickname modal
 function createNicknameModal() {
@@ -208,11 +208,17 @@ document.addEventListener('keyup', (e) => {
 function updatePoints(points) {
     // update points in clientGameState
     setPoints(points)
-    console.log('incoming points:', points)
-
+    // Remove players from state.players that aren't in clientGameState.points
+    for (const id of Object.keys(state.players)) {
+        if (!(id in clientGameState.points)) {
+            delete state.players[id]
+        }
+    }
     // update points in framework state to trigger scoreboard re-render
     for (const[id, points] of Object.entries(clientGameState.points)){
-        state.players[id].points = points
+        if (state.players && state.players[id]) {
+            state.players[id].points = points
+        }
     }    
 }
 
@@ -251,6 +257,12 @@ export async function startClient() {
         } else if (msg.type === 'state') {  // for mini game
             // Only update on changes. Keep player points, payload doesn't contain them.
             if (JSON.stringify(state.players) !== JSON.stringify(msg.payload)) {
+                // Remove players not present in msg.payload
+                for (const id of Object.keys(state.players)) {
+                    if (!(id in msg.payload)) {
+                        delete state.players[id]
+                    }
+                }                
                 for (const [id, playerInfo] of Object.entries(msg.payload)) {
                     if (state.players[id]) {
                         for (const [key, val] of Object.entries(playerInfo)) {
@@ -260,6 +272,12 @@ export async function startClient() {
                         state.players[id] = playerInfo
                     }
                 }
+
+                if (firstState) {
+                    ws.send(JSON.stringify({ type: 'requestPoints' }))
+                    firstState = false
+                }
+
                 renderMiniGame(msg.payload)
             }
         } else if (msg.type === 'chat') {
@@ -334,12 +352,20 @@ export async function startClient() {
         } else if (msg.type === 'playerId') {
             setPlayerId(msg.id)
         } else if (msg.type === 'endgame') {
-            endGraphic(msg.winner)
+            if (gameRunning) {
+                endGraphic(msg.winner)
+            }
             updatePoints(msg.points)
         } else if (msg.type === 'back to lobby') {
-            box.innerHTML = ''          // clear main game graphics
-            box.className = 'game-area' // restore default class
-            stopSequenceClient()
+            if (gameRunning) {
+                box.innerHTML = ''          // clear main game graphics
+                box.className = 'game-area' // restore default class
+                stopSequenceClient()
+            }
+        } else if (msg.type === 'points') {
+            if (state.players) {
+                updatePoints(msg.points)
+            }
         }
     })
 
