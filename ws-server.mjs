@@ -14,7 +14,7 @@ let countdown = 2 // 10
 let lobbyTimer = null
 let lobbyTimeLeft = null
 
-const LOBBY_DURATION = 4 //20
+const LOBBY_DURATION = 3 //20
 
 function encodeMessage(str) {
     const json = Buffer.from(str)
@@ -55,7 +55,7 @@ function resetCountdown() {
     broadcast({ type: 'countdown', time: null })
 }
 
-function startCountdown() {
+function startCountdown() {    
     resetCountdown()
     let timeLeft = countdown
 
@@ -71,6 +71,7 @@ function startCountdown() {
             // stop minigame and start bomberman
             if (!mainGameRunning) {
                 stopMiniGame()
+                //console.log('clients when starting game:', clients.values())
                 startSequence(clients)
             }
         }
@@ -157,7 +158,7 @@ export function handleUpgrade(req, socket) {
             pingInterval = null
         }
         if (id) {
-            game.removePlayer(id) // remove player from mini game
+            game.removePlayer(id)   // remove player from mini game
             removePlayer(id)        // remove player from main game
             heldInputs.delete(id)
             const sender = clients.get(socket)?.nickname || '???'
@@ -278,6 +279,14 @@ export function handleUpgrade(req, socket) {
                 if (obj.type === 'requestPoints') {
                     const points = countPoints()
                     broadcast({ type: 'points', points })
+                }
+
+                if (obj.type === 'leaveGame') {
+                    removePlayer(id)        // remove player from main game
+                    const sender = clients.get(socket)?.nickname || '???'
+                    if (sender && sender !== '???') {
+                        broadcast({ type: 'chat', nickname: sender, playerId: id, message: sender + ' exited to lobby!' })
+                    }
                 }
 
                 offset = dataEnd

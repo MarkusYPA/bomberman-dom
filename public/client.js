@@ -1,7 +1,7 @@
 import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
 import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
-import { clientGameState, setPoints, updateClientGameState } from './shared/state.js'
+import { clearClientGameState, clientGameState, setPoints, updateClientGameState } from './shared/state.js'
 import { CountdownComponent } from './app.js'
 import { LobbyTimerComponent } from './app.js'
 import { endGraphic } from './bomberman/endGraphics.js'
@@ -340,6 +340,7 @@ export async function startClient() {
         // Display error message to user
             showErrorMessage(msg.message)
         } else if (msg.type === 'startgame') {
+            clearClientGameState()  // make sure no old calls try to collapse walls
             updateClientGameState(msg.payload)
             // Ensure box is assigned to the game area element before using it
             box = document.getElementById('game')
@@ -388,6 +389,7 @@ export async function startClient() {
         }
     })
 }
+
 function renderMiniGame(players) {
     const areaId = state.screen === 'lobby' ? 'lobby' : 'game'
     const box = document.getElementById(areaId)
@@ -441,4 +443,9 @@ export function setupChatHandlers() {
 
     }
 }
+
+export function sendLeaveGame(){
+    ws.send(JSON.stringify({ type: 'leaveGame' }))
+}
+
 export { renderMiniGame }
