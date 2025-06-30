@@ -142,7 +142,7 @@ export function makeWalls(level) {
     }
 
     // place speed powerups inside weak walls  
-    while (state.powerups.size < 15) {
+    while (state.powerups.size < 13) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
