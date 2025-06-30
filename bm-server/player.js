@@ -82,7 +82,7 @@ export class Player {
             timedEvents.delete(`resurrection${countNow}`)
         }, 2000)
         timedEvents.set(`resurrection${countNow}`, timedResurrection)
-        
+
         timedCount++
     };
 
@@ -181,6 +181,9 @@ export class Player {
                     if (pow.powerType === 'flame') {
                         this.bombPower++
                     }
+                    if (pow.powerType === 'speed') {
+                        this.speed += 1.5 * mult // Increase speed by a reasonable amount
+                    }
                     pow.pickUp()
                     state.pickedItems.push(pow.name)
                     break
@@ -191,7 +194,7 @@ export class Player {
 };
 
 function checkHit(playerBounds, other) {
-    let otherBounds = {}    
+    let otherBounds = {}
     if (other.size) {
         otherBounds = { left: other.x, right: other.x + other.size, top: other.y, bottom: other.y + other.size }
     } else {    // flames have width and height, not size
