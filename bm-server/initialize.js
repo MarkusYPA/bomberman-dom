@@ -1,6 +1,6 @@
 import { levelMap, powerUpMap } from './game.js'
 import { Player } from './player.js'
-import { BombUp, FlameUp } from './powerup.js'
+import { BombUp, FlameUp, SpeedUp } from './powerup.js'
 import { SolidWall, WeakWall } from './walls.js'
 import { state } from '../bm-server-shared/state.js'
 import { gridStep, halfStep, mult } from '../bm-server-shared/config.js'
@@ -138,6 +138,25 @@ export function makeWalls(level) {
             const newFlameUp = new FlameUp(x, y, gridStep * 1.0, name, mapY, mapX)
             state.powerups.set(name, newFlameUp)
             powerUpMap[mapY][mapX] = [name, newFlameUp]
+        };
+    }
+
+    // place speed powerups inside weak walls  
+    while (state.powerups.size < 15) {
+        const mapX = Math.floor(Math.random() * 13)
+        const mapY = Math.floor(Math.random() * 11)
+
+        if (levelMap[mapY][mapX] &&
+            typeof levelMap[mapY][mapX] == 'string' &&
+            levelMap[mapY][mapX].startsWith('weakWall') &&
+            !powerUpMap[mapY][mapX]
+        ) {
+            const x = gridStep * mapX
+            const y = gridStep * mapY
+            const name = `speedUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`  // use as id to DOM element?
+            const newSpeedUp = new SpeedUp(x, y, gridStep * 1.0, name, mapY, mapX)
+            state.powerups.set(name, newSpeedUp)
+            powerUpMap[mapY][mapX] = [name, newSpeedUp]
         };
     }
 };
