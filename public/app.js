@@ -66,7 +66,6 @@ function GameScreen() {
         createVNode('button', {
             id: 'leave-game',
             onclick: () => {
-                state.screen = 'lobby'
                 stopSequenceClient()
             }
         }, 'Leave Game')
@@ -138,4 +137,5 @@ window.addEventListener('keydown', function (e) {
 
 subscribe(update, ['screen']) // Only watch for screen changes
 stopSequenceClient()
+state.screen = 'start'
 update()

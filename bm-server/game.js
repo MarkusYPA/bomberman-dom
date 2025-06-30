@@ -50,18 +50,25 @@ export function startSequence(clients) {
     runGame()
 }
 
+export function countPoints () {
+    const points = {}
+    clients.forEach(c => {
+        points[c.id] = c.points
+    })
+    return points
+}
+
 // end main game
 function endSequence() {
     setTimeout(() => {
         // Broadcast winner and points or undefined
         const winner = state.players.find(p => p.lives !== 0)
-        const points = {}
         clients.forEach(c => {
             if (c.id === winner.id) {
                 c.points++
             }
-            points[c.id] = c.points
         })
+        const points = countPoints()
         broadcast({ type: 'endgame', winner, points })
 
         // Show result, then return to lobby

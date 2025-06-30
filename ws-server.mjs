@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import { Buffer } from 'buffer'
 import Game from './game.mjs'
 import { stopMiniGame } from './server.mjs'
-import { mainGameRunning, startSequence } from './bm-server/game.js'
+import { countPoints, mainGameRunning, startSequence } from './bm-server/game.js'
 import { removePlayer } from './bm-server-shared/state.js'
 
 const game = new Game()
@@ -164,7 +164,7 @@ export function handleUpgrade(req, socket) {
             if (sender && sender !== '???') {
                 broadcast({ type: 'chat', nickname: sender, playerId: id, message: sender + ' left the game!' })
             }
-        }        
+        }
         clients.delete(socket)
     }
 
@@ -255,7 +255,6 @@ export function handleUpgrade(req, socket) {
                         id
                     }))
                     socket.write(idMsg)
-
                     // Reset countdown whenever the number of players changes
                     updateCountdown()
 
@@ -276,6 +275,11 @@ export function handleUpgrade(req, socket) {
                     broadcast({ type: 'chat', nickname: sender, playerId: id, message: obj.message })
                 }
 
+                if (obj.type === 'requestPoints') {
+                    const points = countPoints()
+                    broadcast({ type: 'points', points })
+                }
+
                 offset = dataEnd
             } catch (e) {
                 console.error('Invalid WS data', e)
@@ -287,6 +291,8 @@ export function handleUpgrade(req, socket) {
     socket.on('close', () => {
         console.log(`Socket closed for client ${id}`)
         cleanup()
+        const points = countPoints()
+        broadcast({ type: 'points', points })
 
         // Reset countdown whenever the number of players changes
         updateCountdown()
@@ -295,6 +301,8 @@ export function handleUpgrade(req, socket) {
     socket.on('end', () => {
         console.log(`Socket ended for client ${id}`)
         cleanup()
+        const points = countPoints()
+        broadcast({ type: 'points', points })
 
         // Reset countdown whenever the number of players changes
         updateCountdown()
@@ -304,6 +312,8 @@ export function handleUpgrade(req, socket) {
     socket.on('error', (err) => {
         console.log(`Socket error for client ${id}: ${err.code} - ${err.message}`)
         cleanup()
+        const points = countPoints()
+        broadcast({ type: 'points', points })
 
         // Reset countdown whenever the number of players changes
         updateCountdown()
@@ -322,7 +332,7 @@ export function tickGame() {
 export function updateCountdown() {
     if (!mainGameRunning) {
         if (clients.size >= 4) {
-        // Stop lobby timer if running, start countdown immediately
+            // Stop lobby timer if running, start countdown immediately
             resetLobbyTimer()
             if (!countdownTimer) {
                 startCountdown()

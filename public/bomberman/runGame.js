@@ -6,6 +6,7 @@ import { drawPowerUps, pickUpItem, burnItem } from './renderItems.js'
 import { drawBombs, clearBombs } from './renderBombs.js'
 import { drawFlames } from './renderFlames.js'
 import { addPlayers, updatePlayers } from './renderPlayers.js'
+import { state } from '../framework/state.js'
 
 export let playerId = ''
 export let thisPlayer
@@ -115,6 +116,7 @@ export function startSequenceClient() {
 export function stopSequenceClient() {    
     gameRunning = false     // exit game loop    
     clearClientGameState()  // clear state
+    state.screen = 'lobby'
     // minigame will run and update with websockets messages
 }
 
