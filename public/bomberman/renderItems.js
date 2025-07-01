@@ -55,7 +55,8 @@ export function pickUpItem(id) {
         const audio = new Audio(targetItem.dataset.sound)
         audio.play()
     }
-    targetItem.remove()
+    
+    if (targetItem) targetItem.remove()
 }
 
 export function burnItem(id) {

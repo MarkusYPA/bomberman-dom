@@ -2,11 +2,13 @@ export const clientGameState = {
     solidWalls: [],             // for player collisions
     surroundingWalls: [],       // no collisions
     weakWalls: new Map(),       // for player collisions
+    powerups: new Map(),
+
     collapsingWalls: [],        // for rendering
     newBombs: new Map(),        // for rendering
     removedBombs: new Map(),    // for rendering
-    newFlames: new Map(),       // for rendering
-    powerups: new Map(),
+    newFlames: new Map(),       // for rendering    
+    newItems: new Map(),
     pickedItems: [],            // for rendering
     burningItems: [],           // for rendering
     players: [],
@@ -37,6 +39,9 @@ export function updateClientGameState(update) {
     // Convert incoming object to Map for powerups
     if (update.powerups && typeof update.powerups === 'object' && Object.keys(update.powerups).length > 0) {
         clientGameState.powerups = new Map(Object.entries(update.powerups))
+    }
+    if (update.newItems && typeof update.newItems === 'object' && Object.keys(update.newItems).length > 0) {
+        clientGameState.newItems = new Map(Object.entries(update.newItems))
     }
 
     // Always overwrite players
@@ -77,6 +82,7 @@ export function clearClientGameState() {
     clientGameState.removedBombs = new Map()
     clientGameState.newFlames = new Map()
     clientGameState.powerups = new Map()
+    clientGameState.newItems = new Map()
     clientGameState.pickedItems = []
     clientGameState.burningItems = []
     clientGameState.players = []
