@@ -42,7 +42,9 @@ function isPowerUp(row, col) {
         Array.isArray(powerUpMap[row][col]) &&
         (powerUpMap[row][col][0].startsWith('bombUp') ||
             powerUpMap[row][col][0].startsWith('flameUp') ||
-            powerUpMap[row][col][0].startsWith('speedUp'))
+            powerUpMap[row][col][0].startsWith('speedUp') ||
+            powerUpMap[row][col][0].startsWith('lifeUp') ||
+            powerUpMap[row][col][0].startsWith('bombClip'))
     )
 }
 
@@ -155,18 +157,18 @@ export class Bomb {
             // In four directions: Stop flames at walls and edges, destroy weak walls, explode other bombs
             for (let j = 0; j < 4; j++) {
                 switch (fourDirs[j].name) {
-                    case 'right':
-                        fourDirs[j].coords = [this.mapRow, this.mapCol + i]
-                        break
-                    case 'left':
-                        fourDirs[j].coords = [this.mapRow, this.mapCol - i]
-                        break
-                    case 'down':
-                        fourDirs[j].coords = [this.mapRow + i, this.mapCol]
-                        break
-                    case 'up':
-                        fourDirs[j].coords = [this.mapRow - i, this.mapCol]
-                        break
+                case 'right':
+                    fourDirs[j].coords = [this.mapRow, this.mapCol + i]
+                    break
+                case 'left':
+                    fourDirs[j].coords = [this.mapRow, this.mapCol - i]
+                    break
+                case 'down':
+                    fourDirs[j].coords = [this.mapRow + i, this.mapCol]
+                    break
+                case 'up':
+                    fourDirs[j].coords = [this.mapRow - i, this.mapCol]
+                    break
                 }
 
                 if (fourDirs[j].going) {
