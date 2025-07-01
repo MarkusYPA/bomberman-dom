@@ -753,23 +753,23 @@ button:active {
   font-size: 16px;
   outline: none;
   background: #1a1a0d;
-  color: #00ff41;
+  color: #ff8c00;
   font-family: 'Courier New', monospace;
   font-weight: bold;
   margin-bottom: 20px;
   box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
-  text-shadow: 0 0 2px #00ff41;
+  text-shadow: 0 0 2px #ff8c00;
   box-sizing: border-box;
 }
 
 .nickname-input:focus {
   border-color: #654321;
-  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 8px #00ff41;
-  text-shadow: 0 0 5px #00ff41;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 8px #ff8c00;
+  text-shadow: 0 0 5px #ff8c00;
 }
 
 .nickname-input::placeholder {
-  color: #006400;
+  color: #000000;
   opacity: 0.7;
 }
 
@@ -1216,4 +1216,16 @@ button:active {
   opacity: 0.5;
   filter: grayscale(1) blur(1px);
   pointer-events: none;
+}
+
+/* Player count styling */
+.player-count {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #ff8c00;
+  text-align: center;
+  margin: 10px 0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-block;
 }
