@@ -70,26 +70,30 @@ function LobbyScreen() {
             // }, 'Leave Game')
         ),
         
-        // Main content area
-        createVNode('div', { class: 'lobby-area-content' },
-            // Left side - Main game board
-            createVNode('div', { class: 'lobby-area-section' },
-                // createVNode('div', { id: 'error-container', class: 'error-container' }),
-                createVNode('div', { id: 'lobby', class: 'lobby-area' })
+        // Game body container for horizontal layout
+        createVNode('div', { class: 'game-body' },
+            // Main content area
+            createVNode('div', { class: 'lobby-area-content' },
+                // Left side - Main game board
+                createVNode('div', { class: 'lobby-area-section' },
+                    // createVNode('div', { id: 'error-container', class: 'error-container' }),
+                    createVNode('div', { id: 'lobby', class: 'lobby-area' })
+                ),
+                
+                
             ),
-            
-            
-        ),
-
-        // Right side - Player board and chat
-        createVNode('div', { class: 'sidebar' },
-            createVNode('div', { id: 'player-board-container', class: 'player-board-container' }), // Empty container for PlayerBoard
-            createVNode('div', { class: 'chat-area' },
-                createVNode('div', { id: 'chat', class: 'chat-box' }),
-                createVNode('input', { id: 'chatInput', placeholder: 'Type a message...' }),
-                createVNode('button', { id: 'send' }, 'Send')
+                
+            // Right side - Player board and chat
+            createVNode('div', { class: 'sidebar' },
+                createVNode('div', { id: 'player-board-container', class: 'player-board-section' }), // Empty container for PlayerBoard
+                createVNode('div', { class: 'chat-area' },
+                    createVNode('div', { id: 'chat', class: 'chat-box' }),
+                    createVNode('input', { id: 'chatInput', placeholder: 'Type a message...' }),
+                    createVNode('button', { id: 'send' }, 'Send')
+                )
             )
         )
+
     )
 }
 
