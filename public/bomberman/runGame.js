@@ -81,7 +81,7 @@ export function updateLivesInfo(players) {
         for (let i = 0; i < p.lives; i++) {
             livesText += '❤️'
         };
-        livesinfos[i].textContent = `${p.name}: `+ livesText
+        livesinfos[i].textContent = `${p.name} `+ livesText
     })
 }
 

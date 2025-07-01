@@ -27,7 +27,7 @@ export function makeTextBar(players) {
         textbar.style.height = `${gridStep - pad * 2 * mult}px`
         textbar.style.width = `${gridStep * 13 - pad * 2 * mult}px`
         textbar.style.top = `${-gridStep}px`
-        textbar.style.padding = `${pad * mult}px`
+        textbar.style.padding = `${pad * mult}px ${pad/2 * mult}px`
 
         // smaller bits to display info
         const infos = []
@@ -39,13 +39,13 @@ export function makeTextBar(players) {
             if (i > players.length -1) {
                 info.style.visibility = 'hidden'
             }
-            info.style.margin = `${pad * mult}px`
-            info.style.padding = `${pad * mult}px`
+            info.style.margin = `${pad * mult}px ${pad/2 * mult}px`
+            info.style.padding = `${pad * mult}px ${pad/2 * mult}px`
             info.style.borderWidth = `${mult * 2}px`
             info.style.borderRadius = `${pad * mult}px`
             info.id = ids[i]
             info.textContent = ''
-            info.style.fontSize = `${18 * mult}px`
+            info.style.fontSize = `${16 * mult}px`
             textbar.appendChild(info)
             infos.push(info)
         }

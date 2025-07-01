@@ -273,7 +273,7 @@ body {
   flex-direction: row;
   position: absolute;
   font-family: monospace;
-  justify-content: space-around;
+  justify-content: space-between;
   z-index: 15;
 }
 
