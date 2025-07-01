@@ -184,6 +184,11 @@ function sendHeld() {
 }
 
 document.addEventListener('keydown', (e) => {
+     const chatInput = document.getElementById('chatInput')
+    if (chatInput && document.activeElement === chatInput) {
+        // If chat input is focused, ignore key events
+        return
+    }
     if (keyMap[e.key]) {
         const action = keyMap[e.key]
         if (!held.has(action)) {
@@ -197,6 +202,11 @@ document.addEventListener('keydown', (e) => {
 })
 
 document.addEventListener('keyup', (e) => {
+     const chatInput = document.getElementById('chatInput')
+    if (chatInput && document.activeElement === chatInput) {
+        // If chat input is focused, ignore key events
+        return
+    }
     if (keyMap[e.key]) {
         if (held.has(keyMap[e.key])) {
             held.delete(keyMap[e.key])
@@ -441,8 +451,7 @@ export function setupChatHandlers() {
                 ws.send(JSON.stringify({ type: 'chat', message: msg }))
                 chatInput.value = ''
 
-                // Focus back on input for better UX
-                //chatInput.focus();
+                chatInput.blur() // Remove focus to prevent accidental sending
             }
         }
         chatInput.addEventListener('keypress', (e) => {
