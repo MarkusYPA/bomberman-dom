@@ -184,7 +184,7 @@ function sendHeld() {
 }
 
 document.addEventListener('keydown', (e) => {
-     const chatInput = document.getElementById('chatInput')
+    const chatInput = document.getElementById('chatInput')
     if (chatInput && document.activeElement === chatInput) {
         // If chat input is focused, ignore key events
         return
@@ -202,7 +202,7 @@ document.addEventListener('keydown', (e) => {
 })
 
 document.addEventListener('keyup', (e) => {
-     const chatInput = document.getElementById('chatInput')
+    const chatInput = document.getElementById('chatInput')
     if (chatInput && document.activeElement === chatInput) {
         // If chat input is focused, ignore key events
         return

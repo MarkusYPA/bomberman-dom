@@ -185,17 +185,29 @@ export function handleUpgrade(req, socket) {
 
                 if (opcode !== 1) break // Only handle text frames
 
+                // Make sure at least 2 bytes are available for header
+                if (offset + 2 > buffer.length) break
+
                 let len = buffer[offset + 1] & 127
                 let maskStart = offset + 2
+
                 if (len === 126) {
+                    // Need 4 bytes for header + extended length
+                    if (offset + 4 > buffer.length) break
                     len = buffer.readUInt16BE(offset + 2)
                     maskStart = offset + 4
                 } else if (len === 127) {
+                    // Not supporting 64-bit lengths, skip frame
                     break
                 }
+
+                // Need 4 bytes for mask + payload
+                if (maskStart + 4 > buffer.length) break
                 const mask = buffer.slice(maskStart, maskStart + 4)
                 const dataStart = maskStart + 4
                 const dataEnd = dataStart + len
+
+                // Make sure the whole payload is available
                 if (dataEnd > buffer.length) break
 
                 const data = buffer.slice(dataStart, dataEnd)
