@@ -1,5 +1,6 @@
 import { Timer } from './timerClient.js'
 import { clientEvents } from './runGame.js'
+import { playSound } from './sounds.js'
 
 function generalItemAttributes(domItem, item) {
     domItem.classList.add('powerup')
@@ -18,27 +19,22 @@ export function drawPowerUps(items) {
 
         if (item.powerType === 'bomb') {
             domItem.classList.add('bombup')
-            domItem.dataset.sound = 'assets/sfx/bombUp.mp3' // Store sound path in dataset
         }
 
         if (item.powerType === 'flame') {
             domItem.classList.add('flameup')
-            domItem.dataset.sound = 'assets/sfx/flameUp.mp3'
         }
 
         if (item.powerType === 'speed') {
             domItem.classList.add('speedup')
-            domItem.dataset.sound = 'assets/sfx/bombUp.mp3' // Using bombUp sound as placeholder
         }
 
         if (item.powerType === 'life') {
             domItem.classList.add('lifeup')
-            domItem.dataset.sound = 'assets/sfx/flameUp.mp3' // Using flame sound
         }
 
         if (item.powerType === 'bombclip') {
             domItem.classList.add('bombclip')
-            domItem.dataset.sound = 'assets/sfx/bombUp.mp3' // Using bombUp sound
         }
 
         document.getElementById('game').appendChild(domItem)
@@ -50,11 +46,16 @@ let timedCount = 0
 export function pickUpItem(id) {
     const targetItem = document.getElementById(id)
 
-    // Play sound if present
-    if (targetItem && targetItem.dataset.sound) {
-        const audio = new Audio(targetItem.dataset.sound)
-        audio.play()
+    if (targetItem) {
+        if (id.startsWith('bombUp') || id.startsWith('speedUp') || id.startsWith('bombClip')) {
+            playSound('bombUp')
+        } else if (id.startsWith('flameUp') || id.startsWith('lifeUp')) {
+            playSound('flameUp')
+        } else {
+            playSound('flameUp')
+        }
     }
+    
     targetItem.remove()
 }
 

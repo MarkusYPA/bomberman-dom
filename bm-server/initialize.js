@@ -172,7 +172,7 @@ export function makeWalls(level) {
         ) {
             const x = gridStep * mapX
             const y = gridStep * mapY
-            const name = `LifeUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
+            const name = `lifeUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
             const newSpeedUp = new LifeUp(x, y, gridStep * 1.0, name, mapY, mapX)
             state.powerups.set(name, newSpeedUp)
             powerUpMap[mapY][mapX] = [name, newSpeedUp]
