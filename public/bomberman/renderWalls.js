@@ -33,8 +33,16 @@ export function drawWeakWalls(walls) {
 
 let timedCount = 0
 
-export function collapseWeakWall(id) {
+export function collapseWeakWall(id, timedout = false) {
     const targetWall = document.getElementById(id)
+    if (!targetWall) return
+
+    if (timedout) {
+        // Remove immediately, no animation or sound
+        targetWall.remove()
+        return
+    }
+
     const countNow = timedCount
     const timedCollapse = new Timer(() => {
         targetWall.remove()

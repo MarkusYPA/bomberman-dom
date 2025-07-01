@@ -7,7 +7,8 @@ let timedCount = 0
 export function drawFlames(flames) {
     const gameContainer = document.getElementById('game')
     if (!gameContainer) return
-    flames.forEach((flame) => {
+    
+    flames.forEach((flame, key) => {
         switch (flame.direction) {
         case 'H':
             drawHorizontalFlame(flame, gameContainer)
@@ -31,6 +32,9 @@ export function drawFlames(flames) {
             console.log('Bad flame direction:', flame)
             break
         }
+        
+        // Remove from map after drawing
+        flames.delete(key)
     })
 }
 

@@ -50,6 +50,17 @@ export function updateClientGameState(update) {
             update[key].forEach(item => {
                 if (!clientGameState[key].includes(item)) {
                     clientGameState[key].push(item)
+                    
+                    // timeout for collapsing walls to prevent accumulation in inactive tabs
+                    if (key === 'collapsingWalls') {
+                        // Auto-remove wall after 300ms if not processed
+                        setTimeout(() => {
+                            const index = clientGameState.collapsingWalls.indexOf(item)
+                            if (index > -1) {
+                                clientGameState.collapsingWalls.splice(index, 1)
+                            }
+                        }, 600)
+                    }
                 }
             })
         }
@@ -60,6 +71,14 @@ export function updateClientGameState(update) {
         if (update[key] && typeof update[key] === 'object') {
             for (const [k, v] of Object.entries(update[key])) {
                 if (!clientGameState[key].has(k)) {
+                    // timeout for flames to prevent accumulation in inactive tabs
+                    if (key === 'newFlames') {
+                        v.addedAt = Date.now()
+                        // Auto-remove flame after 300ms if not processed
+                        setTimeout(() => {
+                            clientGameState.newFlames.delete(k)
+                        }, 600)
+                    }
                     clientGameState[key].set(k, v)
                 }
             }
