@@ -7,7 +7,7 @@ state.screen = 'start'
 state.players = {}          // This can be kept for compatibility, but not used for rendering
 state.countdownTime = null  // Initialize countdown time
 state.lobbyTime = null
-state.playerCount = 0 
+state.playerCount = 0
 
 function StartScreen() {
     return createVNode('div', { id: 'start-menu', class: 'start-menu' },
@@ -27,21 +27,22 @@ export const PlayerBoardComponent = createReactiveComponent(
         return createVNode('div', {
             class: 'scoreboard scoreboard-width'
         },
-        createVNode('h2', {}, 'Scoreboard'),
-        ...[1, 2, 3, 4].map(i => {
-            const player = state.players[i]
-            return createVNode('div', {
-                class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
-            },
-            // display player points
-            createVNode('span', { class: 'player-points' },
-                player ? player.points ? player.points: '0' : ''
-            ),
-            createVNode('span', { class: 'player-nickname' },
-                player ? player.nickname : `Player ${i}`
-            )
-            )
-        })
+            createVNode('h2', {}, 'Scoreboard'),
+            createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
+            ...[1, 2, 3, 4].map(i => {
+                const player = state.players[i]
+                return createVNode('div', {
+                    class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
+                },
+                    // display player points
+                    createVNode('span', { class: 'player-points' },
+                        player ? player.points ? player.points : '0' : ''
+                    ),
+                    createVNode('span', { class: 'player-nickname' },
+                        player ? player.nickname : `Player ${i}`
+                    )
+                )
+            })
         )
     },
     ['players'] // Only watch the 'players' path
@@ -54,7 +55,6 @@ function LobbyScreen() {
         createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()),
         createVNode('div', { id: 'countdown-container' }, CountdownComponent()),
         createVNode('div', { id: 'lobby', class: 'lobby-area' }), // Mini-game area
-        createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()) // Player count component
     )
 }
 
@@ -97,7 +97,7 @@ export function LobbyTimerComponent() {
 }
 
 export function PlayerCountComponent() {
-    return createVNode('div', { class: 'player-count' }, 
+    return createVNode('div', { class: 'player-count' },
         `Players in lobby: ${state.playerCount}/4`
     )
 }
