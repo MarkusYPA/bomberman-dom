@@ -150,7 +150,8 @@ export class Player {
             // adjust next coordinates based on collisions to bombs
             for (const bomb of collidingBombs) {
                 // No collision if bomb has this owner or bombClip power-up has been picked up
-                if (this.bombClip || !bomb.owners[this.name]) {
+                if (!this.bombClip && !bomb.owners[this.name]) {
+                    console.log('hitting bomb, clip:', this.bombClip, 'Owner of bomb:', bomb.owners[this.name]);
                     [newX, newY] = bomb.checkCollision(newX, newY, this.size)
                 };
             };
@@ -187,7 +188,7 @@ export class Player {
                     if (pow.powerType === 'life') {
                         this.lives += 1
                     }
-                    if (pow.powerType === 'bombClip') {
+                    if (pow.powerType === 'bombclip') {
                         this.bombClip = true
                     }
                     pow.pickUp()
