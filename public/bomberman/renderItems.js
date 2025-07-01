@@ -70,3 +70,7 @@ export function burnItem(id) {
     clientEvents.set(`burnPowerUpElement${countNow}`, timedCollapse)
     timedCount++
 }
+
+/* export function drawNewItems(items) {
+
+} */
