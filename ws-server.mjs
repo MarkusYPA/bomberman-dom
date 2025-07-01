@@ -257,8 +257,17 @@ export function handleUpgrade(req, socket) {
                         id
                     }))
                     socket.write(idMsg)
+                    
+                    // Send current player count to the new client
+                    const countMsg = encodeMessage(JSON.stringify({
+                        type: 'playerCount',
+                        count: clients.size
+                    }))
+                    socket.write(countMsg)
+                    
                     // Reset countdown whenever the number of players changes
                     updateCountdown()
+                    broadcastPlayerCount()
 
                     // Start heartbeat after successful join
                     startHeartbeat()
@@ -321,6 +330,7 @@ export function handleUpgrade(req, socket) {
 
         // Reset countdown whenever the number of players changes
         updateCountdown()
+        broadcastPlayerCount()
     })
 
     // Handle socket errors (like ECONNRESET) to prevent crashes
@@ -332,6 +342,7 @@ export function handleUpgrade(req, socket) {
 
         // Reset countdown whenever the number of players changes
         updateCountdown()
+        broadcastPlayerCount()
     })
 }
 
@@ -362,4 +373,8 @@ export function updateCountdown() {
         }
     }
 
+}
+
+function broadcastPlayerCount() {
+    broadcast({ type: 'playerCount', count: clients.size })
 }
