@@ -56,7 +56,7 @@ export function pickUpItem(id) {
         }
     }
     
-    targetItem.remove()
+    if (targetItem) targetItem.remove()
 }
 
 export function burnItem(id) {
