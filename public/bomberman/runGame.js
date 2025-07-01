@@ -149,6 +149,11 @@ function runGame() {
             clientGameState.removedBombs.clear()
         }
 
+        if (clientGameState.newItems.size > 0) {
+            drawPowerUps(clientGameState.newItems)
+            clientGameState.newItems.clear()
+        }
+
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)
         requestAnimationFrame(gameLoop)
     }

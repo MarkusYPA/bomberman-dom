@@ -256,9 +256,6 @@ export async function startClient() {
         }))
     })
 
-
-
-
     ws.addEventListener('message', (e) => {
         const msg = JSON.parse(e.data)
         if (msg.type === 'lobby') {

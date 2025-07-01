@@ -173,9 +173,9 @@ export function makeWalls(level) {
             const x = gridStep * mapX
             const y = gridStep * mapY
             const name = `lifeUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
-            const newSpeedUp = new LifeUp(x, y, gridStep * 1.0, name, mapY, mapX)
-            state.powerups.set(name, newSpeedUp)
-            powerUpMap[mapY][mapX] = [name, newSpeedUp]
+            const newLifeUp = new LifeUp(x, y, gridStep * 1.0, name, mapY, mapX)
+            state.powerups.set(name, newLifeUp)
+            powerUpMap[mapY][mapX] = [name, newLifeUp]
         };
     }
 
@@ -192,9 +192,9 @@ export function makeWalls(level) {
             const x = gridStep * mapX
             const y = gridStep * mapY
             const name = `bombClip${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
-            const newSpeedUp = new BombClip(x, y, gridStep * 1.0, name, mapY, mapX)
-            state.powerups.set(name, newSpeedUp)
-            powerUpMap[mapY][mapX] = [name, newSpeedUp]
+            const newBombClip = new BombClip(x, y, gridStep * 1.0, name, mapY, mapX)
+            state.powerups.set(name, newBombClip)
+            powerUpMap[mapY][mapX] = [name, newBombClip]
         };
     }
 };
