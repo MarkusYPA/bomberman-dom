@@ -258,6 +258,16 @@ body {
   background-size: cover;
 }
 
+.lifeup {
+  background-image: url("assets/images/lifeup.svg");
+  background-size: cover;
+}
+
+.bombclip {
+  background-image: url("assets/images/bombclip.svg");
+  background-size: cover;
+}
+
 .textbar {
   display: flex;
   flex-direction: row;
