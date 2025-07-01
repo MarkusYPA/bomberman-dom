@@ -138,6 +138,10 @@ function update(changedPath) {
 
 // Prevent default behavior for arrow keys and space to avoid page scrolling
 window.addEventListener('keydown', function (e) {
+    const chatInput = document.getElementById('chatInput');
+    if (chatInput && document.activeElement === chatInput) {
+        return;
+    }
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Space'].includes(e.key)) {
         e.preventDefault()
     };
