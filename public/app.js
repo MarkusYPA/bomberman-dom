@@ -7,6 +7,7 @@ state.screen = 'start'
 state.players = {}          // This can be kept for compatibility, but not used for rendering
 state.countdownTime = null  // Initialize countdown time
 state.lobbyTime = null
+state.playerCount = 0
 
 function StartScreen() {
     return createVNode('div', { id: 'start-menu', class: 'start-menu' },
@@ -26,21 +27,22 @@ export const PlayerBoardComponent = createReactiveComponent(
         return createVNode('div', {
             class: 'scoreboard scoreboard-width'
         },
-        createVNode('h2', {}, 'Scoreboard'),
-        ...[1, 2, 3, 4].map(i => {
-            const player = state.players[i]
-            return createVNode('div', {
-                class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
-            },
-            // display player points
-            createVNode('span', { class: 'player-points' },
-                player ? player.points ? player.points: '0' : ''
-            ),
-            createVNode('span', { class: 'player-nickname' },
-                player ? player.nickname : `Player ${i}`
-            )
-            )
-        })
+            createVNode('h2', {}, 'Scoreboard'),
+            createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
+            ...[1, 2, 3, 4].map(i => {
+                const player = state.players[i]
+                return createVNode('div', {
+                    class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
+                },
+                    // display player points
+                    createVNode('span', { class: 'player-points' },
+                        player ? player.points ? player.points : '0' : ''
+                    ),
+                    createVNode('span', { class: 'player-nickname' },
+                        player ? player.nickname : `Player ${i}`
+                    )
+                )
+            })
         )
     },
     ['players'] // Only watch the 'players' path
@@ -158,6 +160,12 @@ export function LobbyTimerComponent() {
     return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, `Lobby: Game starts in ${state.lobbyTime}s`)
 }
 
+export function PlayerCountComponent() {
+    return createVNode('div', { class: 'player-count' },
+        `Players in lobby: ${state.playerCount}/4`
+    )
+}
+
 function App() {
     let screenContent
     if (state.screen === 'start') screenContent = StartScreen()
@@ -203,6 +211,10 @@ function update(changedPath) {
 
 // Prevent default behavior for arrow keys and space to avoid page scrolling
 window.addEventListener('keydown', function (e) {
+    const chatInput = document.getElementById('chatInput');
+    if (chatInput && document.activeElement === chatInput) {
+        return;
+    }
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Space'].includes(e.key)) {
         e.preventDefault()
     };

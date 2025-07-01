@@ -3,8 +3,8 @@ body {
   background-image: url('assets/background03.jpg');
   background-size: cover;
   color: #2a1810;
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 *, :after, :before {
     box-sizing: border-box;
@@ -264,12 +264,22 @@ body {
   background-size: cover;
 }
 
+.lifeup {
+  background-image: url("assets/images/lifeup.svg");
+  background-size: cover;
+}
+
+.bombclip {
+  background-image: url("assets/images/bombclip.svg");
+  background-size: cover;
+}
+
 .textbar {
   display: flex;
   flex-direction: row;
   position: absolute;
   font-family: monospace;
-  justify-content: space-around;
+  justify-content: space-between;
   z-index: 15;
 }
 
@@ -757,23 +767,23 @@ button:active {
   font-size: 16px;
   outline: none;
   background: #1a1a0d;
-  color: #00ff41;
+  color: #ff8c00;
   font-family: 'Courier New', monospace;
   font-weight: bold;
   margin-bottom: 20px;
   box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
-  text-shadow: 0 0 2px #00ff41;
+  text-shadow: 0 0 2px #ff8c00;
   box-sizing: border-box;
 }
 
 .nickname-input:focus {
   border-color: #654321;
-  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 8px #00ff41;
-  text-shadow: 0 0 5px #00ff41;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 8px #ff8c00;
+  text-shadow: 0 0 5px #ff8c00;
 }
 
 .nickname-input::placeholder {
-  color: #006400;
+  color: #000000;
   opacity: 0.7;
 }
 
@@ -1215,11 +1225,458 @@ button:active {
   }
 }
 
-/* Ghost Player style test */
+/* Ghost Player */
 .player.ghost {
-  opacity: 0.5;
-  filter: grayscale(1) blur(1px);
+  /* opacity: 0.5;
+  filter: grayscale(1) blur(1px); */
   pointer-events: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 4s;
+}
+
+/* Player count styling */
+.player-count {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #ff8c00;
+  text-align: center;
+  margin: 10px 0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* ========================================
+   NEW GAME LAYOUT STYLES
+   ======================================== */
+
+/* Game Root Layout */
+.game-root,
+.lobby-menu {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-image: url('assets/background03.jpg');
+  background-size: cover;
+}
+
+/* Game Body Container - holds sidebar and content side by side on desktop */
+.game-body {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  overflow: scroll;
+}
+
+/* Game Header */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(42, 24, 16, 0.9);
+  color: #fff;
+  min-height: 60px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(6px);
+}
+
+.timer-section {
+  flex: 1;
+}
+
+.countdown-timer {
+  font-size: 18px;
+  font-weight: bold;
+  color: #00ff41;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px #00ff41;
+  letter-spacing: 1px;
+}
+
+.leave-button {
+  background: #a4301e;
+  color: white;
+  border: 3px solid #654321;
+  border-style: outset;
+  padding: 10px 20px;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  transition: all 0.2s;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1px;
+}
+
+.leave-button:hover {
+  background: #8b2914;
+  border-style: inset;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.leave-button:active {
+  background: #6b1f0f;
+}
+
+/* Main Game Layout Container */
+.game-root > .game-content,
+.game-root > .sidebar,
+.lobby-menu > .lobby-area-content,
+.lobby-menu > .sidebar {
+  display: flex;
+}
+
+.game-root > .game-content,
+.lobby-menu > .lobby-area-content {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar {
+  width: 25%;
+}
+
+.game-root > .sidebar,
+.lobby-menu > .sidebar {
+  flex: 1 0 350px;
+  flex-direction: column;
+  background: rgba(244, 241, 232, 0.95);
+  border-top: 4px solid #8b4513;
+  border-style: outset;
+  min-width: 300px;
+  max-width: 400px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Game Content Layout */
+.game-content,
+.lobby-area-content {
+  overflow: scroll;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  width: 75%;
+  border-right: 4px solid #cccccc;
+}
+
+/* Main Game Board Section */
+.game-board-section,
+.lobby-area-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* Ensure textbar can position relative to this */
+}
+
+.game-area,
+.lobby-area {
+  width: 600px;
+  height: 450px;
+  border: 4px solid #8b4513;
+  border-style: outset;
+  border-radius: 0;
+  position: relative;
+  overflow: visible; /* Allow textbar to show above */
+  box-shadow: 4px 4px 0px #654321, 8px 8px 0px #4a2c17;
+  background-color: transparent;
+  margin-top: 40px; /* Add space for textbar */
+}
+
+.game-root .game-area, 
+.lobby-menu .lobby-area {
+  background-color: transparent;
+  border: 4px solid #8b4513;
+  border-style: outset;
+  border-radius: 0;
+  position: relative;
+  overflow: visible; /* Allow textbar to show above game area */
+  box-shadow: 4px 4px 0px #654321, 8px 8px 0px #4a2c17;
+}
+
+/* Player Board Section */
+.player-board-section {
+  padding: 15px;
+  border-left: 0px solid #cccccc;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Updated Scoreboard for Sidebar */
+.game-root .sidebar .scoreboard,
+.lobby-menu .sidebar .scoreboard {
+  width: 100%;
+  max-width: none;
+  background: rgba(42, 24, 16, 0.8);
+  border: 3px solid #654321;
+  border-style: inset;
+  border-radius: 0;
+  padding: 15px;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: 0;
+}
+
+.game-root .sidebar .scoreboard h2,
+.lobby-menu .sidebar .scoreboard h2 {
+  margin: 0 0 15px 0;
+  text-align: center;
+  color: #00ff41;
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+  text-shadow: 0 0 5px #00ff41;
+}
+
+/* Updated Scoreboard Player for Sidebar */
+.game-root .sidebar .scoreboard-player,
+.lobby-menu .sidebar .scoreboard-player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  margin: 4px 0;
+  border: 2px solid #654321;
+  border-style: outset;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  color: white;
+  transition: all 0.2s;
+}
+
+.game-root .sidebar .scoreboard-player:hover,
+.lobby-menu .sidebar .scoreboard-player:hover {
+  border-style: inset;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.game-root .sidebar .scoreboard-player.inactive,
+.lobby-menu .sidebar .scoreboard-player.inactive {
+  opacity: 0.3;
+  background: rgba(100, 100, 100, 0.5) !important;
+  border-style: inset;
+}
+
+.game-root .sidebar .player-points,
+.lobby-menu .sidebar .player-points {
+  font-size: 16px;
+  min-width: 30px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.game-root .sidebar .player-nickname,
+.lobby-menu .sidebar .player-nickname {
+  flex: 1;
+  text-align: left;
+  margin-left: 10px;
+  font-size: 13px;
+}
+
+/* Chat Section in Sidebar */
+.game-root .sidebar .chat-area,
+.lobby-menu .sidebar .chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  min-height: 200px;
+  width: auto;
+  background: transparent;
+  border: none;
+  border-style: none;
+  box-shadow: none;
+  margin-top: 0;
+  background-image: none;
+}
+
+.game-root .sidebar .chat-area::before,
+.lobby-menu .sidebar .chat-area::before {
+  margin: -15px -15px 10px -15px;
+}
+
+.game-root .sidebar .chat-box,
+.lobby-menu .sidebar .chat-box {
+  flex: 1;
+  margin-bottom: 10px;
+  height: auto;
+  min-height: 300px;
+}
+
+/* Chat Input Container */
+.chat-input-container {
+  display: flex;
+  gap: 5px;
+}
+
+.game-root .sidebar #chatInput,
+.lobby-menu .sidebar #chatInput {
+  flex: 1;
+  padding: 8px;
+  border: 3px solid #654321;
+  border-style: inset;
+  border-radius: 0;
+  font-size: 13px;
+  font-family: 'Courier New', monospace;
+  background: #f4f1e8;
+  color: #2a1810;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2);
+  width: auto;
+}
+
+.game-root .sidebar #send,
+.lobby-menu .sidebar #send {
+  background: #374a1f;
+  color: white;
+  border: 3px solid #654321;
+  border-style: outset;
+  padding: 8px 15px;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  transition: all 0.2s;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  width: auto;
+  margin-left: 0;
+}
+
+.game-root .sidebar #send:hover,
+.lobby-menu .sidebar #send:hover {
+  background: #2d3a19;
+  border-style: inset;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.game-root .sidebar #send:active,
+.lobby-menu .sidebar #send:active {
+  background: #1f2711;
+}
+
+/* Error Container for Game Screen */
+.game-root .error-container,
+.lobby-menu .error-container {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: #a4301e;
+  color: white;
+  padding: 10px 20px;
+  border: 3px solid #654321;
+  border-style: outset;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  display: none;
+}
+
+/* Responsive Design for Game Layout */
+@media (max-width: 1024px) {
+  .game-body {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    flex: 0 0 300px;
+    border-top: 4px solid #8b4513;
+    border-style: outset;
+    border-left: none;
+    width: 100vw;
+  }
+  
+  .game-content,
+  .lobby-area-content {
+    min-height: 100vh;
+    min-width: 100vw;
+  }
+
+  .game-board-section,
+  .lobby-area-section {
+    flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .game-header {
+    padding: 5px 10px;
+    min-height: 50px;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .countdown-timer {
+    font-size: 16px;
+  }
+  
+  .leave-button {
+    padding: 8px 15px;
+    font-size: 12px;
+  }
+  
+  .sidebar {
+    flex: 0 0 250px;
+    width: 100vw;
+  }
+  
+  .player-board-section,
+  .chat-area {
+    padding: 10px;
+    margin: 0 auto;
+  }
+  
+  .sidebar .scoreboard h2 {
+    font-size: 14px;
+  }
+  
+  .sidebar .player-nickname {
+    font-size: 12px;
+  }
+
+  .game-content,
+  .lobby-area-content {
+    min-height: 100vh;
+    min-width: 100vw;
+  }
+  
+  .game-board-section,
+  .lobby-area-section {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-header {
+    padding: 5px;
+  }
+  
+  .sidebar {
+    flex: 0 0 200px;
+    width: 100vw;
+  }
+  
+  .game-content,
+  .lobby-area-content {
+    min-height: 100vh;
+    min-width: 100vw;
+  }
+
+  .game-board-section,
+  .lobby-area-section {
+    padding: 10px;
+  }
+  
+  /* .game-area {
+    transform: scale(0.8);
+    transform-origin: center;
+  } */
 }
 
 /* ========================================

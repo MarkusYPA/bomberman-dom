@@ -2,7 +2,7 @@ import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
 import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
 import { clearClientGameState, clientGameState, setPoints, updateClientGameState } from './shared/state.js'
-import { CountdownComponent } from './app.js'
+import { CountdownComponent, PlayerCountComponent } from './app.js'
 import { LobbyTimerComponent } from './app.js'
 import { endGraphic } from './bomberman/endGraphics.js'
 
@@ -85,13 +85,15 @@ function createNicknameModal() {
             input.select()
         }, 100)
 
-        // Close on overlay click
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                resolve('Player') // Default nickname
-                document.body.removeChild(overlay)
-            }
-        })
+        // Do we wanna keep this?
+
+        // // Close on overlay click
+        // overlay.addEventListener('click', (e) => {
+        //     if (e.target === overlay) {
+        //         resolve('Player') // Default nickname
+        //         document.body.removeChild(overlay)
+        //     }
+        // })
     })
 }
 
@@ -182,6 +184,11 @@ function sendHeld() {
 }
 
 document.addEventListener('keydown', (e) => {
+    const chatInput = document.getElementById('chatInput')
+    if (chatInput && document.activeElement === chatInput) {
+        // If chat input is focused, ignore key events
+        return
+    }
     if (keyMap[e.key]) {
         const action = keyMap[e.key]
         if (!held.has(action)) {
@@ -195,6 +202,11 @@ document.addEventListener('keydown', (e) => {
 })
 
 document.addEventListener('keyup', (e) => {
+    const chatInput = document.getElementById('chatInput')
+    if (chatInput && document.activeElement === chatInput) {
+        // If chat input is focused, ignore key events
+        return
+    }
     if (keyMap[e.key]) {
         if (held.has(keyMap[e.key])) {
             held.delete(keyMap[e.key])
@@ -223,6 +235,13 @@ function updatePoints(points) {
     }    
 }
 
+function updatePlayerCount() {
+    const playerCountElement = document.getElementById('player-count-container')
+    if (playerCountElement) {
+        mount(playerCountElement, PlayerCountComponent())
+    }
+}
+
 export async function startClient() {
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.close(1000, 'New session')
@@ -236,9 +255,6 @@ export async function startClient() {
             nickname: nickname,
         }))
     })
-
-
-
 
     ws.addEventListener('message', (e) => {
         const msg = JSON.parse(e.data)
@@ -255,6 +271,9 @@ export async function startClient() {
             state.screen = 'game' // Switch to game screen
             state.countdownTime = null
             updateCountdown()
+        } else if (msg.type === 'playerCount') {
+            state.playerCount = msg.count
+            updatePlayerCount()
         } else if (msg.type === 'state') {  // for mini game
             // Only update on changes. Keep player points, payload doesn't contain them.
             if (JSON.stringify(state.players) !== JSON.stringify(msg.payload)) {
@@ -429,8 +448,7 @@ export function setupChatHandlers() {
                 ws.send(JSON.stringify({ type: 'chat', message: msg }))
                 chatInput.value = ''
 
-                // Focus back on input for better UX
-                //chatInput.focus();
+                chatInput.blur() // Remove focus to prevent accidental sending
             }
         }
         chatInput.addEventListener('keypress', (e) => {

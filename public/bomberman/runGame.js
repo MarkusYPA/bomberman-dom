@@ -81,7 +81,7 @@ export function updateLivesInfo(players) {
         for (let i = 0; i < p.lives; i++) {
             livesText += '❤️'
         };
-        livesinfos[i].textContent = `${p.name}: `+ livesText
+        livesinfos[i].textContent = `${p.name} `+ livesText
     })
 }
 
@@ -164,6 +164,11 @@ function runGame() {
         if (clientGameState.removedBombs.size > 0) {
             clearBombs(clientGameState.removedBombs)
             clientGameState.removedBombs.clear()
+        }
+
+        if (clientGameState.newItems.size > 0) {
+            drawPowerUps(clientGameState.newItems)
+            clientGameState.newItems.clear()
         }
 
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)

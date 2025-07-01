@@ -31,6 +31,16 @@ export function drawPowerUps(items) {
             domItem.dataset.sound = 'assets/sfx/bombUp.mp3' // Using bombUp sound as placeholder
         }
 
+        if (item.powerType === 'life') {
+            domItem.classList.add('lifeup')
+            domItem.dataset.sound = 'assets/sfx/flameUp.mp3' // Using flame sound
+        }
+
+        if (item.powerType === 'bombclip') {
+            domItem.classList.add('bombclip')
+            domItem.dataset.sound = 'assets/sfx/bombUp.mp3' // Using bombUp sound
+        }
+
         document.getElementById('game').appendChild(domItem)
     })
 }
@@ -45,7 +55,8 @@ export function pickUpItem(id) {
         const audio = new Audio(targetItem.dataset.sound)
         audio.play()
     }
-    targetItem.remove()
+    
+    if (targetItem) targetItem.remove()
 }
 
 export function burnItem(id) {
