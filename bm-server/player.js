@@ -24,7 +24,7 @@ export class Player {
         this.isMoving = false
         this.score = 0
         this.killer = ''
-
+        this.bombClip = false
         this.invulnerability()
     };
 
@@ -149,8 +149,9 @@ export class Player {
 
             // adjust next coordinates based on collisions to bombs
             for (const bomb of collidingBombs) {
-                // No collision if bomb has this owner
-                if (!bomb.owners[this.name]) {
+                // No collision if bomb has this owner or bombClip power-up has been picked up
+                if (!this.bombClip && !bomb.owners[this.name]) {
+                    console.log('hitting bomb, clip:', this.bombClip, 'Owner of bomb:', bomb.owners[this.name]);
                     [newX, newY] = bomb.checkCollision(newX, newY, this.size)
                 };
             };
@@ -183,6 +184,12 @@ export class Player {
                     }
                     if (pow.powerType === 'speed') {
                         this.speed += 1.5 * mult // Increase speed by a reasonable amount
+                    }
+                    if (pow.powerType === 'life') {
+                        this.lives += 1
+                    }
+                    if (pow.powerType === 'bombclip') {
+                        this.bombClip = true
                     }
                     pow.pickUp()
                     state.pickedItems.push(pow.name)
