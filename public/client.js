@@ -439,8 +439,7 @@ export function setupChatHandlers() {
                 ws.send(JSON.stringify({ type: 'chat', message: msg }))
                 chatInput.value = ''
 
-                // Focus back on input for better UX
-                chatInput.focus();
+                chatInput.blur() // Remove focus to prevent accidental sending
             }
         }
         chatInput.addEventListener('keypress', (e) => {
