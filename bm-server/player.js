@@ -93,7 +93,7 @@ export class Player {
             const col = Math.floor((this.x + this.size / 2) / gridStep)
 
             // pick one string from this.powerups or, if it's empty, from powerupTypes
-            const powerupTypes = ['bombUp', 'flameUp', 'speedUp', 'lifeUp', 'bombClip']
+            const powerupTypes = ['bombUp', 'flameUp', 'speedUp', 'bombClip']   // no life up: could lead to long lineof 6 lives
             let powerupType = ''
             if (this.powerups.length > 0) {
                 powerupType = this.powerups[Math.floor(Math.random() * this.powerups.length)]

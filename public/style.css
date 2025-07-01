@@ -1211,11 +1211,14 @@ button:active {
   }
 }
 
-/* Ghost Player style test */
+/* Ghost Player */
 .player.ghost {
-  opacity: 0.5;
-  filter: grayscale(1) blur(1px);
+  /* opacity: 0.5;
+  filter: grayscale(1) blur(1px); */
   pointer-events: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 4s;
 }
 
 /* Player count styling */
