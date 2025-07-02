@@ -437,7 +437,7 @@ export function setupChatHandlers() {
                 chatInput.value = ''
 
                 // Focus back on input for better UX
-                chatInput.focus();
+                chatInput.focus()
             }
         }
         chatInput.addEventListener('keypress', (e) => {

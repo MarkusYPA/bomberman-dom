@@ -44,9 +44,12 @@ export function drawPowerUps(items) {
 let timedCount = 0
 
 export function pickUpItem(id) {
+    const timedout = String(id).endsWith('timedout')
+    if (timedout) id = id.slice(0, -8)
+        
     const targetItem = document.getElementById(id)
 
-    if (targetItem) {
+    if (targetItem && !timedout) {
         if (id.startsWith('bombUp') || id.startsWith('speedUp') || id.startsWith('bombClip')) {
             playSound('bombUp')
         } else if (id.startsWith('flameUp') || id.startsWith('lifeUp')) {
@@ -57,6 +60,7 @@ export function pickUpItem(id) {
     }
     
     if (targetItem) targetItem.remove()
+    else console.log('item', id, 'not found')
 }
 
 export function burnItem(id) {
@@ -73,7 +77,6 @@ export function burnItem(id) {
         return
     }
 
-    //targetItem.style.backgroundImage = 'url("assets/images/burn.svg")'
     targetItem.classList.add('burn')
     const countNow = timedCount
     const timedCollapse = new Timer(() => {

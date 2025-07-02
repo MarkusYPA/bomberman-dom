@@ -124,11 +124,6 @@ function runGame() {
             clientGameState.collapsingWalls.length = 0
         }
 
-        if (clientGameState.pickedItems.length > 0) {
-            clientGameState.pickedItems.forEach(name => pickUpItem(name))
-            clientGameState.pickedItems.length = 0
-        }
-
         if (clientGameState.burningItems.length > 0) {
             clientGameState.burningItems.forEach(name => burnItem(name))
             clientGameState.burningItems.length = 0
@@ -152,6 +147,11 @@ function runGame() {
         if (clientGameState.newItems.size > 0) {
             drawPowerUps(clientGameState.newItems)
             clientGameState.newItems.clear()
+        }
+
+        if (clientGameState.pickedItems.length > 0) {
+            clientGameState.pickedItems.forEach(name => pickUpItem(name))
+            clientGameState.pickedItems.length = 0
         }
 
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)

@@ -77,26 +77,47 @@ export function updateClientGameState(update) {
                             }
                         }, 600)
                     }
+
+                    // timeout for burning items to prevent delayed animation in inactive tabs
+                    if (key === 'pickedItems') {
+                        // Modify collapse to happen without sound and going orange
+                        setTimeout(() => {
+                            const index = clientGameState.pickedItems.indexOf(item)
+                            if (index > -1) {
+                                clientGameState.pickedItems[index] = clientGameState.pickedItems[index] + 'timedout'
+                            }
+                        }, 600)
+                    }
                 }
             })
         }
     });
 
     // Add non-duplicate entries to Maps with unique string keys
-    ['newBombs', 'removedBombs', 'newFlames'].forEach(key => {          // '' could be a problem
+    ['newBombs', 'removedBombs', 'newFlames'].forEach(key => {
         if (update[key] && typeof update[key] === 'object') {
             for (const [k, v] of Object.entries(update[key])) {
                 if (!clientGameState[key].has(k)) {
+
                     // timeout for flames to prevent accumulation in inactive tabs
                     if (key === 'newFlames') {
                         v.addedAt = Date.now()
-                        // Auto-remove flame after 300ms if not processed
+                        // Auto-remove flame after 600ms if not processed
                         setTimeout(() => {
                             clientGameState.newFlames.delete(k)
                         }, 600)
                     }
+
+                    // timeout for new bombs to prevent delayed bomb drop sound
+                    if (key === 'newBombs') {
+                        setTimeout(() => {
+                            clientGameState.newBombs.delete(k)
+                        }, 600)
+                    }
                     clientGameState[key].set(k, v)
                 }
+
+
             }
         }
     })
