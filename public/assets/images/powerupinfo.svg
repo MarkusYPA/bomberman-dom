@@ -25,14 +25,14 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="1.2220607"
-     inkscape:cx="345.72752"
-     inkscape:cy="288.85636"
+     inkscape:cx="345.72751"
+     inkscape:cy="255.30647"
      inkscape:window-width="1936"
      inkscape:window-height="1119"
      inkscape:window-x="0"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer2" />
+     inkscape:current-layer="layer1" />
   <defs
      id="defs1">
     <linearGradient
@@ -75,7 +75,8 @@
      inkscape:groupmode="layer"
      id="layer1">
     <g
-       id="g12">
+       id="g12"
+       transform="matrix(0.83593195,0,0,0.83593195,15.0452,35.268994)">
       <g
          id="g1"
          transform="matrix(0.25046507,0,0,0.25046507,38.398083,66.472963)">
@@ -284,70 +285,97 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:7.10172px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.57272;stroke-opacity:1"
-       x="61.499966"
-       y="45.760193"
+       style="font-weight:bold;font-size:5.93655px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.31469;stroke-opacity:1"
+       x="66.454987"
+       y="73.5214"
        id="text7"><tspan
          sodipodi:role="line"
          id="tspan7"
-         style="font-size:7.10172px;stroke-width:1.57272;fill:#adadad;fill-opacity:1"
-         x="61.499966"
-         y="45.760193">additional bomb</tspan></text>
+         style="font-size:5.93655px;fill:#adadad;fill-opacity:1;stroke-width:1.31469"
+         x="66.454987"
+         y="73.5214">additional bomb</tspan></text>
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:7.10172px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.57272;stroke-opacity:1"
-       x="61.269169"
-       y="59.849903"
+       style="font-weight:bold;font-size:5.93655px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.31469;stroke-opacity:1"
+       x="66.262054"
+       y="85.299446"
        id="text8"><tspan
          sodipodi:role="line"
          id="tspan8"
-         style="font-size:7.10172px;stroke-width:1.57272;fill:#adadad;fill-opacity:1"
-         x="61.269169"
-         y="59.849903">more powerful bombs</tspan></text>
+         style="font-size:5.93655px;fill:#adadad;fill-opacity:1;stroke-width:1.31469"
+         x="66.262054"
+         y="85.299446">more powerful bombs</tspan></text>
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:7.10172px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.57272;stroke-opacity:1"
-       x="61.5266"
-       y="73.892845"
+       style="font-weight:bold;font-size:5.93655px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.31469;stroke-opacity:1"
+       x="66.477249"
+       y="97.038383"
        id="text9"><tspan
          sodipodi:role="line"
          id="tspan9"
-         style="font-size:7.10172px;stroke-width:1.57272;fill:#adadad;fill-opacity:1"
-         x="61.5266"
-         y="73.892845">extra life</tspan></text>
+         style="font-size:5.93655px;fill:#adadad;fill-opacity:1;stroke-width:1.31469"
+         x="66.477249"
+         y="97.038383">extra life</tspan></text>
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:7.10172px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.57272;stroke-opacity:1"
-       x="61.784031"
-       y="88.002754"
+       style="font-weight:bold;font-size:5.93655px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.31469;stroke-opacity:1"
+       x="66.692444"
+       y="108.8333"
        id="text10"><tspan
          sodipodi:role="line"
          id="tspan10"
-         style="font-size:7.10172px;stroke-width:1.57272;fill:#adadad;fill-opacity:1"
-         x="61.784031"
-         y="88.002754">faster movement</tspan></text>
+         style="font-size:5.93655px;fill:#adadad;fill-opacity:1;stroke-width:1.31469"
+         x="66.692444"
+         y="108.8333">faster movement</tspan></text>
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:7.10172px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.57272;stroke-opacity:1"
-       x="61.304676"
-       y="102.19985"
+       style="font-weight:bold;font-size:5.93655px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.31469;stroke-opacity:1"
+       x="66.29174"
+       y="120.70111"
        id="text11"><tspan
          sodipodi:role="line"
          id="tspan11"
-         style="font-size:7.10172px;stroke-width:1.57272;fill:#adadad;fill-opacity:1"
-         x="61.304676"
-         y="102.19985">pass through bombs</tspan></text>
+         style="font-size:5.93655px;fill:#adadad;fill-opacity:1;stroke-width:1.31469"
+         x="66.29174"
+         y="120.70111">pass through bombs</tspan></text>
     <text
        xml:space="preserve"
-       style="font-weight:bold;font-size:9.87778px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.57272;stroke-opacity:1"
-       x="41.328529"
-       y="29.35601"
+       style="font-weight:bold;font-size:7.05556px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.31469;stroke-opacity:1"
+       x="49.593037"
+       y="59.80862"
        id="text12"><tspan
          sodipodi:role="line"
          id="tspan12"
-         style="font-size:9.87778px;fill:#adadad;fill-opacity:1;stroke-width:1.57272"
-         x="41.328529"
-         y="29.35601">Power-Ups</tspan></text>
+         style="font-size:7.05556px;fill:#adadad;fill-opacity:1;stroke-width:1.31469"
+         x="49.593037"
+         y="59.80862">Power-Ups</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:5.93655px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.31469;stroke-opacity:1"
+       x="49.462437"
+       y="34.889923"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-size:5.93655px;fill:#adadad;fill-opacity:1;stroke-width:1.31469"
+         x="49.462437"
+         y="34.889923">use arrows to move</tspan><tspan
+         sodipodi:role="line"
+         style="font-size:5.93655px;fill:#adadad;fill-opacity:1;stroke-width:1.31469"
+         x="49.462437"
+         y="42.310612"
+         id="tspan2">press space to drop bombs</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:7.05556px;font-family:'Helvetica Neue';-inkscape-font-specification:'Helvetica Neue Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#adadad;fill-opacity:1;stroke:none;stroke-width:1.31469;stroke-opacity:1"
+       x="49.593037"
+       y="24.492004"
+       id="text4"><tspan
+         sodipodi:role="line"
+         id="tspan4"
+         style="font-size:7.05556px;fill:#adadad;fill-opacity:1;stroke-width:1.31469"
+         x="49.593037"
+         y="24.492004">Controls</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"

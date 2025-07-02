@@ -20,6 +20,7 @@ body {
 .lobby-area {
   background-image: url("assets/images/powerupinfo.svg");
   background-size: cover;
+  background-position: center;
 }
 
 #game.level-1 {
