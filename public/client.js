@@ -249,6 +249,9 @@ export async function startClient() {
 
     ws.addEventListener('message', (e) => {
         const msg = JSON.parse(e.data)
+         if (msg.type === 'playerCount') {
+            state.playerCount = msg.count
+        }
         if (msg.type === 'lobby') {
             state.lobbyTime = msg.time
             updateLobbyTimer()
