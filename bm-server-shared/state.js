@@ -2,11 +2,13 @@ export const state = {
     solidWalls: [],             // for player collisions
     surroundingWalls: [],       // no collisions
     weakWalls: new Map(),       // for player collisions
+    powerups: new Map(),
+
     collapsingWalls: [],        // for rendering
     newBombs: new Map(),        // for rendering
     removedBombs: new Map(),    // for rendering
     newFlames: new Map(),       // for rendering
-    powerups: new Map(),
+    newItems: new Map(),
     pickedItems: [],            // for rendering
     burningItems: [],           // for rendering
     players: [],
@@ -31,6 +33,7 @@ export function clearTempsState() {
     state.newBombs.clear()
     state.removedBombs.clear()
     state.newFlames.clear()
+    state.newItems.clear()
     state.pickedItems = []
     state.burningItems = []
 }

@@ -1,5 +1,5 @@
 import { clearClientGameState, clientGameState } from '../shared/state.js'
-import { walkingSound } from './sounds.js'
+import { currentlyPlaying, playSound, stopSound } from './sounds.js'
 import { makeTextBar, resizeGameContainer } from './initializeClient.js'
 import { drawSolidWalls, drawWeakWalls, collapseWeakWall } from './renderWalls.js'
 import { drawPowerUps, pickUpItem, burnItem } from './renderItems.js'
@@ -33,38 +33,21 @@ export function setNewLives(nl) {
 }
 
 // Walking sounds controlled from inputlisteners
-let playPromise = null
-
-// Walking sounds controlled from inputlisteners
 export function setMoving(moving) {
     wasMoving = isMoving
     isMoving = moving
 
     if (thisPlayer && !thisPlayer.alive) {
-        if (!walkingSound.paused) {
-            walkingSound.pause()
-            walkingSound.currentTime = 0
+        if (currentlyPlaying['walkingSound']) {
+            stopSound('walkingSound')
         }
         return
     }
 
     if (isMoving && !wasMoving) {
-        playPromise = walkingSound.play().catch((err) => {
-            if (err.name !== 'AbortError') {
-                console.error('walk sound play error:', err)
-            }
-        })
+        playSound('walkingSound')
     } else if (!isMoving && wasMoving) {
-        // If play was initiated and hasn't resolved yet, wait for it to finish before pausing
-        if (playPromise) {
-            playPromise.finally(() => {
-                walkingSound.pause()
-                walkingSound.currentTime = 0
-            })
-        } else {
-            walkingSound.pause()
-            walkingSound.currentTime = 0
-        }
+        stopSound('walkingSound')
     }
 }
 
@@ -81,7 +64,7 @@ export function updateLivesInfo(players) {
         for (let i = 0; i < p.lives; i++) {
             livesText += '❤️'
         };
-        livesinfos[i].textContent = `${p.name}: `+ livesText
+        livesinfos[i].textContent = `${p.name} `+ livesText
     })
 }
 
@@ -164,6 +147,11 @@ function runGame() {
         if (clientGameState.removedBombs.size > 0) {
             clearBombs(clientGameState.removedBombs)
             clientGameState.removedBombs.clear()
+        }
+
+        if (clientGameState.newItems.size > 0) {
+            drawPowerUps(clientGameState.newItems)
+            clientGameState.newItems.clear()
         }
 
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)

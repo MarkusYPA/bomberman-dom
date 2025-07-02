@@ -1,8 +1,9 @@
 import { Bomb } from './bomb.js'
-import { bombTime, bombs, bounds, flames, timedEvents, levelMap } from './game.js'
+import { bombTime, bombs, bounds, flames, timedEvents, levelMap, powerUpMap } from './game.js'
 import { Timer } from './timer.js'
 import { state } from '../bm-server-shared/state.js'
-import { gridStep, mult } from '../bm-server-shared/config.js'
+import { gridStep, halfStep, mult } from '../bm-server-shared/config.js'
+import { BombClip, BombUp, FlameUp, LifeUp, SpeedUp } from './powerup.js'
 
 let timedCount = 0
 
@@ -24,7 +25,8 @@ export class Player {
         this.isMoving = false
         this.score = 0
         this.killer = ''
-
+        this.bombClip = false
+        this.powerups = []      // drop one picked powerup at death
         this.invulnerability()
     };
 
@@ -84,6 +86,52 @@ export class Player {
         timedEvents.set(`resurrection${countNow}`, timedResurrection)
 
         timedCount++
+
+        // Drop powerup at death
+        if (this.lives === 0) {        
+            const row = Math.floor((this.y + this.size / 2) / gridStep)
+            const col = Math.floor((this.x + this.size / 2) / gridStep)
+
+            // pick one string from this.powerups or, if it's empty, from powerupTypes
+            const powerupTypes = ['bombUp', 'flameUp', 'speedUp', 'bombClip']   // no life up: could lead to long lineof 6 lives
+            let powerupType = ''
+            if (this.powerups.length > 0) {
+                powerupType = this.powerups[Math.floor(Math.random() * this.powerups.length)]
+            } else {
+                powerupType = powerupTypes[Math.floor(Math.random() * powerupTypes.length)]
+            }
+
+            // Create the powerup and the necessary information
+            const name = `${powerupType}${String(col).padStart(2, '0')}${String(row).padStart(2, '0')}`
+            //console.log('dropping power up:', row, col, powerupType, name)
+
+            let newPowerup
+            const [x, y] = [this.x + this.size / 2 - halfStep, this.y + this.size / 2 - halfStep]
+            switch (powerupType) {
+            case 'bombUp':
+                newPowerup = new BombUp(x, y, gridStep * 1.0, name, row, col)
+                break
+            case 'flameUp':
+                newPowerup = new FlameUp(x, y, gridStep * 1.0, name, row, col)
+                break
+            case 'speedUp':
+                newPowerup = new SpeedUp(x, y, gridStep * 1.0, name, row, col)
+                break
+            case 'lifeUp':
+                newPowerup = new LifeUp(x, y, gridStep * 1.0, name, row, col)
+                break
+            case 'bombClip':
+                newPowerup = new BombClip(x, y, gridStep * 1.0, name, row, col)
+                break
+            }
+
+            if (newPowerup) {
+                state.powerups.set(name, newPowerup)
+                powerUpMap[row][col] = [name, newPowerup]
+                state.newItems.set(name, newPowerup)  // only track changes for rendering
+            }
+        }
+
     };
 
     movePlayer(deltaTime, inputs) {
@@ -149,8 +197,8 @@ export class Player {
 
             // adjust next coordinates based on collisions to bombs
             for (const bomb of collidingBombs) {
-                // No collision if bomb has this owner
-                if (!bomb.owners[this.name]) {
+                // No collision if bomb has this owner or bombClip power-up has been picked up
+                if (!this.bombClip && !bomb.owners[this.name]) {
                     [newX, newY] = bomb.checkCollision(newX, newY, this.size)
                 };
             };
@@ -174,15 +222,26 @@ export class Player {
 
             // power-ups hit
             for (const pow of state.powerups.values()) {
-                if (checkHit(playerBounds, pow)) {
+                if (this.alive && checkHit(playerBounds, pow)) {
                     if (pow.powerType === 'bomb') {
                         this.bombAmount++
+                        this.powerups.push('bombUp')
                     }
                     if (pow.powerType === 'flame') {
                         this.bombPower++
+                        this.powerups.push('flameUp')
                     }
                     if (pow.powerType === 'speed') {
                         this.speed += 1.5 * mult // Increase speed by a reasonable amount
+                        this.powerups.push('speedUp')
+                    }
+                    if (pow.powerType === 'life') {
+                        this.lives += 1
+                        this.powerups.push('lifeUp')
+                    }
+                    if (pow.powerType === 'bombclip') {
+                        this.bombClip = true
+                        this.powerups.push('bombClip')
                     }
                     pow.pickUp()
                     state.pickedItems.push(pow.name)

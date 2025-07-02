@@ -182,12 +182,12 @@ function sendHeld() {
 }
 
 document.addEventListener('keydown', (e) => {
-     const chatInput = document.getElementById('chatInput')
+    const chatInput = document.getElementById('chatInput')
     if (chatInput && document.activeElement === chatInput) {
         // If chat input is focused, ignore key events
         return
     }
-    if (keyMap[e.key]) {
+    if (keyMap[e.key] && state.screen !== 'start') {
         const action = keyMap[e.key]
         if (!held.has(action)) {
             held.add(action)
@@ -200,12 +200,12 @@ document.addEventListener('keydown', (e) => {
 })
 
 document.addEventListener('keyup', (e) => {
-     const chatInput = document.getElementById('chatInput')
+    const chatInput = document.getElementById('chatInput')
     if (chatInput && document.activeElement === chatInput) {
         // If chat input is focused, ignore key events
         return
     }
-    if (keyMap[e.key]) {
+    if (keyMap[e.key] && state.screen !== 'start') {
         if (held.has(keyMap[e.key])) {
             held.delete(keyMap[e.key])
             sendHeld()
@@ -246,9 +246,6 @@ export async function startClient() {
             nickname: nickname,
         }))
     })
-
-
-
 
     ws.addEventListener('message', (e) => {
         const msg = JSON.parse(e.data)

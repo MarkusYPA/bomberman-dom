@@ -1,6 +1,6 @@
 import { Timer } from './timerClient.js'
 import { clientEvents } from './runGame.js'
-import { wallBreak } from './sounds.js'
+import { currentlyPlaying, playSound } from './sounds.js'
 
 function generalWallAttributes(domWall, wall) {
     domWall.classList.add('wall')
@@ -51,5 +51,7 @@ export function collapseWeakWall(id, timedout = false) {
     clientEvents.set(`collapse${countNow}`, timedCollapse)
     timedCount++
     targetWall.classList.add('burning')
-    wallBreak.play()
+    if (!currentlyPlaying['wallBreak']) {
+        playSound('wallBreak')
+    }
 }
