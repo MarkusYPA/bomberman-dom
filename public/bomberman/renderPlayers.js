@@ -1,5 +1,5 @@
 import { playerId, setNewLives, setThisPlayer } from './runGame.js'
-import { playerBombDeath, playerDeath, playerDeath2 } from './sounds.js'
+import { playSound } from './sounds.js'
 
 const domPlayers = new Map()
 
@@ -55,9 +55,9 @@ export function updatePlayers(players) {
 
         if (!player.alive) {
             if (!p.classList.contains('dead')) {
-                if (player.killer === 'bomb') playerBombDeath.play()
-                if (player.killer === 'enemy1') playerDeath.play()
-                if (player.killer === 'enemy2') playerDeath2.play()
+                if (player.killer === 'bomb') playSound('playerBombDeath')
+                if (player.killer === 'enemy1') playSound('playerDeath')
+                if (player.killer === 'enemy2') playSound('playerDeath2')
             }
             p.classList.add('dead')
         } else {

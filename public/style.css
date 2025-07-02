@@ -1,3 +1,5 @@
+@import url("preload.css");
+
 body {
   font-family: 'Courier New', 'Monaco', 'Lucida Console', monospace;
   background-image: url('assets/background03.jpg');

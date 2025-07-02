@@ -189,7 +189,7 @@ document.addEventListener('keydown', (e) => {
         // If chat input is focused, ignore key events
         return
     }
-    if (keyMap[e.key]) {
+    if (keyMap[e.key] && state.screen !== 'start') {
         const action = keyMap[e.key]
         if (!held.has(action)) {
             held.add(action)
@@ -207,7 +207,7 @@ document.addEventListener('keyup', (e) => {
         // If chat input is focused, ignore key events
         return
     }
-    if (keyMap[e.key]) {
+    if (keyMap[e.key] && state.screen !== 'start') {
         if (held.has(keyMap[e.key])) {
             held.delete(keyMap[e.key])
             sendHeld()

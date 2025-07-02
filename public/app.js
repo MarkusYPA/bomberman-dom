@@ -2,6 +2,7 @@ import { createVNode, mount } from './framework/mini.js'
 import { state, subscribe, createReactiveComponent } from './framework/state.js'
 import { sendLeaveGame, setupChatHandlers, startClient } from './client.js'
 import { stopSequenceClient } from './bomberman/runGame.js'
+import { loadAllSounds } from './bomberman/sounds.js'
 
 state.screen = 'start'
 state.players = {}          // This can be kept for compatibility, but not used for rendering
@@ -27,22 +28,22 @@ export const PlayerBoardComponent = createReactiveComponent(
         return createVNode('div', {
             class: 'scoreboard scoreboard-width'
         },
-            createVNode('h2', {}, 'Scoreboard'),
-            createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
-            ...[1, 2, 3, 4].map(i => {
-                const player = state.players[i]
-                return createVNode('div', {
-                    class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
-                },
-                    // display player points
-                    createVNode('span', { class: 'player-points' },
-                        player ? player.points ? player.points : '0' : ''
-                    ),
-                    createVNode('span', { class: 'player-nickname' },
-                        player ? player.nickname : `Player ${i}`
-                    )
-                )
-            })
+        createVNode('h2', {}, 'Scoreboard'),
+        createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
+        ...[1, 2, 3, 4].map(i => {
+            const player = state.players[i]
+            return createVNode('div', {
+                class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
+            },
+            // display player points
+            createVNode('span', { class: 'player-points' },
+                player ? player.points ? player.points : '0' : ''
+            ),
+            createVNode('span', { class: 'player-nickname' },
+                player ? player.nickname : `Player ${i}`
+            )
+            )
+        })
         )
     },
     ['players'] // Only watch the 'players' path
@@ -211,15 +212,16 @@ function update(changedPath) {
 
 // Prevent default behavior for arrow keys and space to avoid page scrolling
 window.addEventListener('keydown', function (e) {
-    const chatInput = document.getElementById('chatInput');
+    const chatInput = document.getElementById('chatInput')
     if (chatInput && document.activeElement === chatInput) {
-        return;
+        return
     }
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Space'].includes(e.key)) {
         e.preventDefault()
     };
 })
 
+loadAllSounds()
 subscribe(update, ['screen']) // Only watch for screen changes
 stopSequenceClient()
 state.screen = 'start'
