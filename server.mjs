@@ -13,6 +13,8 @@ const mediaTypes = {
     '.png': 'image/png',
     '.svg': 'image/svg+xml',
     '.json': 'application/json',
+    '.mp3': 'audio/mpeg',
+    '.ico': 'image/x-icon',
 }
 
 const server = createServer((req, res) => {
