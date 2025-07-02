@@ -63,7 +63,7 @@
      id="layer2"
      inkscape:label="bg">
     <rect
-       style="fill:#252525;fill-opacity:0.81967211;stroke:none;stroke-width:2.5"
+       style="fill:#252525;fill-opacity:0.69999999;stroke:none;stroke-width:2.5"
        id="rect7"
        width="171.97917"
        height="145.52083"
@@ -348,5 +348,19 @@
          style="font-size:9.87778px;fill:#adadad;fill-opacity:1;stroke-width:1.57272"
          x="41.328529"
          y="29.35601">Power-Ups</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="overlay"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <rect
+       style="fill:#000000;fill-opacity:0.409836;stroke:none;stroke-width:2.5"
+       id="rect12"
+       width="171.97917"
+       height="145.52083"
+       x="0"
+       y="0" />
   </g>
 </svg>
