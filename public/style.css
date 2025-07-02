@@ -1231,6 +1231,11 @@ button:active {
   transition: opacity 4s;
 }
 
+.player.ghost.timeout {
+  transition: none;
+  opacity: 0;
+}
+
 /* Player count styling */
 .player-count {
   font-size: 1.2em;

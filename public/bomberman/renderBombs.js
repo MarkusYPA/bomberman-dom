@@ -4,6 +4,7 @@ import { playSound } from './sounds.js'
 export function drawBombs(bombs) {        
     const gameContainer = document.getElementById('game')
     if (!gameContainer) return
+
     bombs.forEach(bomb => {        
         const domBomb = document.createElement('div')
 
@@ -11,6 +12,7 @@ export function drawBombs(bombs) {
         domBomb.classList.add('bomb')
         if (bomb.glowing) {
             domBomb.classList.add('glowing')
+            playSound('explosion')
         }
         domBomb.style.width = `${bomb.size}px`
         domBomb.style.height = `${bomb.size}px`
@@ -20,7 +22,9 @@ export function drawBombs(bombs) {
         domBomb.style.display = 'block'
         gameContainer.appendChild(domBomb)
 
-        playSound('placeBomb')
+        if (bomb.glowing) { 
+            playSound('placeBomb')
+        }
         //playSound('tickingBomb')  // don't play this annoying sound
     })
 }
