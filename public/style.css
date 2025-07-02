@@ -918,7 +918,7 @@ button:active {
   text-align: center;
   letter-spacing: 3px;
   text-transform: uppercase;
-  animation: titleGlow 3s ease-in-out infinite alternate;
+  /* animation: titleGlow 3s ease-in-out infinite alternate; */
   position: relative;
   z-index: 2;
   background: #1a1a0d;
