@@ -17,6 +17,11 @@ body {
   margin-bottom: 20px;
 }
 
+.lobby-area {
+  background-image: url("assets/images/powerupinfo.svg");
+  background-size: cover;
+}
+
 #game.level-1 {
   width: 650px;
   height: 550px;
