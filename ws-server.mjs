@@ -250,7 +250,7 @@ export function handleUpgrade(req, socket) {
                         }
                     }
 
-                    if (obj.nickname === 'Player' || obj.nickname === '') {
+                    if (obj.nickname === 'Player' || obj.nickname === 'player' || obj.nickname === '') {
                         // If nickname is default, set it to something unique with adding player ID
                         obj.nickname = `Player ${id}`
                     }

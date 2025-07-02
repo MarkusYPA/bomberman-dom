@@ -71,8 +71,11 @@ function createNicknameModal() {
         })
 
         cancelBtn.addEventListener('click', () => {
-            resolve('Player') // Default nickname if cancelled
+            // resolve('Player') // Default nickname if cancelled
+            // document.body.removeChild(overlay)
+
             document.body.removeChild(overlay)
+            state.screen = 'start'
         })
 
         // Add to DOM and focus
