@@ -16,6 +16,9 @@ export const clientGameState = {
     level: 1,
 
     points: {}, // id: points tally
+
+    deadPlayers: new Map(),
+    longDeadPlayers: new Map()
 }
 
 /**
@@ -47,6 +50,13 @@ export function updateClientGameState(update) {
     // Always overwrite players
     if (Array.isArray(update.players)) {
         clientGameState.players = [...update.players]
+        // add player to long dead players after timeout so death animation doesn't play with delay
+        update.players.forEach( p => {
+            if (p.lives === 0 && !clientGameState.deadPlayers.get(p.id)) {
+                clientGameState.deadPlayers.set(p.id, true)
+                setTimeout(()=> { clientGameState.longDeadPlayers.set(p.id, true) }, 3000)
+            }
+        })        
     }
 
     // Add non-duplicate elements to unique string arrays
@@ -138,6 +148,9 @@ export function clearClientGameState() {
     clientGameState.burningItems = []
     clientGameState.players = []
     clientGameState.level = 1
+
+    clientGameState.deadPlayers = new Map()
+    clientGameState.longDeadPlayers = new Map()
 }
 
 export function setPoints(points) {
