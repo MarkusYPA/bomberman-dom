@@ -25,9 +25,9 @@ function createNicknameModal() {
         // Modal content HTML
         modal.innerHTML = `
             <h2>Enter Player Name</h2>
-            <p>Choose a nickname to identify yourself in the game terminal. Maximum 12 characters allowed.</p>
-            <input type="text" class="nickname-input" placeholder="PLAYER_NAME" maxlength="12" autocomplete="off">
-            <div class="character-count">0/12 characters</div>
+            <p>Choose a nickname to identify yourself in the game terminal. Maximum 10 characters allowed.</p>
+            <input type="text" class="nickname-input" placeholder="PLAYER_NAME" maxlength="10" autocomplete="off">
+            <div class="character-count">0/10 characters</div>
             <div class="nickname-modal-buttons">
                 <button type="button" class="cancel-btn">Cancel</button>
                 <button type="button" class="primary confirm-btn">Connect</button>
@@ -42,7 +42,7 @@ function createNicknameModal() {
         // Update character count
         function updateCharCount() {
             const length = input.value.length
-            charCount.textContent = `${length}/12 characters`
+            charCount.textContent = `${length}/10 characters`
             charCount.style.color = length >= 10 ? '#ff4444' : '#ff8c00'
         }
 
