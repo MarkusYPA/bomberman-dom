@@ -193,7 +193,7 @@ document.addEventListener('keydown', (e) => {
             held.add(action)
             sendHeld()
         }
-        if (action === 'left' || action === 'right' || action === 'up' || action === 'down') {
+        if (state.screen === 'game' && (action === 'left' || action === 'right' || action === 'up' || action === 'down')) {
             setMoving(true)
         }
     }
@@ -226,11 +226,11 @@ function updatePoints(points) {
         }
     }
     // update points in framework state to trigger scoreboard re-render
-    for (const[id, points] of Object.entries(clientGameState.points)){
+    for (const [id, points] of Object.entries(clientGameState.points)) {
         if (state.players && state.players[id]) {
             state.players[id].points = points
         }
-    }    
+    }
 }
 
 export async function startClient() {
@@ -272,7 +272,7 @@ export async function startClient() {
                     if (!(id in msg.payload)) {
                         delete state.players[id]
                     }
-                }                
+                }
                 for (const [id, playerInfo] of Object.entries(msg.payload)) {
                     if (state.players[id]) {
                         for (const [key, val] of Object.entries(playerInfo)) {
@@ -330,14 +330,14 @@ export async function startClient() {
             chatBox.appendChild(messageDiv)
 
             if (isAtBottom) {
-            // User was at bottom, auto-scroll to show new message
+                // User was at bottom, auto-scroll to show new message
                 chatBox.scrollTop = chatBox.scrollHeight
             } else {
-            // User is reading older messages, show new message indicator
+                // User is reading older messages, show new message indicator
                 showNewMessageIndicator()
             }
         } else if (msg.type === 'duplicateNickname') {
-        // Show error message and prompt for new nickname
+            // Show error message and prompt for new nickname
             showErrorMessage(msg.message)
             // Prompt user to enter a different nickname
             createNicknameModal().then(newNickname => {
@@ -347,7 +347,7 @@ export async function startClient() {
                 }))
             })
         } else if (msg.type === 'error') {
-        // Display error message to user
+            // Display error message to user
             showErrorMessage(msg.message)
         } else if (msg.type === 'startgame') {
             clearClientGameState()  // make sure no old calls try to collapse walls
@@ -461,7 +461,7 @@ export function setupChatHandlers() {
     }
 }
 
-export function sendLeaveGame(){
+export function sendLeaveGame() {
     ws.send(JSON.stringify({ type: 'leaveGame' }))
 }
 
