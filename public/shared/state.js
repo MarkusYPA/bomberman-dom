@@ -16,6 +16,9 @@ export const clientGameState = {
     level: 1,
 
     points: {}, // id: points tally
+
+    deadPlayers: new Map(),
+    longDeadPlayers: new Map()
 }
 
 /**
@@ -47,6 +50,13 @@ export function updateClientGameState(update) {
     // Always overwrite players
     if (Array.isArray(update.players)) {
         clientGameState.players = [...update.players]
+        // add player to long dead players after timeout so death animation doesn't play with delay
+        update.players.forEach( p => {
+            if (p.lives === 0 && !clientGameState.deadPlayers.get(p.id)) {
+                clientGameState.deadPlayers.set(p.id, true)
+                setTimeout(()=> { clientGameState.longDeadPlayers.set(p.id, true) }, 3000)
+            }
+        })        
     }
 
     // Add non-duplicate elements to unique string arrays
@@ -55,6 +65,39 @@ export function updateClientGameState(update) {
             update[key].forEach(item => {
                 if (!clientGameState[key].includes(item)) {
                     clientGameState[key].push(item)
+                    
+                    // timeout for collapsing walls to prevent delayed animation in inactive tabs
+                    if (key === 'collapsingWalls') {
+                        // Modify collapse to happen without sound and going orange
+                        setTimeout(() => {
+                            const index = clientGameState.collapsingWalls.indexOf(item)
+                            if (index > -1) {
+                                clientGameState.collapsingWalls[index] = clientGameState.collapsingWalls[index] + 'timedout'
+                            }
+                        }, 600)
+                    }
+
+                    // timeout for burning items to prevent delayed animation in inactive tabs
+                    if (key === 'burningItems') {
+                        // Modify collapse to happen without sound and going orange
+                        setTimeout(() => {
+                            const index = clientGameState.burningItems.indexOf(item)
+                            if (index > -1) {
+                                clientGameState.burningItems[index] = clientGameState.burningItems[index] + 'timedout'
+                            }
+                        }, 600)
+                    }
+
+                    // timeout for burning items to prevent delayed animation in inactive tabs
+                    if (key === 'pickedItems') {
+                        // Modify collapse to happen without sound and going orange
+                        setTimeout(() => {
+                            const index = clientGameState.pickedItems.indexOf(item)
+                            if (index > -1) {
+                                clientGameState.pickedItems[index] = clientGameState.pickedItems[index] + 'timedout'
+                            }
+                        }, 600)
+                    }
                 }
             })
         }
@@ -65,8 +108,26 @@ export function updateClientGameState(update) {
         if (update[key] && typeof update[key] === 'object') {
             for (const [k, v] of Object.entries(update[key])) {
                 if (!clientGameState[key].has(k)) {
+
+                    // timeout for flames to prevent accumulation in inactive tabs
+                    if (key === 'newFlames') {
+                        v.addedAt = Date.now()
+                        // Auto-remove flame after 600ms if not processed
+                        setTimeout(() => {
+                            clientGameState.newFlames.delete(k)
+                        }, 600)
+                    }
+
+                    // timeout for new bombs to prevent delayed bomb drop sound
+                    if (key === 'newBombs') {
+                        setTimeout(() => {
+                            clientGameState.newBombs.delete(k)
+                        }, 600)
+                    }
                     clientGameState[key].set(k, v)
                 }
+
+
             }
         }
     })
@@ -87,6 +148,9 @@ export function clearClientGameState() {
     clientGameState.burningItems = []
     clientGameState.players = []
     clientGameState.level = 1
+
+    clientGameState.deadPlayers = new Map()
+    clientGameState.longDeadPlayers = new Map()
 }
 
 export function setPoints(points) {

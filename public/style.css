@@ -270,6 +270,14 @@ body {
   background-size: cover;
 }
 
+.lifeup.burn,
+.bombup.burn,
+.flameup.burn,
+.speedup.burn,
+.bombclip.burn { 
+    background-image: url("assets/images/burn.svg");
+}
+
 .textbar {
   display: flex;
   flex-direction: row;
@@ -1221,6 +1229,11 @@ button:active {
   opacity: 0;
   pointer-events: none;
   transition: opacity 4s;
+}
+
+.player.ghost.timeout {
+  transition: none;
+  opacity: 0;
 }
 
 /* Player count styling */

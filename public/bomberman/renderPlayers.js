@@ -1,3 +1,4 @@
+import { clientGameState } from '../shared/state.js'
 import { playerId, setNewLives, setThisPlayer } from './runGame.js'
 import { playSound } from './sounds.js'
 
@@ -49,6 +50,9 @@ export function updatePlayers(players) {
         // Add ghost effect if player is out of lives
         if (player.lives <= 0) {
             p.classList.add('ghost')
+            if (clientGameState.longDeadPlayers.get(player.id)) {
+                p.classList.add('timeout')
+            }
         } else {
             p.classList.remove('ghost')
         }
