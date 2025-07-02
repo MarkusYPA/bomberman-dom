@@ -1,4 +1,4 @@
-import { placeBomb, tickingBomb } from './sounds.js'
+import { playSound } from './sounds.js'
 
 
 export function drawBombs(bombs) {
@@ -11,10 +11,7 @@ export function drawBombs(bombs) {
         domBomb.classList.add('bomb')
         if (bomb.glowing) {
             domBomb.classList.add('glowing')
-
-            const explosion = new Audio('assets/sfx/explosion.mp3')
-            explosion.volume = 0.6
-            explosion.play()
+            playSound('explosion')
         }
         domBomb.style.width = `${bomb.size}px`
         domBomb.style.height = `${bomb.size}px`
@@ -23,19 +20,18 @@ export function drawBombs(bombs) {
 
         domBomb.style.display = 'block'
         gameContainer.appendChild(domBomb)
-
-        // Sound for bomb
-        placeBomb.play()
-        tickingBomb.play()
+        playSound('placeBomb')
+        //playSound('tickingBomb')  // don't play this annoying sound
     })
 }
 
 export function clearBombs(bombs) {
     bombs.forEach(bomb => {
-        tickingBomb.pause()
-        tickingBomb.currentTime = 0
+        //stopSound('tickingBomb')  // isn't being played
 
-        document.getElementById(bomb.name).remove()    // black version
+        const targetBomb = document.getElementById(bomb.name)   // black version
+        if (targetBomb) targetBomb.remove()
+
         if (document.getElementById(bomb.name)) {
             document.getElementById(bomb.name).remove()    // orange version, doesn't always get created at early explosion
         }
