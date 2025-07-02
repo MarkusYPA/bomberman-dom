@@ -29,7 +29,9 @@ export function clearBombs(bombs) {
     bombs.forEach(bomb => {
         //stopSound('tickingBomb')  // isn't being played
 
-        document.getElementById(bomb.name).remove()    // black version
+        const targetBomb = document.getElementById(bomb.name)   // black version
+        if (targetBomb) targetBomb.remove()
+
         if (document.getElementById(bomb.name)) {
             document.getElementById(bomb.name).remove()    // orange version, doesn't always get created at early explosion
         }
