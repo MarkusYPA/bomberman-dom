@@ -60,9 +60,21 @@ export function pickUpItem(id) {
 }
 
 export function burnItem(id) {
+    const timedout = String(id).endsWith('timedout')
+    if (timedout) id = id.slice(0, -8)
+        
     const targetItem = document.getElementById(id)
 
-    targetItem.style.backgroundImage = 'url("assets/images/burn.svg")'
+    if (!targetItem) return
+
+    if (timedout) {
+        // Remove immediately, no animation or sound
+        targetItem.remove()
+        return
+    }
+
+    //targetItem.style.backgroundImage = 'url("assets/images/burn.svg")'
+    targetItem.classList.add('burn')
     const countNow = timedCount
     const timedCollapse = new Timer(() => {
         targetItem.remove()

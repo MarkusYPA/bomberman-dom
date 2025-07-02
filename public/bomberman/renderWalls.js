@@ -33,8 +33,12 @@ export function drawWeakWalls(walls) {
 
 let timedCount = 0
 
-export function collapseWeakWall(id, timedout = false) {
-    const targetWall = document.getElementById(id)
+export function collapseWeakWall(id) {
+    const timedout = String(id).endsWith('timedout')
+    if (timedout) id = id.slice(0, -8)
+
+    const targetWall = document.querySelector(`#${id}`)
+
     if (!targetWall) return
 
     if (timedout) {

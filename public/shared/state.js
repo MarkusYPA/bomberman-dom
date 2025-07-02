@@ -56,13 +56,24 @@ export function updateClientGameState(update) {
                 if (!clientGameState[key].includes(item)) {
                     clientGameState[key].push(item)
                     
-                    // timeout for collapsing walls to prevent accumulation in inactive tabs
+                    // timeout for collapsing walls to prevent delayed animation in inactive tabs
                     if (key === 'collapsingWalls') {
-                        // Auto-remove wall after 300ms if not processed
+                        // Modify collapse to happen without sound and going orange
                         setTimeout(() => {
                             const index = clientGameState.collapsingWalls.indexOf(item)
                             if (index > -1) {
-                                clientGameState.collapsingWalls.splice(index, 1)
+                                clientGameState.collapsingWalls[index] = clientGameState.collapsingWalls[index] + 'timedout'
+                            }
+                        }, 600)
+                    }
+
+                    // timeout for burning items to prevent delayed animation in inactive tabs
+                    if (key === 'burningItems') {
+                        // Modify collapse to happen without sound and going orange
+                        setTimeout(() => {
+                            const index = clientGameState.burningItems.indexOf(item)
+                            if (index > -1) {
+                                clientGameState.burningItems[index] = clientGameState.burningItems[index] + 'timedout'
                             }
                         }, 600)
                     }
@@ -72,7 +83,7 @@ export function updateClientGameState(update) {
     });
 
     // Add non-duplicate entries to Maps with unique string keys
-    ['newBombs', 'removedBombs', 'newFlames'].forEach(key => {
+    ['newBombs', 'removedBombs', 'newFlames'].forEach(key => {          // '' could be a problem
         if (update[key] && typeof update[key] === 'object') {
             for (const [k, v] of Object.entries(update[key])) {
                 if (!clientGameState[key].has(k)) {
