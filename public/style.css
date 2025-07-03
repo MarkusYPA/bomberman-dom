@@ -6,7 +6,35 @@ body {
   background-size: cover;
   color: #2a1810;
 }
+/* bar header layout */
+/* .game-header {
+  width: 100%;
+  background: rgba(42, 24, 16, 0.95);
+  border-bottom: 4px solid #8b4513;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  padding: 24px 0 16px 0;
+  text-align: center;
+} */
 
+/* nobar header layout */
+.game-header {
+  width: 100%;
+  text-align: center;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+.game-header h2 {
+  font-family: 'Courier New', monospace;
+  font-family: 3rem;
+  color: #ff8c00;
+  text-shadow:
+    0 0 10px #ff8c00,
+    0 0 20px #ff8c00,
+    0 0 30px #ff8c00;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 0;
+}
 .game-area,
 .lobby-area {
   width: 652px; /* 650 - 32*2 */
@@ -306,7 +334,6 @@ body {
   font-weight: normal;
 }
 
-/* Fixed Chat Area Styling */
 .chat-area {
   width: 100%;
   max-width: none;
@@ -350,10 +377,9 @@ body {
   flex-direction: row;
   align-items: flex-start;
   justify-content: center;
-  width: 100vw;
-  min-height: 100vh;
+  width: 95vw;
   gap: 20px;
-  padding: 20px;
+  /* padding: 20px; */
   box-sizing: border-box;
 }
 
@@ -361,7 +387,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: auto;
+  flex: 0 0 auto;
 }
 
 .sidebar {
@@ -369,10 +395,11 @@ body {
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  flex: 0 0 320px;
+  width: 350px !important; /* Force a specific width */
   min-width: 320px;
-  max-width: 320px;
-  gap: 16px;
+  max-width: 400px;
+  flex-shrink: 0; /* Prevent shrinking */
+  gap: 10px;
 }
 
 .player-board-section {

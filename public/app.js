@@ -28,7 +28,6 @@ export const PlayerBoardComponent = createReactiveComponent(
         return createVNode('div', {
             class: 'scoreboard scoreboard-width'
         },
-        createVNode('h2', {}, 'Scoreboard'),
         createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
         ...[1, 2, 3, 4].map(i => {
             const player = state.players[i]
@@ -57,9 +56,7 @@ function MainLayout({ header, boardId, boardClass, boardNode }) {
         createVNode('div', { class: 'game-body' },
             // Main board area
             createVNode('div', { class: 'game-content' },
-                createVNode('div', { class: 'game-board-section' },
-                    boardNode ? boardNode : createVNode('div', { id: boardId, class: boardClass })
-                )
+                boardNode ? boardNode : createVNode('div', { id: boardId, class: boardClass })
             ),
             // Sidebar with scoreboard and chat
             createVNode('div', { class: 'sidebar' },
@@ -123,7 +120,7 @@ export function LobbyTimerComponent() {
 
 export function PlayerCountComponent() {
     return createVNode('div', { class: 'player-count' },
-        `Players in lobby: ${state.playerCount}/4`
+        `Players online: ${state.playerCount}/4`
     )
 }
 
