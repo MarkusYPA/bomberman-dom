@@ -250,6 +250,11 @@ export function handleUpgrade(req, socket) {
                         }
                     }
 
+                    if (obj.nickname === 'Player' || obj.nickname === 'player' || obj.nickname === '') {
+                        // If nickname is default, set it to something unique with adding player ID
+                        obj.nickname = `Player ${id}`
+                    }
+
                     clients.set(socket, { id, nickname: obj.nickname, points: 0 })
                     const added = game.addPlayer(id, obj.nickname)
                     if (!added) {
