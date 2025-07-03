@@ -234,7 +234,7 @@ export class Player {
                         this.powerups.push('flameUp')
                     }
                     if (pow.powerType === 'speed') {
-                        this.speed += 1.3 * mult // Increase speed by a reasonable amount
+                        this.speed += 1.2 * mult // Increase speed by a reasonable amount
                         this.powerups.push('speedUp')
                     }
                     if (pow.powerType === 'life') {

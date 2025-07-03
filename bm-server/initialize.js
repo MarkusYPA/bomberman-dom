@@ -104,7 +104,8 @@ export function makeWalls(level) {
     };
 
     // place 5 bomb powerups inside weak walls
-    for (let i = 0; i < 5; i++) {
+    let placements = 0
+    while (placements < 5) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -119,11 +120,13 @@ export function makeWalls(level) {
             const newBombUp = new BombUp(x, y, gridStep * 1.0, name, mapY, mapX)
             state.powerups.set(name, newBombUp)
             powerUpMap[mapY][mapX] = [name, newBombUp]
+            placements ++
         };
     }
 
     // place 5 flame powerups inside weak walls
-    for (let i = 0; i < 5; i++) {
+    placements = 0
+    while (placements < 5) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -138,11 +141,13 @@ export function makeWalls(level) {
             const newFlameUp = new FlameUp(x, y, gridStep * 1.0, name, mapY, mapX)
             state.powerups.set(name, newFlameUp)
             powerUpMap[mapY][mapX] = [name, newFlameUp]
+            placements ++
         };
     }
 
     // place 3 speed powerups inside weak walls  
-    for (let i = 0; i < 3; i++) {
+    placements = 0
+    while (placements < 3) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -157,11 +162,13 @@ export function makeWalls(level) {
             const newSpeedUp = new SpeedUp(x, y, gridStep * 1.0, name, mapY, mapX)
             state.powerups.set(name, newSpeedUp)
             powerUpMap[mapY][mapX] = [name, newSpeedUp]
+            placements ++
         };
     }
 
     // place 2 life powerups inside weak walls  
-    for (let i = 0; i < 2; i++) {
+    placements = 0
+    while (placements < 2) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -176,11 +183,13 @@ export function makeWalls(level) {
             const newLifeUp = new LifeUp(x, y, gridStep * 1.0, name, mapY, mapX)
             state.powerups.set(name, newLifeUp)
             powerUpMap[mapY][mapX] = [name, newLifeUp]
+            placements ++
         };
     }
 
     // place 2 bomb clip powerups inside weak walls  
-    /* for (let i = 0; i < 2; i++) {
+    /* placements = 0
+    while (placements < 2) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -195,11 +204,13 @@ export function makeWalls(level) {
             const newBombClip = new BombClip(x, y, gridStep * 1.0, name, mapY, mapX)
             state.powerups.set(name, newBombClip)
             powerUpMap[mapY][mapX] = [name, newBombClip]
+            placements ++
         };
     } */
 
     // place 2 wall clip powerups inside weak walls  
-    for (let i = 0; i < 2; i++) {
+    placements = 0
+    while (placements < 2) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -214,6 +225,7 @@ export function makeWalls(level) {
             const newWallClip = new WallClip(x, y, gridStep * 1.0, name, mapY, mapX)
             state.powerups.set(name, newWallClip)
             powerUpMap[mapY][mapX] = [name, newWallClip]
+            placements ++
         };
     }
 };
