@@ -308,12 +308,20 @@ export function handleUpgrade(req, socket) {
                     broadcast({ type: 'points', points, players: game.getState() })
                 }
 
-                if (obj.type === 'leaveGame') {
+                if (obj.type === 'backToLobby') {
                     removePlayer(id)        // remove player from main game
                     const sender = clients.get(socket)?.nickname || '???'
                     if (sender && sender !== '???') {
                         broadcast({ type: 'chat', nickname: sender, playerId: id, message: sender + ' exited to lobby!' })
                     }
+                }
+
+                if (obj.type === 'leaveGame') {
+                    cleanup() // Clean up the socket and player state
+                    const points = countPoints()
+                    broadcast({ type: 'points', points })
+                    updateCountdown()
+                    broadcastPlayerCount()
                 }
 
                 offset = dataEnd

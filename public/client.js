@@ -461,8 +461,12 @@ export function setupChatHandlers() {
     }
 }
 
-export function sendLeaveGame() {
+export function sendLeaveGame(){
     ws.send(JSON.stringify({ type: 'leaveGame' }))
+}
+
+export function sendBackToLobby(){
+    ws.send(JSON.stringify({ type: 'backToLobby' }))
 }
 
 export { renderMiniGame }
