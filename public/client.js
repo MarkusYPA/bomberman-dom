@@ -417,8 +417,8 @@ function renderMiniGame(players) {
         const p = players[id]
         const d = document.createElement('div')
         d.className = `player player-color-${id}`
-        d.style.left = `${p.x * 20}px`
-        d.style.top = `${p.y * 20}px`
+        d.style.left = `${p.x * 25}px`
+        d.style.top = `${p.y * 25}px`
         d.textContent = p.direction === 'left' ? '<' : '>'
         d.title = p.nickname
         box.appendChild(d)

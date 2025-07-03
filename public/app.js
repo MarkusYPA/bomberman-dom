@@ -49,7 +49,7 @@ export const PlayerBoardComponent = createReactiveComponent(
     ['players'] // Only watch the 'players' path
 )
 
-function MainLayout({ header, boardId, boardClass }) {
+function MainLayout({ header, boardId, boardClass, boardNode }) {
     return createVNode('div', { class: 'game-root' },
         // Header
         header,
@@ -58,7 +58,7 @@ function MainLayout({ header, boardId, boardClass }) {
             // Main board area
             createVNode('div', { class: 'game-content' },
                 createVNode('div', { class: 'game-board-section' },
-                    createVNode('div', { id: boardId, class: boardClass })
+                    boardNode ? boardNode : createVNode('div', { id: boardId, class: boardClass })
                 )
             ),
             // Sidebar with scoreboard and chat
@@ -77,14 +77,16 @@ function MainLayout({ header, boardId, boardClass }) {
 }
 
 function LobbyScreen() {
+    const boardNode = createVNode('div', { class: 'lobby-border-wrapper' },
+        createVNode('div', { id: 'lobby', class: 'lobby-area' })
+    )
     return MainLayout({
         header: createVNode('div', { class: 'game-header' },
             createVNode('h2', {}, 'Lobby: Waiting for players...'),
             createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()),
             createVNode('div', { id: 'countdown-container', class: 'timer-section' }, CountdownComponent())
         ),
-        boardId: 'lobby',
-        boardClass: 'lobby-area'
+        boardNode
     })
 }
 

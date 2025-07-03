@@ -9,18 +9,33 @@ body {
 
 .game-area,
 .lobby-area {
-  width: 600px;
-  height: 450px;
+  width: 652px; /* 650 - 32*2 */
+  height: 552px; /* 550 - 32*2 */
+  /* margin: 70px 50px 70px 50px; */
+  /* width: 600px;
+  height: 450px; */
   border: 1px solid #000;
   position: relative;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  /* margin-top: 20px;
+  margin-bottom: 20px; */
+}
+
+.lobby-border-wrapper {
+  display: inline-block;
+  border-width: 50px;
+  border-style: solid;
+  border-image: url('assets/images/solidwall.svg') 32;
+  box-sizing: content-box; /* ensures border is outside the content */
+  padding: 0;
+  background: none;
 }
 
 .lobby-area {
+  border: none;
   background-image: url("assets/images/powerupinfo.svg");
   background-size: cover;
   background-position: center;
+  box-sizing: border-box;
 }
 
 #game.level-1 {
@@ -346,10 +361,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 auto;
-  width: 650px;
-  max-width: 650px;
-  min-width: 600px;
+  width: auto;
 }
 
 .sidebar {
@@ -875,43 +887,4 @@ button {
   padding: 8px 16px;
   border-radius: 8px;
   display: inline-block;
-}
-
-/* Layout for game and sidebar (playerboard + chat) */
-.game-body {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: center;
-  width: 100vw;
-  min-height: 100vh;
-  gap: 20px;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.game-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  width: 650px;
-  max-width: 650px;
-  min-width: 600px;
-}
-
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  flex: 0 0 320px;
-  min-width: 320px;
-  max-width: 320px;
-  gap: 16px;
-}
-
-.player-board-section {
-  flex: 0 0 auto;
-  margin-bottom: 0;
 }
