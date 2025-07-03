@@ -2,13 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="51.272648mm"
+   width="50.403999mm"
    height="50.403622mm"
-   viewBox="0 0 51.272648 50.403622"
+   viewBox="0 0 50.403999 50.403622"
    version="1.1"
    id="svg5"
    sodipodi:docname="solidwall.svg"
-   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   inkscape:version="1.4.2 (ebf0e940, 2025-05-08)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -23,33 +23,33 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="3.6115912"
-     inkscape:cx="94.141331"
-     inkscape:cy="96.771751"
-     inkscape:window-width="1752"
-     inkscape:window-height="1122"
-     inkscape:window-x="0"
+     inkscape:zoom="2.5537806"
+     inkscape:cx="71.854254"
+     inkscape:cy="48.94704"
+     inkscape:window-width="1240"
+     inkscape:window-height="1119"
+     inkscape:window-x="1000"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg5" />
   <defs
      id="defs2" />
   <rect
-     style="fill:#d4791e;fill-opacity:1;stroke:none;stroke-width:4.99999;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+     style="fill:#ac9346;fill-opacity:1;stroke:none;stroke-width:4.95744;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
      id="rect3"
-     width="51.272839"
-     height="50.403641"
+     width="50.403999"
+     height="50.403622"
      x="0"
      y="0" />
   <path
      id="rect1"
-     style="fill:#3f1b41;stroke-width:5;stroke-linecap:round;stroke-dasharray:none;stroke:none;stroke-opacity:1;fill-opacity:1"
-     d="M 51.272839 0 L 46.611625 4.5821493 L 46.611625 45.821493 L 4.6612142 45.821493 L 0 50.403642 L 51.272839 50.403642 L 51.272839 0 z " />
+     style="fill:#452b2d;fill-opacity:1;stroke:none;stroke-width:4.95745;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+     d="M 50.403999,0 45.821772,4.5821475 V 45.821475 H 4.582228 L 0,50.403622 h 50.403999 z" />
   <rect
-     style="fill:#693470;fill-opacity:1;stroke:none;stroke-width:4.09091;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+     style="fill:#436053;fill-opacity:1;stroke:none;stroke-width:4.0561;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
      id="rect2"
-     width="41.950348"
-     height="41.239326"
-     x="4.66115"
-     y="4.5821476" />
+     width="41.239483"
+     height="41.239311"
+     x="4.5821648"
+     y="4.5821457" />
 </svg>
