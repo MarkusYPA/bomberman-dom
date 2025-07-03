@@ -56,9 +56,11 @@ body {
   box-sizing: content-box; /* ensures border is outside the content */
   padding: 0;
   background: none;
+  margin-top: 20px;
 }
 
 .lobby-area {
+  position : relative;
   border: none;
   background-image: url("assets/images/powerupinfo.svg");
   background-size: cover;
