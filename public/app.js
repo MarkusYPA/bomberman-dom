@@ -26,7 +26,7 @@ function StartScreen() {
 export const PlayerBoardComponent = createReactiveComponent(
     () => {
         return createVNode('div', {
-            class: 'scoreboard scoreboard-width'
+            class: 'scoreboard-box'
         },
         createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
         ...[1, 2, 3, 4].map(i => {
