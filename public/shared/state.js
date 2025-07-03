@@ -122,7 +122,7 @@ export function updateClientGameState(update) {
                     if (key === 'newBombs') {
                         setTimeout(() => {
                             clientGameState.newBombs.delete(k)
-                        }, 600)
+                        }, 2500)
                     }
                     clientGameState[key].set(k, v)
                 }
