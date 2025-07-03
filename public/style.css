@@ -276,11 +276,17 @@ body {
   background-size: cover;
 }
 
+.wallclip {
+  background-image: url("assets/images/wallclip.svg");
+  background-size: cover;
+}
+
 .lifeup.burn,
 .bombup.burn,
 .flameup.burn,
 .speedup.burn,
-.bombclip.burn { 
+.bombclip.burn,
+.wallclip.burn { 
     background-image: url("assets/images/burn.svg");
 }
 

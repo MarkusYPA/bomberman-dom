@@ -3,7 +3,7 @@ import { bombTime, bombs, bounds, flames, timedEvents, levelMap, powerUpMap } fr
 import { Timer } from './timer.js'
 import { state } from '../bm-server-shared/state.js'
 import { gridStep, halfStep, mult } from '../bm-server-shared/config.js'
-import { BombClip, BombUp, FlameUp, LifeUp, SpeedUp } from './powerup.js'
+import { BombUp, FlameUp, LifeUp, SpeedUp, WallClip } from './powerup.js'
 
 let timedCount = 0
 
@@ -25,7 +25,8 @@ export class Player {
         this.isMoving = false
         this.score = 0
         this.killer = ''
-        this.bombClip = false
+        //this.bombClip = false
+        this.wallClip = false
         this.powerups = []      // drop one picked powerup at death
         this.invulnerability()
     };
@@ -93,7 +94,7 @@ export class Player {
             const col = Math.floor((this.x + this.size / 2) / gridStep)
 
             // pick one string from this.powerups or, if it's empty, from powerupTypes
-            const powerupTypes = ['bombUp', 'flameUp', 'speedUp', 'bombClip']   // no life up: could lead to long lineof 6 lives
+            const powerupTypes = ['bombUp', 'flameUp', 'speedUp', 'wallClip']   // no life up: could lead to long lineof 6 lives
             let powerupType = ''
             if (this.powerups.length > 0) {
                 powerupType = this.powerups[Math.floor(Math.random() * this.powerups.length)]
@@ -120,8 +121,8 @@ export class Player {
             case 'lifeUp':
                 newPowerup = new LifeUp(x, y, gridStep * 1.0, name, row, col)
                 break
-            case 'bombClip':
-                newPowerup = new BombClip(x, y, gridStep * 1.0, name, row, col)
+            case 'wallClip':
+                newPowerup = new WallClip(x, y, gridStep * 1.0, name, row, col)
                 break
             }
 
@@ -173,7 +174,7 @@ export class Player {
 
             // weak wall collisions
             for (const wall of state.weakWalls.values()) {
-                if (wall.checkCollision(newX, newY, this.size, slowDown).toString() != [newX, newY].toString()) {
+                if (!this.wallClip && wall.checkCollision(newX, newY, this.size, slowDown).toString() != [newX, newY].toString()) {
                     collidingWalls.push(wall)
                     if (collidingWalls.length === 3) break // Can't collide with more than three walls
                 };
@@ -198,7 +199,8 @@ export class Player {
             // adjust next coordinates based on collisions to bombs
             for (const bomb of collidingBombs) {
                 // No collision if bomb has this owner or bombClip power-up has been picked up
-                if (!this.bombClip && !bomb.owners[this.name]) {
+                //if (!this.bombClip && !bomb.owners[this.name]) {
+                if (this.vulnerable && !bomb.owners[this.name]) {
                     [newX, newY] = bomb.checkCollision(newX, newY, this.size)
                 };
             };
@@ -232,16 +234,16 @@ export class Player {
                         this.powerups.push('flameUp')
                     }
                     if (pow.powerType === 'speed') {
-                        this.speed += 1.5 * mult // Increase speed by a reasonable amount
+                        this.speed += 1.3 * mult // Increase speed by a reasonable amount
                         this.powerups.push('speedUp')
                     }
                     if (pow.powerType === 'life') {
                         this.lives += 1
                         this.powerups.push('lifeUp')
                     }
-                    if (pow.powerType === 'bombclip') {
-                        this.bombClip = true
-                        this.powerups.push('bombClip')
+                    if (pow.powerType === 'wallclip') {
+                        this.wallClip = true
+                        this.powerups.push('wallClip')
                     }
                     pow.pickUp()
                     state.pickedItems.push(pow.name)

@@ -33,8 +33,12 @@ export function drawPowerUps(items) {
             domItem.classList.add('lifeup')
         }
 
-        if (item.powerType === 'bombclip') {
+        /* if (item.powerType === 'bombclip') {
             domItem.classList.add('bombclip')
+        } */
+
+        if (item.powerType === 'wallclip') {
+            domItem.classList.add('wallclip')
         }
 
         document.getElementById('game').appendChild(domItem)
@@ -50,7 +54,7 @@ export function pickUpItem(id) {
     const targetItem = document.getElementById(id)
 
     if (targetItem && !timedout) {
-        if (id.startsWith('bombUp') || id.startsWith('speedUp') || id.startsWith('bombClip')) {
+        if (id.startsWith('bombUp') || id.startsWith('speedUp') || id.startsWith('wallClip')) {
             playSound('bombUp')
         } else if (id.startsWith('flameUp') || id.startsWith('lifeUp')) {
             playSound('flameUp')

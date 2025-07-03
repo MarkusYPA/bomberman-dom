@@ -44,7 +44,8 @@ function isPowerUp(row, col) {
             powerUpMap[row][col][0].startsWith('flameUp') ||
             powerUpMap[row][col][0].startsWith('speedUp') ||
             powerUpMap[row][col][0].startsWith('lifeUp') ||
-            powerUpMap[row][col][0].startsWith('bombClip'))
+            //powerUpMap[row][col][0].startsWith('bombClip') ||
+            powerUpMap[row][col][0].startsWith('wallClip'))
     )
 }
 

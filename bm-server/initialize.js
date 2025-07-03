@@ -1,6 +1,6 @@
 import { levelMap, powerUpMap } from './game.js'
 import { Player } from './player.js'
-import { BombClip, BombUp, FlameUp, LifeUp, SpeedUp } from './powerup.js'
+import { BombUp, FlameUp, LifeUp, SpeedUp, WallClip } from './powerup.js'
 import { SolidWall, WeakWall } from './walls.js'
 import { state } from '../bm-server-shared/state.js'
 import { gridStep, halfStep, mult } from '../bm-server-shared/config.js'
@@ -104,7 +104,7 @@ export function makeWalls(level) {
     };
 
     // place 5 bomb powerups inside weak walls
-    while (state.powerups.size < 5) {
+    for (let i = 0; i < 5; i++) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -123,7 +123,7 @@ export function makeWalls(level) {
     }
 
     // place 5 flame powerups inside weak walls
-    while (state.powerups.size < 10) {
+    for (let i = 0; i < 5; i++) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -142,7 +142,7 @@ export function makeWalls(level) {
     }
 
     // place 3 speed powerups inside weak walls  
-    while (state.powerups.size < 13) {
+    for (let i = 0; i < 3; i++) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -161,7 +161,7 @@ export function makeWalls(level) {
     }
 
     // place 2 life powerups inside weak walls  
-    while (state.powerups.size < 15) {
+    for (let i = 0; i < 2; i++) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -180,7 +180,7 @@ export function makeWalls(level) {
     }
 
     // place 2 bomb clip powerups inside weak walls  
-    while (state.powerups.size < 17) {
+    /* for (let i = 0; i < 2; i++) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -195,6 +195,25 @@ export function makeWalls(level) {
             const newBombClip = new BombClip(x, y, gridStep * 1.0, name, mapY, mapX)
             state.powerups.set(name, newBombClip)
             powerUpMap[mapY][mapX] = [name, newBombClip]
+        };
+    } */
+
+    // place 2 wall clip powerups inside weak walls  
+    for (let i = 0; i < 2; i++) {
+        const mapX = Math.floor(Math.random() * 13)
+        const mapY = Math.floor(Math.random() * 11)
+
+        if (levelMap[mapY][mapX] &&
+            typeof levelMap[mapY][mapX] == 'string' &&
+            levelMap[mapY][mapX].startsWith('weakWall') &&
+            !powerUpMap[mapY][mapX]
+        ) {
+            const x = gridStep * mapX
+            const y = gridStep * mapY
+            const name = `wallClip${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
+            const newWallClip = new WallClip(x, y, gridStep * 1.0, name, mapY, mapX)
+            state.powerups.set(name, newWallClip)
+            powerUpMap[mapY][mapX] = [name, newWallClip]
         };
     }
 };
