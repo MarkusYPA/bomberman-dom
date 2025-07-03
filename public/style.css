@@ -294,16 +294,29 @@ body {
   align-items: center;
 }
 
-.scoreboard-box{
-    width: 85%;
-    max-width: none;
-    background: rgba(42, 24, 16, 0.8);
-    border: 3px solid #654321;
-    border-style: inset;
-    border-radius: 0;
-    padding: 15px;
-    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
-    margin-bottom: 0;
+.scoreboard-box {
+  width: 250px;
+  height: auto;
+  overflow-y: auto;
+  border: 3px solid #2a1810;
+  border-style: inset;
+  padding: 10px;
+  /* margin-bottom: 15px; */
+  margin: 0 auto;
+  position: relative;
+  background: #1a1a0d;
+  color: #ff9900;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.5);
+  background-image:
+    linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent);
+  background-size: 2px 2px;
+  display: flex;
+  justify-items: center;
+  justify-content: center;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .scoreboard-player {
@@ -335,7 +348,7 @@ opacity: 1;
 
 .chat-area {
   width: 100%;
-  height: 410px;
+  height: 390px;
   max-width: none;
   background: #2a1810;
   border: 4px solid #8b4513;
@@ -351,6 +364,7 @@ opacity: 1;
 
 .chat-box {
   height: 85%;
+  width: 300px;
   overflow-y: auto;
   border: 3px solid #2a1810;
   border-style: inset;
@@ -498,11 +512,31 @@ opacity: 1;
   max-width: 400px;
   flex-shrink: 0; /* Prevent shrinking */
   gap: 3px;
+  margin-top: 20px;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 350px !important; /* Force a specific width */
+  min-width: 320px;
+  max-width: 400px;
+  flex-shrink: 0; /* Prevent shrinking */
+  gap: 3px;
+  height: 650px;
 }
 
 .player-board-section {
-  padding: 15px;
-  background: rgba(0, 0, 0, 0.05);
+  width: 85%;
+  background: #44260f;
+  border: 4px solid #000;
+  border-style: outset;
+  padding: 20px;
+  margin: 0 auto 20px auto;
+  box-shadow: inset -2px -2px 0px rgba(0, 0, 0, 0.5), inset 2px 2px 0px rgba(255, 255, 255, 0.05);
+  display: block;
 }
 
 /* Input styling fixes */
