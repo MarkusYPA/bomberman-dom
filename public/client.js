@@ -375,7 +375,7 @@ export async function startClient() {
             if (gameRunning) {
                 box.innerHTML = ''          // clear main game graphics
                 box.className = 'game-area' // restore default class
-                stopSequenceClient()
+                stopSequenceClient('lobby')
             }
         } else if (msg.type === 'points') {
             if (msg.players) {
