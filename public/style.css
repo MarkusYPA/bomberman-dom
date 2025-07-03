@@ -559,7 +559,8 @@ button {
   content: "=== PLAYER IDENTIFICATION ===";
   display: block;
   background: #1a1a0d;
-  color: #00ff41;
+  color: #ff8c00;
+  /* color: #00ff41; */
   text-align: center;
   margin: -30px -30px 20px -30px;
   padding: 10px;
@@ -568,15 +569,17 @@ button {
   font-weight: bold;
   letter-spacing: 2px;
   border-bottom: 2px solid #8b4513;
-  text-shadow: 0 0 5px #00ff41;
+  /* text-shadow: 0 0 5px #00ff41; */
+  text-shadow: 0 0 5px #ff8c00;
+
 }
 
 .nickname-modal h2 {
-  color: #00ff41;
+  color: #ff8c00;
   font-family: 'Courier New', monospace;
   font-size: 16px;
   margin: 0 0 15px 0;
-  text-shadow: 0 0 3px #00ff41;
+  text-shadow: 0 0 3px #ff8c00;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -736,27 +739,33 @@ button {
   font-family: 'Courier New', monospace;
   font-size: 48px;
   font-weight: bold;
-  color: #00ff41;
+  color: #ff8c00;
   text-shadow:
+    0 0 10px #ff8c00,
+    0 0 20px #ff8c00,
+    0 0 30px #ff8c00;
+    /* 2px 2px 0px #004d00; */
+  /* color: #00ff41; */
+  /* text-shadow:
     0 0 10px #00ff41,
     0 0 20px #00ff41,
     0 0 30px #00ff41,
-    2px 2px 0px #004d00;
+    2px 2px 0px #004d00; */
   margin: 0 0 20px 0;
   text-align: center;
   letter-spacing: 3px;
   text-transform: uppercase;
-  animation: titleGlow 3s ease-in-out infinite alternate;
+  /* animation: titleGlow 3s ease-in-out infinite alternate; */
   position: relative;
   z-index: 2;
   background: #1a1a0d;
   padding: 30px 40px;
   border: 4px solid #8b4513;
   border-style: outset;
-  box-shadow:
+  /* box-shadow:
     4px 4px 0px #654321,
-    8px 8px 0px #4a2c17,
-    inset 0 0 20px rgba(0, 255, 65, 0.1);
+    8px 8px 0px #4a2c17, */
+    /* inset 0 0 20px rgba(0, 255, 65, 0.1); */
 }
 
 .start-menu h1::before {
@@ -775,16 +784,16 @@ button {
   font-weight: bold;
   padding: 20px 40px;
   border: 4px solid #654321;
-  border-style: outset;
+  /* border-style: outset; */
   background: #8b4513;
   color: #f4f1e8;
   cursor: pointer;
   transition: all 0.1s ease;
   text-transform: uppercase;
   letter-spacing: 2px;
-  box-shadow:
+  /* box-shadow:
     4px 4px 0px #4a2c17,
-    8px 8px 0px #2d1b0f;
+    8px 8px 0px #2d1b0f; */
   text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
   position: relative;
   z-index: 2;
@@ -811,19 +820,19 @@ button {
   background: #654321;
 }
 
-.start-menu button::before {
+/* .start-menu button::before {
   content: "=== ";
   color: #00ff41;
   text-shadow: 0 0 5px #00ff41;
-}
+} */
 
-.start-menu button::after {
+/* .start-menu button::after {
   content: " ===";
   color: #00ff41;
   text-shadow: 0 0 5px #00ff41;
-}
+} */
 
-@keyframes titleGlow {
+/* @keyframes titleGlow {
   0% {
     text-shadow:
       0 0 10px #00ff41,
@@ -839,7 +848,7 @@ button {
       0 0 35px #00ff41,
       2px 2px 0px #004d00;
   }
-}
+} */
 
 /* Ghost Player */
 .player.ghost {
