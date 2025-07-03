@@ -2,7 +2,7 @@ import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
 import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
 import { clearClientGameState, clientGameState, setPoints, updateClientGameState } from './shared/state.js'
-import { CountdownComponent } from './app.js'
+import { CountdownComponent, PlayerCountComponent } from './app.js'
 import { LobbyTimerComponent } from './app.js'
 import { endGraphic } from './bomberman/endGraphics.js'
 
@@ -71,8 +71,11 @@ function createNicknameModal() {
         })
 
         cancelBtn.addEventListener('click', () => {
-            resolve('Player') // Default nickname if cancelled
+            // resolve('Player') // Default nickname if cancelled
+            // document.body.removeChild(overlay)
+
             document.body.removeChild(overlay)
+            state.screen = 'start'
         })
 
         // Add to DOM and focus
@@ -193,7 +196,7 @@ document.addEventListener('keydown', (e) => {
             held.add(action)
             sendHeld()
         }
-        if (state.screen === 'game' && (action === 'left' || action === 'right' || action === 'up' || action === 'down')) {
+        if (action === 'left' || action === 'right' || action === 'up' || action === 'down') {
             setMoving(true)
         }
     }
@@ -226,10 +229,17 @@ function updatePoints(points) {
         }
     }
     // update points in framework state to trigger scoreboard re-render
-    for (const [id, points] of Object.entries(clientGameState.points)) {
+    for (const[id, points] of Object.entries(clientGameState.points)){
         if (state.players && state.players[id]) {
             state.players[id].points = points
         }
+    }    
+}
+
+function updatePlayerCount() {
+    const playerCountElement = document.getElementById('player-count-container')
+    if (playerCountElement) {
+        mount(playerCountElement, PlayerCountComponent())
     }
 }
 
@@ -249,9 +259,7 @@ export async function startClient() {
 
     ws.addEventListener('message', (e) => {
         const msg = JSON.parse(e.data)
-        if (msg.type === 'playerCount') {
-            state.playerCount = msg.count
-        } else if (msg.type === 'lobby') {
+        if (msg.type === 'lobby') {
             state.lobbyTime = msg.time
             updateLobbyTimer()
         } else if (msg.type === 'lobbyFinished') {
@@ -264,6 +272,9 @@ export async function startClient() {
             state.screen = 'game' // Switch to game screen
             state.countdownTime = null
             updateCountdown()
+        } else if (msg.type === 'playerCount') {
+            state.playerCount = msg.count
+            updatePlayerCount()
         } else if (msg.type === 'state') {  // for mini game
             // Only update on changes. Keep player points, payload doesn't contain them.
             if (JSON.stringify(state.players) !== JSON.stringify(msg.payload)) {
@@ -272,7 +283,7 @@ export async function startClient() {
                     if (!(id in msg.payload)) {
                         delete state.players[id]
                     }
-                }
+                }                
                 for (const [id, playerInfo] of Object.entries(msg.payload)) {
                     if (state.players[id]) {
                         for (const [key, val] of Object.entries(playerInfo)) {
@@ -330,14 +341,14 @@ export async function startClient() {
             chatBox.appendChild(messageDiv)
 
             if (isAtBottom) {
-                // User was at bottom, auto-scroll to show new message
+            // User was at bottom, auto-scroll to show new message
                 chatBox.scrollTop = chatBox.scrollHeight
             } else {
-                // User is reading older messages, show new message indicator
+            // User is reading older messages, show new message indicator
                 showNewMessageIndicator()
             }
         } else if (msg.type === 'duplicateNickname') {
-            // Show error message and prompt for new nickname
+        // Show error message and prompt for new nickname
             showErrorMessage(msg.message)
             // Prompt user to enter a different nickname
             createNicknameModal().then(newNickname => {
@@ -347,7 +358,7 @@ export async function startClient() {
                 }))
             })
         } else if (msg.type === 'error') {
-            // Display error message to user
+        // Display error message to user
             showErrorMessage(msg.message)
         } else if (msg.type === 'startgame') {
             clearClientGameState()  // make sure no old calls try to collapse walls
@@ -375,7 +386,7 @@ export async function startClient() {
             if (gameRunning) {
                 box.innerHTML = ''          // clear main game graphics
                 box.className = 'game-area' // restore default class
-                stopSequenceClient('lobby')
+                stopSequenceClient('lobby') // stop game loop
             }
         } else if (msg.type === 'points') {
             if (msg.players) {
@@ -438,8 +449,7 @@ export function setupChatHandlers() {
                 ws.send(JSON.stringify({ type: 'chat', message: msg }))
                 chatInput.value = ''
 
-                // Focus back on input for better UX
-                chatInput.focus()
+                chatInput.blur() // Remove focus to prevent accidental sending
             }
         }
         chatInput.addEventListener('keypress', (e) => {
