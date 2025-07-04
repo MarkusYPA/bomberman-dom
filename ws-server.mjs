@@ -10,11 +10,11 @@ export const clients = new Map() // socket -> { id, nickname }
 export const heldInputs = new Map() // id -> Set of held directions
 
 let countdownTimer = null
-let countdown = 2 // 10
+let countdown = 5 // 10
 let lobbyTimer = null
 let lobbyTimeLeft = null
 
-const LOBBY_DURATION = 3 //20
+const LOBBY_DURATION = 10 //20
 
 function encodeMessage(str) {
     const json = Buffer.from(str)
@@ -55,7 +55,7 @@ function resetCountdown() {
     broadcast({ type: 'countdown', time: null })
 }
 
-function startCountdown() {    
+function startCountdown() {
     resetCountdown()
     let timeLeft = countdown
 
@@ -269,14 +269,14 @@ export function handleUpgrade(req, socket) {
                         id
                     }))
                     socket.write(idMsg)
-                    
+
                     // Send current player count to the new client
                     const countMsg = encodeMessage(JSON.stringify({
                         type: 'playerCount',
                         count: clients.size
                     }))
                     socket.write(countMsg)
-                    
+
                     // Reset countdown whenever the number of players changes
                     updateCountdown()
                     broadcastPlayerCount()

@@ -2,8 +2,6 @@ import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
 import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
 import { clearClientGameState, clientGameState, setPoints, updateClientGameState } from './shared/state.js'
-import { CountdownComponent } from './app.js'
-import { LobbyTimerComponent } from './app.js'
 import { endGraphic } from './bomberman/endGraphics.js'
 
 let box // game area
@@ -116,20 +114,6 @@ function showErrorMessage(message) {
     }
 }
 
-function updateCountdown() {
-    const countdownElement = document.getElementById('countdown-container')
-    if (countdownElement) {
-        mount(countdownElement, CountdownComponent())
-    }
-}
-
-function updateLobbyTimer() {
-    const lobbyElement = document.getElementById('lobby-timer-container')
-    if (lobbyElement) {
-        mount(lobbyElement, LobbyTimerComponent())
-    }
-}
-
 // Function to show new message indicator
 function showNewMessageIndicator() {
     const chatBox = document.getElementById('chat')
@@ -238,7 +222,7 @@ export async function startClient() {
         ws.close(1000, 'New session')
     }
     nickname = await createNicknameModal()
-    
+
     // support https and http connections
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
     ws = new WebSocket(`${protocol}//${location.host}`)
@@ -256,17 +240,13 @@ export async function startClient() {
             state.playerCount = msg.count
         } else if (msg.type === 'lobby') {
             state.lobbyTime = msg.time
-            updateLobbyTimer()
         } else if (msg.type === 'lobbyFinished') {
             state.lobbyTime = null
-            updateLobbyTimer()
         } else if (msg.type === 'countdown') {
             state.countdownTime = msg.time
-            updateCountdown()
         } else if (msg.type === 'countdownFinished') {
             state.screen = 'game' // Switch to game screen
             state.countdownTime = null
-            updateCountdown()
         } else if (msg.type === 'state') {  // for mini game
             // Only update on changes. Keep player points, payload doesn't contain them.
             if (JSON.stringify(state.players) !== JSON.stringify(msg.payload)) {
