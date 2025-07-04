@@ -6,6 +6,7 @@ body {
   background-size: cover;
   color: #2a1810;
 }
+
 /* bar header layout */
 /* .game-header {
   width: 100%;
@@ -23,6 +24,7 @@ body {
   margin-top: 24px;
   margin-bottom: 16px;
 }
+
 .game-header h2 {
   font-family: 'Courier New', monospace;
   font-family: 3rem;
@@ -35,10 +37,13 @@ body {
   text-transform: uppercase;
   margin: 0;
 }
+
 .game-area,
 .lobby-area {
-  width: 652px; /* 650 - 32*2 */
-  height: 552px; /* 550 - 32*2 */
+  width: 652px;
+  /* 650 - 32*2 */
+  height: 552px;
+  /* 550 - 32*2 */
   /* margin: 70px 50px 70px 50px; */
   /* width: 600px;
   height: 450px; */
@@ -53,14 +58,15 @@ body {
   border-width: 50px;
   border-style: solid;
   border-image: url('assets/images/solidwall.svg') 32;
-  box-sizing: content-box; /* ensures border is outside the content */
+  box-sizing: content-box;
+  /* ensures border is outside the content */
   padding: 0;
   background: none;
   margin-top: 20px;
 }
 
 .lobby-area {
-  position : relative;
+  position: relative;
   border: none;
   background-image: url("assets/images/powerupinfo.svg");
   background-size: cover;
@@ -76,10 +82,21 @@ body {
 }
 
 /* Player colors (retro palette) */
-.player-color-1 { background: #fc6621 !important; } 
-.player-color-2 { background: #374a1f !important; } 
-.player-color-3 { background: #fda921 !important; } 
-.player-color-4 { background: #a4301e !important; } 
+.player-color-1 {
+  background: #fc6621;
+}
+
+.player-color-2 {
+  background: #374a1f;
+}
+
+.player-color-3 {
+  background: #fda921;
+}
+
+.player-color-4 {
+  background: #a4301e;
+}
 
 .win,
 .tie {
@@ -136,28 +153,72 @@ body {
 }
 
 /* Default right-facing sprites */
-.player.id1 { background-image: url('assets/images/bear-orange-right.png'); }
-.player.id2 { background-image: url('assets/images/bear-green-right.png'); }
-.player.id3 { background-image: url('assets/images/bear-yellow-right.png'); }
-.player.id4 { background-image: url('assets/images/bear-red-right.png'); }
+.player.id1 {
+  background-image: url('assets/images/bear-orange-right.png');
+}
+
+.player.id2 {
+  background-image: url('assets/images/bear-green-right.png');
+}
+
+.player.id3 {
+  background-image: url('assets/images/bear-yellow-right.png');
+}
+
+.player.id4 {
+  background-image: url('assets/images/bear-red-right.png');
+}
 
 /* Left-facing sprites */
-.player.id1.left { background-image: url('assets/images/bear-orange-left.png'); }
-.player.id2.left { background-image: url('assets/images/bear-green-left.png'); }
-.player.id3.left { background-image: url('assets/images/bear-yellow-left.png'); }
-.player.id4.left { background-image: url('assets/images/bear-red-left.png'); }
+.player.id1.left {
+  background-image: url('assets/images/bear-orange-left.png');
+}
+
+.player.id2.left {
+  background-image: url('assets/images/bear-green-left.png');
+}
+
+.player.id3.left {
+  background-image: url('assets/images/bear-yellow-left.png');
+}
+
+.player.id4.left {
+  background-image: url('assets/images/bear-red-left.png');
+}
 
 /* Invulnerable right-facing sprites */
-.player.id1.invulnerable { background-image: url('assets/images/bear-orange-right-iv.png'); }
-.player.id2.invulnerable { background-image: url('assets/images/bear-green-right-iv.png'); }
-.player.id3.invulnerable { background-image: url('assets/images/bear-yellow-right-iv.png'); }
-.player.id4.invulnerable { background-image: url('assets/images/bear-red-right-iv.png'); }
+.player.id1.invulnerable {
+  background-image: url('assets/images/bear-orange-right-iv.png');
+}
+
+.player.id2.invulnerable {
+  background-image: url('assets/images/bear-green-right-iv.png');
+}
+
+.player.id3.invulnerable {
+  background-image: url('assets/images/bear-yellow-right-iv.png');
+}
+
+.player.id4.invulnerable {
+  background-image: url('assets/images/bear-red-right-iv.png');
+}
 
 /* Invulnerable left-facing sprites */
-.player.id1.left.invulnerable { background-image: url('assets/images/bear-orange-left-iv.png'); }
-.player.id2.left.invulnerable { background-image: url('assets/images/bear-green-left-iv.png'); }
-.player.id3.left.invulnerable { background-image: url('assets/images/bear-yellow-left-iv.png'); }
-.player.id4.left.invulnerable { background-image: url('assets/images/bear-red-left-iv.png'); }
+.player.id1.left.invulnerable {
+  background-image: url('assets/images/bear-orange-left-iv.png');
+}
+
+.player.id2.left.invulnerable {
+  background-image: url('assets/images/bear-green-left-iv.png');
+}
+
+.player.id3.left.invulnerable {
+  background-image: url('assets/images/bear-yellow-left-iv.png');
+}
+
+.player.id4.left.invulnerable {
+  background-image: url('assets/images/bear-red-left-iv.png');
+}
 
 /* Dead state for all players */
 .player.dead,
@@ -269,8 +330,8 @@ body {
 .bombup.burn,
 .flameup.burn,
 .speedup.burn,
-.bombclip.burn { 
-    background-image: url("assets/images/burn.svg");
+.bombclip.burn {
+  background-image: url("assets/images/burn.svg");
 }
 
 .textbar {
@@ -322,9 +383,9 @@ body {
 }
 
 .scoreboard-player {
-opacity: 1;
-    transition: opacity 0.2s;
-    display: flex;
+  opacity: 1;
+  transition: opacity 0.2s;
+  display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
@@ -336,6 +397,7 @@ opacity: 1;
 
 .scoreboard-player.inactive {
   opacity: 0.5;
+  background-color: rgb(110 72 46 / 53%);
 }
 
 .player-points {
@@ -361,7 +423,8 @@ opacity: 1;
     radial-gradient(circle at 1px 1px, rgba(139, 69, 19, 0.1) 1px, transparent 0);
   background-size: 20px 20px;
   box-sizing: border-box;
-  overflow: hidden; /* Prevents growing past parent */
+  overflow: hidden;
+  /* Prevents growing past parent */
 }
 
 .chat-box {
@@ -390,15 +453,18 @@ opacity: 1;
 .chat-box::-webkit-scrollbar {
   width: 12px;
 }
+
 .chat-box::-webkit-scrollbar-track {
   background: #2a1810;
   border: 1px solid #654321;
 }
+
 .chat-box::-webkit-scrollbar-thumb {
   background: #8b4513;
   border: 1px solid #654321;
   border-radius: 0;
 }
+
 .chat-box::-webkit-scrollbar-thumb:hover {
   background: #a0522d;
 }
@@ -411,26 +477,31 @@ opacity: 1;
   animation: messageFlicker 0.5s ease-out;
   font-family: 'Courier New', monospace;
 }
+
 .chat-message.own {
   margin-left: auto;
   margin-right: 0;
   text-align: right;
 }
+
 .chat-message.own .message-bubble {
   border: 2px solid #8b4513;
   margin-left: auto;
   font-weight: bold;
   color: white;
 }
+
 .chat-message.other {
   margin-left: 0;
   margin-right: auto;
   text-align: left;
 }
+
 .chat-message.other .message-bubble {
   border: 2px solid #654321;
   color: white;
 }
+
 .message-bubble {
   padding: 8px 12px;
   border-radius: 0;
@@ -442,6 +513,7 @@ opacity: 1;
   font-family: 'Courier New', monospace;
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
 }
+
 .message-sender {
   font-size: 10px;
   opacity: 0.8;
@@ -451,16 +523,19 @@ opacity: 1;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
+
 .chat-message.own .message-sender {
   text-align: right;
   color: #ff8c00;
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
 }
+
 .chat-message.other .message-sender {
   text-align: left;
   color: #eedac2;
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
 }
+
 .message-timestamp {
   font-size: 9px;
   opacity: 0.6;
@@ -471,9 +546,11 @@ opacity: 1;
   font-style: italic;
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
 }
+
 .chat-message.own .message-timestamp {
   text-align: right;
 }
+
 .chat-message.other .message-timestamp {
   text-align: left;
 }
@@ -509,10 +586,12 @@ opacity: 1;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  width: 350px !important; /* Force a specific width */
+  width: 350px !important;
+  /* Force a specific width */
   min-width: 320px;
   max-width: 400px;
-  flex-shrink: 0; /* Prevent shrinking */
+  flex-shrink: 0;
+  /* Prevent shrinking */
   gap: 3px;
   margin-top: 20px;
 }
@@ -522,10 +601,12 @@ opacity: 1;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  width: 350px !important; /* Force a specific width */
+  width: 350px !important;
+  /* Force a specific width */
   min-width: 320px;
   max-width: 400px;
-  flex-shrink: 0; /* Prevent shrinking */
+  flex-shrink: 0;
+  /* Prevent shrinking */
   gap: 3px;
   height: 650px;
 }
@@ -909,7 +990,7 @@ button {
     0 0 10px #ff8c00,
     0 0 20px #ff8c00,
     0 0 30px #ff8c00;
-    /* 2px 2px 0px #004d00; */
+  /* 2px 2px 0px #004d00; */
   /* color: #00ff41; */
   /* text-shadow:
     0 0 10px #00ff41,
@@ -930,7 +1011,7 @@ button {
   /* box-shadow:
     4px 4px 0px #654321,
     8px 8px 0px #4a2c17, */
-    /* inset 0 0 20px rgba(0, 255, 65, 0.1); */
+  /* inset 0 0 20px rgba(0, 255, 65, 0.1); */
 }
 
 .start-menu h1::before {
