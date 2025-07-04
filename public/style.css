@@ -2,8 +2,12 @@
 
 body {
   font-family: 'Courier New', 'Monaco', 'Lucida Console', monospace;
-  background-image: url('assets/background03.jpg');
-  background-size: cover;
+  /* background-image: url('assets/background03.jpg'); */
+  /* background-size: cover; */
+  background-image: url('assets/images/bg-fancy-tile2.svg');
+  background-size: 250px;
+  background-repeat: repeat;
+
   color: #2a1810;
 }
 
@@ -27,7 +31,9 @@ body {
   width: 650px;
   height: 550px;
   margin: 70px 50px 70px 50px;
-  background-image: url("assets/images/bluegrass.jpg");
+  /* background-image: url("assets/images/bluegrass.jpg"); */
+  /* background-image: url("assets/images/darkviolet.jpg"); */
+  background-image: url("assets/images/darkground02.jpg");
 }
 
 /* Retro orange */
