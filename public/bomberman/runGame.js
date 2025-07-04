@@ -66,6 +66,11 @@ export function updateLivesInfo(players) {
         };
         livesinfos[i].textContent = `${p.name} `+ livesText
     })
+
+    while (livesinfos.length > players.length) {
+        const removedPlayerInfo = livesinfos.pop()
+        removedPlayerInfo.style.visibility = 'hidden'
+    }
 }
 
 export function startSequenceClient() {
