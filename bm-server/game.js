@@ -42,10 +42,10 @@ export function startSequence(clients) {
     ending = false
     ended = false
 
-    clients.values().forEach((c) => {
+    for (const c of clients.values()){
         state.players.push(createPlayer(c.nickname, c.id))     // bomb ownership breaks (no collision until player is away from it)
         playerNames.push(c.nickname)
-    })
+    }
 
     bounds = { left: 0, right: 650, top: 0, bottom: 550, width: 650, height: 550 }
     levelMap = makeLevelMap()

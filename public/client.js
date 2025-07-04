@@ -238,7 +238,10 @@ export async function startClient() {
         ws.close(1000, 'New session')
     }
     nickname = await createNicknameModal()
-    ws = new WebSocket(`ws://${location.host}`)
+    
+    // support https and http connections
+    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
+    ws = new WebSocket(`${protocol}//${location.host}`)
 
     ws.addEventListener('open', () => {
         ws.send(JSON.stringify({

@@ -2,8 +2,12 @@
 
 body {
   font-family: 'Courier New', 'Monaco', 'Lucida Console', monospace;
-  background-image: url('assets/background03.jpg');
-  background-size: cover;
+  /* background-image: url('assets/background03.jpg'); */
+  /* background-size: cover; */
+  background-image: url('assets/images/bg-fancy-tile2.svg');
+  background-size: 250px;
+  background-repeat: repeat;
+
   color: #2a1810;
 }
 
@@ -78,7 +82,9 @@ body {
   width: 650px;
   height: 550px;
   margin: 70px 50px 70px 50px;
-  background-image: url("assets/images/bluegrass.jpg");
+  /* background-image: url("assets/images/bluegrass.jpg"); */
+  /* background-image: url("assets/images/darkviolet.jpg"); */
+  background-image: url("assets/images/darkground02.jpg");
 }
 
 /* Player colors (retro palette) */
@@ -326,12 +332,18 @@ body {
   background-size: cover;
 }
 
+.wallclip {
+  background-image: url("assets/images/wallclip.svg");
+  background-size: cover;
+}
+
 .lifeup.burn,
 .bombup.burn,
 .flameup.burn,
 .speedup.burn,
-.bombclip.burn {
-  background-image: url("assets/images/burn.svg");
+.bombclip.burn,
+.wallclip.burn { 
+    background-image: url("assets/images/burn.svg");
 }
 
 .textbar {
@@ -596,21 +608,6 @@ body {
   margin-top: 20px;
 }
 
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  width: 350px !important;
-  /* Force a specific width */
-  min-width: 320px;
-  max-width: 400px;
-  flex-shrink: 0;
-  /* Prevent shrinking */
-  gap: 3px;
-  height: 650px;
-}
-
 .player-board-section {
   width: 85%;
   background: #44260f;
@@ -710,33 +707,6 @@ button {
   }
 }
 
-
-/* .chat-box .new-message-indicator {
-  position: sticky;
-  bottom: 0;
-  align-self: center;
-  background: #ff8c00;
-  color: #1a1a0d;
-  padding: 6px 12px;
-  border: 2px solid #654321;
-  font-size: 11px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 2px 2px 0px #4a2c17;
-  z-index: 10;
-  transition: all 0.1s ease;
-  user-select: none;
-  animation: retroPulse 2s infinite, slideUp 0.3s ease-out;
-  min-width: 120px;
-  text-align: center;
-  font-family: 'Courier New', monospace;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
-  margin-top: auto;
-  margin-bottom: 10px;
-} */
-
 .new-message-indicator:hover {
   background: #ffa500;
   transform: translate(1px, 1px);
@@ -817,7 +787,6 @@ button {
   border-bottom: 2px solid #8b4513;
   /* text-shadow: 0 0 5px #00ff41; */
   text-shadow: 0 0 5px #ff8c00;
-
 }
 
 .nickname-modal h2 {
@@ -990,28 +959,16 @@ button {
     0 0 10px #ff8c00,
     0 0 20px #ff8c00,
     0 0 30px #ff8c00;
-  /* 2px 2px 0px #004d00; */
-  /* color: #00ff41; */
-  /* text-shadow:
-    0 0 10px #00ff41,
-    0 0 20px #00ff41,
-    0 0 30px #00ff41,
-    2px 2px 0px #004d00; */
   margin: 0 0 20px 0;
   text-align: center;
   letter-spacing: 3px;
   text-transform: uppercase;
-  /* animation: titleGlow 3s ease-in-out infinite alternate; */
   position: relative;
   z-index: 2;
   background: #1a1a0d;
   padding: 30px 40px;
   border: 4px solid #8b4513;
   border-style: outset;
-  /* box-shadow:
-    4px 4px 0px #654321,
-    8px 8px 0px #4a2c17, */
-  /* inset 0 0 20px rgba(0, 255, 65, 0.1); */
 }
 
 .start-menu h1::before {
@@ -1065,36 +1022,6 @@ button {
   box-shadow: none;
   background: #654321;
 }
-
-/* .start-menu button::before {
-  content: "=== ";
-  color: #00ff41;
-  text-shadow: 0 0 5px #00ff41;
-} */
-
-/* .start-menu button::after {
-  content: " ===";
-  color: #00ff41;
-  text-shadow: 0 0 5px #00ff41;
-} */
-
-/* @keyframes titleGlow {
-  0% {
-    text-shadow:
-      0 0 10px #00ff41,
-      0 0 20px #00ff41,
-      0 0 30px #00ff41,
-      2px 2px 0px #004d00;
-  }
-
-  100% {
-    text-shadow:
-      0 0 15px #00ff41,
-      0 0 25px #00ff41,
-      0 0 35px #00ff41,
-      2px 2px 0px #004d00;
-  }
-} */
 
 /* Ghost Player */
 .player.ghost {

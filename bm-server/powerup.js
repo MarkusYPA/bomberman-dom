@@ -93,3 +93,13 @@ export class BombClip extends PowerUp {
         super.pickUp()
     };
 };
+
+export class WallClip extends PowerUp {
+    constructor(x, y, size, nameOf, row, col) {
+        super(x, y, size, nameOf, row, col)
+        this.powerType = 'wallclip'
+    };
+    pickUp() {
+        super.pickUp()
+    };
+};
