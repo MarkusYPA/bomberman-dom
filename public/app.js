@@ -77,9 +77,18 @@ function LobbyScreen() {
     const boardNode = createVNode('div', { class: 'lobby-border-wrapper' },
         createVNode('div', { id: 'lobby', class: 'lobby-area' })
     )
+
+    // Simple timer text generation
+    let timerText = ''
+    if (state.lobbyTime) {
+        timerText = ` - Game starts in ${state.lobbyTime}s`
+    } else if (state.countdownTime) {
+        timerText = ` - Starting in ${state.countdownTime}s`
+    }
+
     return MainLayout({
         header: createVNode('div', { class: 'game-header' },
-            createVNode('h2', {}, 'Lobby: Waiting for players... ', { id: 'lobby-timer-container' }, LobbyTimerComponent()),
+            createVNode('h2', {}, `Lobby: Waiting for players...${timerText}`)
         ),
         boardNode
     })
@@ -102,20 +111,6 @@ function GameScreen() {
     })
 }
 
-export function CountdownComponent() {
-    if (state.countdownTime === null) {
-        return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, '')
-    }
-    return createVNode('div', { id: 'countdown', class: 'countdown-timer' }, `Game starts in: ${state.countdownTime}s`)
-}
-
-export function LobbyTimerComponent() {
-    if (state.lobbyTime === null) {
-        return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, '')
-    }
-    return createVNode('div', { id: 'lobby-timer', class: 'lobby-timer' }, `Lobby: Game starts in ${state.lobbyTime}s`)
-}
-
 export function PlayerCountComponent() {
     return createVNode('div', { class: 'player-count' },
         `Players online: ${state.playerCount}/4`
@@ -134,9 +129,10 @@ function App() {
     )
 }
 
-// Only re-render the entire app when the screen changes
+// Re-render the app if the screen or timer state changes
 function update(changedPath) {
-    if (!changedPath || changedPath === 'screen') {
+    const watchedPaths = ['screen', 'lobbyTime', 'countdownTime'];
+    if (!changedPath || watchedPaths.includes(changedPath)) {
         mount(document.body, App())
         if (state.screen === 'lobby' || state.screen === 'game') {
             const playerBoard = document.getElementById('player-board-container')
@@ -160,7 +156,7 @@ window.addEventListener('keydown', function (e) {
 })
 
 loadAllSounds()
-subscribe(update, ['screen']) // Only watch for screen changes
+subscribe(update, ['screen', 'lobbyTime', 'countdownTime']) // Watch for screen and timer changes
 stopSequenceClient()
 state.screen = 'start'
 update()
