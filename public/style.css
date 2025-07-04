@@ -350,18 +350,18 @@ opacity: 1;
 
 .chat-area {
   width: 100%;
-  height: 390px;
+  height: 100%;
   max-width: none;
   background: #2a1810;
   border: 4px solid #8b4513;
   border-style: outset;
   padding: 20px;
-  margin-top: 20px;
   position: relative;
   background-image:
     radial-gradient(circle at 1px 1px, rgba(139, 69, 19, 0.1) 1px, transparent 0);
   background-size: 20px 20px;
   box-sizing: border-box;
+  overflow: hidden; /* Prevents growing past parent */
 }
 
 .chat-box {
@@ -1036,7 +1036,6 @@ button {
   font-weight: bold;
   color: #ff8c00;
   text-align: center;
-  margin: 10px 0;
   padding: 8px 16px;
   border-radius: 8px;
   display: inline-block;
