@@ -25,11 +25,7 @@ You'll need Node.js installed. If you don't have it, figure it out.
     git clone https://github.com/MarkusYPA/node-server-game.git
     cd node-server-game
     ```
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Start the server:**
+2.  **Start the server:**
     ```bash
     node server.mjs
     ```
