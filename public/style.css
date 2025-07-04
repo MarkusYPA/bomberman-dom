@@ -2,8 +2,12 @@
 
 body {
   font-family: 'Courier New', 'Monaco', 'Lucida Console', monospace;
-  background-image: url('assets/background03.jpg');
-  background-size: cover;
+  /* background-image: url('assets/background03.jpg'); */
+  /* background-size: cover; */
+  background-image: url('assets/images/bg-fancy-tile.svg');
+  background-size: 20%;
+  background-repeat: repeat;
+
   color: #2a1810;
 }
 
