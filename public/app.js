@@ -26,9 +26,8 @@ function StartScreen() {
 export const PlayerBoardComponent = createReactiveComponent(
     () => {
         return createVNode('div', {
-            class: 'scoreboard scoreboard-width'
+            class: 'scoreboard-box'
         },
-        createVNode('h2', {}, 'Scoreboard'),
         createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
         ...[1, 2, 3, 4].map(i => {
             const player = state.players[i]
@@ -49,21 +48,40 @@ export const PlayerBoardComponent = createReactiveComponent(
     ['players'] // Only watch the 'players' path
 )
 
-function LobbyScreen() {
-    // return createVNode('div', { id: 'lobby-menu', class: 'lobby-menu' },
-    //     createVNode('h2', {}, 'Lobby: Waiting for players...'),
-    //     createVNode('div', { id: 'lobby-board-container' }), // Show players in lobby
-    //     createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()),
-    //     createVNode('div', { id: 'countdown-container' }, CountdownComponent()),
-    //     createVNode('div', { id: 'lobby', class: 'lobby-area' }), // Mini-game area
-    // )
+function MainLayout({ header, boardId, boardClass, boardNode }) {
+    return createVNode('div', { class: 'game-root' },
+        // Header
+        header,
+        // Body
+        createVNode('div', { class: 'game-body' },
+            // Main board area
+            createVNode('div', { class: 'game-content' },
+                boardNode ? boardNode : createVNode('div', { id: boardId, class: boardClass })
+            ),
+            // Sidebar with scoreboard and chat
+            createVNode('div', { class: 'sidebar' },
+                createVNode('div', { id: 'player-board-container', class: 'player-board-section' }),
+                createVNode('div', { class: 'chat-area' },
+                    createVNode('div', { id: 'chat', class: 'chat-box' }),
+                    createVNode('div', { class: 'chat-input-container' },
+                        createVNode('input', { id: 'chatInput', placeholder: 'Type a message...' }),
+                        createVNode('button', { id: 'send' }, 'Send')
+                    )
+                )
+            )
+        )
+    )
+}
 
-    return createVNode('div', { id: 'lobby-menu', class: 'lobby-menu' },
-        // Header with timer and leave button
-        createVNode('div', { class: 'game-header' },
+function LobbyScreen() {
+    const boardNode = createVNode('div', { class: 'lobby-border-wrapper' },
+        createVNode('div', { id: 'lobby', class: 'lobby-area' })
+    )
+    return MainLayout({
+        header: createVNode('div', { class: 'game-header' },
             createVNode('h2', {}, 'Lobby: Waiting for players...'),
-            createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()), // Lobby timer
-            createVNode('div', { id: 'countdown-container', class: 'timer-section' }, CountdownComponent()), // Countdown timer
+            createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()),
+            createVNode('div', { id: 'countdown-container', class: 'timer-section' }, CountdownComponent()),
             createVNode('button', {
                 id: 'leave-lobby',
                 class: 'leave-button',
@@ -73,51 +91,17 @@ function LobbyScreen() {
                 }
             }, 'Leave Lobby'),
         ),
-        
-        // Game body container for horizontal layout
-        createVNode('div', { class: 'game-body' },
-            // Main content area
-            createVNode('div', { class: 'lobby-area-content' },
-                // Left side - Main game board
-                createVNode('div', { class: 'lobby-area-section' },
-                    // createVNode('div', { id: 'error-container', class: 'error-container' }),
-                    createVNode('div', { id: 'lobby', class: 'lobby-area' })
-                ),
-                
-                
-            ),
-                
-            // Right side - Player board and chat
-            createVNode('div', { class: 'sidebar' },
-                createVNode('div', { id: 'player-board-container', class: 'player-board-section' }), // Empty container for PlayerBoard
-                createVNode('div', { class: 'chat-area' },
-                    createVNode('div', { id: 'chat', class: 'chat-box' }),
-                    createVNode('input', { id: 'chatInput', placeholder: 'Type a message...' }),
-                    createVNode('button', { id: 'send' }, 'Send')
-                )
-            )
-        )
-
-    )
+        boardNode
+    })
 }
 
 function GameScreen() {
-    return createVNode('div', { class: 'game-root' },
-        // Header with timer and leave button
-        createVNode('div', { class: 'game-header' },
-            // createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()), // Lobby timer
-            // createVNode('div', { id: 'countdown-container', class: 'timer-section' }, CountdownComponent()), // Countdown timer
+    return MainLayout({
+        header: createVNode('div', { class: 'game-header' },
             createVNode('button', {
                 id: 'leave-game',
                 class: 'leave-button',
                 onclick: () => {
-                    // version 1
-                    //state.screen = 'lobby'
-
-                    // version 2
-                    //stopSequenceClient()
-
-                    // v3: send ws mesg to server, telling to leave game?
                     stopSequenceClient('start')
                     sendLeaveGame()
                 }
@@ -138,29 +122,9 @@ function GameScreen() {
                 }
             }, 'Back to Lobby'),
         ),
-        
-        // Game body container for horizontal layout
-        createVNode('div', { class: 'game-body' },
-            // Main game content
-            createVNode('div', { class: 'game-content' },
-                // Main game board
-                createVNode('div', { class: 'game-board-section' },
-                    // createVNode('div', { id: 'error-container', class: 'error-container' }),
-                    createVNode('div', { id: 'game', class: 'game-area' })
-                )
-            ),
-                
-            // Right side - Player board and chat
-            createVNode('div', { class: 'sidebar' },
-                createVNode('div', { id: 'player-board-container', class: 'player-board-section' }), // Empty container for PlayerBoard
-                createVNode('div', { class: 'chat-area' },
-                    createVNode('div', { id: 'chat', class: 'chat-box' }),
-                    createVNode('input', { id: 'chatInput', placeholder: 'Type a message...' }),
-                    createVNode('button', { id: 'send' }, 'Send')
-                )
-            )
-        )
-    )
+        boardId: 'game',
+        boardClass: 'game-area'
+    })
 }
 
 export function CountdownComponent() {
@@ -179,7 +143,7 @@ export function LobbyTimerComponent() {
 
 export function PlayerCountComponent() {
     return createVNode('div', { class: 'player-count' },
-        `Players in lobby: ${state.playerCount}/4`
+        `Players online: ${state.playerCount}/4`
     )
 }
 
@@ -190,17 +154,8 @@ function App() {
     else if (state.screen === 'game') screenContent = GameScreen()
     else screenContent = createVNode('div', {}, 'Game loading...')
 
-    // Only show chat in lobby and game screens
-    const showChat = false /*state.screen === 'lobby'  || state.screen === 'game' */
-
     return createVNode('div', { id: 'app-root' },
-        createVNode('div', { id: 'error-container', class: 'error-container' }),
-        screenContent,
-        showChat && createVNode('div', { class: 'chat-area' },
-            createVNode('div', { id: 'chat', class: 'chat-box' }),
-            createVNode('input', { id: 'chatInput', placeholder: 'Type a message...' }),
-            createVNode('button', { id: 'send' }, 'Send')
-        )
+        screenContent
     )
 }
 
@@ -208,14 +163,6 @@ function App() {
 function update(changedPath) {
     if (!changedPath || changedPath === 'screen') {
         mount(document.body, App())
-
-        // Always mount PlayerBoardComponent in the correct container for the current screen
-        // if (state.screen === 'lobby') {
-        //     const lobbyBoard = document.getElementById('lobby-board-container')
-        //     if (lobbyBoard) {
-        //         PlayerBoardComponent.mount(lobbyBoard)
-        //     }
-        // }
         if (state.screen === 'lobby' || state.screen === 'game') {
             const playerBoard = document.getElementById('player-board-container')
             if (playerBoard) {

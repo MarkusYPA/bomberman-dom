@@ -80,7 +80,7 @@ export function makeWalls(level) {
     };
 
     // place weak walls randomly
-    while (state.weakWalls.size < 42) {
+    while (state.weakWalls.size < 44) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -103,9 +103,9 @@ export function makeWalls(level) {
         levelMap[mapY][mapX] = name
     };
 
-    // place 5 bomb powerups inside weak walls
+    // place 8 bomb powerups inside weak walls
     let placements = 0
-    while (placements < 5) {
+    while (placements < 8) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -124,9 +124,9 @@ export function makeWalls(level) {
         };
     }
 
-    // place 5 flame powerups inside weak walls
+    // place 8 flame powerups inside weak walls
     placements = 0
-    while (placements < 5) {
+    while (placements < 8) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 

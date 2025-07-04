@@ -5,11 +5,11 @@ export default class Game {
     constructor() {
         this.players = {} // id -> { nickname, x, y }
         this.playerSize = 40 // Player size in pixels
-        this.gridSize = 20 // Grid size for movement calculations
+        this.gridSize = 25 // Grid size for movement calculations
 
         this.dimensions = {
-            width: 600,
-            height: 450
+            width: 650,
+            height: 550
         }
 
         this.updateBoundaries()
