@@ -695,7 +695,15 @@ button {
   animation: slideIn 0.3s ease-out;
 }
 
-.countdown-timer {
+.header-timers {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.countdown-timer .lobby-timer {
   font-size: 24px;
   font-weight: bold;
   color: orange;
@@ -703,13 +711,14 @@ button {
   margin-top: 20px;
 }
 
+/*
 .lobby-timer {
   font-size: 24px;
   font-weight: bold;
   color: orange;
   text-align: center;
   margin-top: 20px;
-}
+} */
 
 @keyframes slideIn {
   from {

@@ -28,21 +28,21 @@ export const PlayerBoardComponent = createReactiveComponent(
         return createVNode('div', {
             class: 'scoreboard-box'
         },
-        createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
-        ...[1, 2, 3, 4].map(i => {
-            const player = state.players[i]
-            return createVNode('div', {
-                class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
-            },
-            // display player points
-            createVNode('span', { class: 'player-points' },
-                player ? player.points ? player.points : '0' : ''
-            ),
-            createVNode('span', { class: 'player-nickname' },
-                player ? player.nickname : `Player ${i}`
-            )
-            )
-        })
+            createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
+            ...[1, 2, 3, 4].map(i => {
+                const player = state.players[i]
+                return createVNode('div', {
+                    class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
+                },
+                    // display player points
+                    createVNode('span', { class: 'player-points' },
+                        player ? player.points ? player.points : '0' : ''
+                    ),
+                    createVNode('span', { class: 'player-nickname' },
+                        player ? player.nickname : `Player ${i}`
+                    )
+                )
+            })
         )
     },
     ['players'] // Only watch the 'players' path
@@ -79,9 +79,7 @@ function LobbyScreen() {
     )
     return MainLayout({
         header: createVNode('div', { class: 'game-header' },
-            createVNode('h2', {}, 'Lobby: Waiting for players...'),
-            createVNode('div', { id: 'lobby-timer-container' }, LobbyTimerComponent()),
-            createVNode('div', { id: 'countdown-container', class: 'timer-section' }, CountdownComponent())
+            createVNode('h2', {}, 'Lobby: Waiting for players... ', { id: 'lobby-timer-container' }, LobbyTimerComponent()),
         ),
         boardNode
     })
