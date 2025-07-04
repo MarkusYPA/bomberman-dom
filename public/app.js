@@ -86,7 +86,7 @@ function LobbyScreen() {
         timerText = ` Game launch in ${state.lobbyTime}s`
     } else if (state.playerCount > 1) {
         // If there are enough players but no timer, the game is about to start.
-        timerText = 'Starting...'
+        timerText = 'Preparing game...'
     }
 
     return MainLayout({
