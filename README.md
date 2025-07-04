@@ -1,6 +1,6 @@
 # Node Game Server
 
-This is a server-authoritative multiplayer game, reminiscent of classic Bomber Bear. It handles all game logic on the server, with clients responsible for sending inputs and rendering the received game state. Now with chat functionality, because who doesn't love a good trash talk session?
+This is a server-authoritative multiplayer game, reminiscent of classic Bomberman. It handles all game logic on the server, with clients responsible for sending inputs and rendering the received game state. Now with chat functionality, because who doesn't love a good trash talk session?
 
 
 ## Features
