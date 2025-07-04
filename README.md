@@ -29,7 +29,7 @@ You'll need Node.js installed. If you don't have it, figure it out.
     ```bash
     node server.mjs
     ```
-    The server will start, and you can then open `public/index.html` in your web browser to connect as a client. Open multiple tabs/browsers to simulate multiple players.
+    The server will start, and you can then open `https://localhost:3000` in your web browser to connect as a client. Open multiple tabs/browsers to simulate multiple players.
 
 ## Project Structure (For the Curious)
 
