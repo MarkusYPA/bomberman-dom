@@ -28,21 +28,21 @@ export const PlayerBoardComponent = createReactiveComponent(
         return createVNode('div', {
             class: 'scoreboard-box'
         },
-            createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
-            ...[1, 2, 3, 4].map(i => {
-                const player = state.players[i]
-                return createVNode('div', {
-                    class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
-                },
-                    // display player points
-                    createVNode('span', { class: 'player-points' },
-                        player ? player.points ? player.points : '0' : ''
-                    ),
-                    createVNode('span', { class: 'player-nickname' },
-                        player ? player.nickname : `Player ${i}`
-                    )
-                )
-            })
+        createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
+        ...[1, 2, 3, 4].map(i => {
+            const player = state.players[i]
+            return createVNode('div', {
+                class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
+            },
+            // display player points
+            createVNode('span', { class: 'player-points' },
+                player ? player.points ? player.points : '0' : ''
+            ),
+            createVNode('span', { class: 'player-nickname' },
+                player ? player.nickname : `Player ${i}`
+            )
+            )
+        })
         )
     },
     ['players'] // Only watch the 'players' path
@@ -79,16 +79,16 @@ function LobbyScreen() {
     )
 
     // Simple timer text generation
-    let timerText = ''
+    let timerText = 'Waiting for players...'
     if (state.lobbyTime) {
-        timerText = ` - Game starts in ${state.lobbyTime}s`
+        timerText = ` Game launch in ${state.lobbyTime}s`
     } else if (state.countdownTime) {
-        timerText = ` - Starting in ${state.countdownTime}s`
+        timerText = ` Starting in ${state.countdownTime}s`
     }
 
     return MainLayout({
         header: createVNode('div', { class: 'game-header' },
-            createVNode('h2', {}, `Lobby: Waiting for players...${timerText}`)
+            createVNode('h2', {}, `Lobby: ${timerText}`)
         ),
         boardNode
     })
@@ -131,7 +131,7 @@ function App() {
 
 // Re-render the app if the screen or timer state changes
 function update(changedPath) {
-    const watchedPaths = ['screen', 'lobbyTime', 'countdownTime'];
+    const watchedPaths = ['screen', 'lobbyTime', 'countdownTime']
     if (!changedPath || watchedPaths.includes(changedPath)) {
         mount(document.body, App())
         if (state.screen === 'lobby' || state.screen === 'game') {
