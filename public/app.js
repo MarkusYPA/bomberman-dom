@@ -77,13 +77,17 @@ function LobbyScreen() {
     const boardNode = createVNode('div', { class: 'lobby-border-wrapper' },
         createVNode('div', { id: 'lobby', class: 'lobby-area' })
     )
-
-    // Simple timer text generation
-    let timerText = 'Waiting for players...'
-    if (state.lobbyTime) {
-        timerText = ` Game launch in ${state.lobbyTime}s`
-    } else if (state.countdownTime) {
+    
+    let timerText
+    if (state.countdownTime) {
         timerText = ` Starting in ${state.countdownTime}s`
+    } else if (state.lobbyTime) {
+        timerText = ` Game launch in ${state.lobbyTime}s`
+    } else if (state.screen === 'lobby') {
+        // When lobbyTime is null but countdown hasn't started, it means the game is about to start.
+        timerText = 'Starting...'
+    } else {
+        timerText = 'Waiting for players...'
     }
 
     return MainLayout({
