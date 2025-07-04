@@ -659,6 +659,12 @@ button {
   flex-shrink: 0;
 }
 
+.leave-button {
+  width: 100%;
+  max-width: 250px;
+  margin: 10px;
+}
+
 /* Error message styling */
 .error-container {
   position: fixed;

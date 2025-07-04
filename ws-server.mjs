@@ -152,7 +152,10 @@ export function handleUpgrade(req, socket) {
         //todo: check if 10 seconds ping timeout is appropriate
     }
 
+    let isCleanedUp = false
     const cleanup = () => {
+        if (isCleanedUp) return
+        isCleanedUp = true
         if (pingInterval) {
             clearInterval(pingInterval)
             pingInterval = null
@@ -337,38 +340,37 @@ export function handleUpgrade(req, socket) {
         }
     })
 
-    socket.on('close', () => {
-        console.log(`Socket closed for client ${id}`)
-        cleanup()
-        const points = countPoints()
-        broadcast({ type: 'points', points })
+    const handleDisconnect = (reason) => {
+        if (isCleanedUp) return
+        console.log(`Client ${id} disconnected: ${reason}`)
+        
+        try {
+            cleanup()
+            const points = countPoints()
+            broadcast({ type: 'points', points })
+            updateCountdown()
 
-        // Reset countdown whenever the number of players changes
-        updateCountdown()
-    })
+            // Reset countdown whenever the number of players changes
+            broadcastPlayerCount()
+        } catch (err) {
+            console.error('Error during disconnect cleanup:', err)
+        }
+    }
 
-    socket.on('end', () => {
-        console.log(`Socket ended for client ${id}`)
-        cleanup()
-        const points = countPoints()
-        broadcast({ type: 'points', points })
-
-        // Reset countdown whenever the number of players changes
-        updateCountdown()
-        broadcastPlayerCount()
-    })
-
-    // Handle socket errors (like ECONNRESET) to prevent crashes
-    socket.on('error', (err) => {
-        console.log(`Socket error for client ${id}: ${err.code} - ${err.message}`)
-        cleanup()
-        const points = countPoints()
-        broadcast({ type: 'points', points })
-
-        // Reset countdown whenever the number of players changes
-        updateCountdown()
-        broadcastPlayerCount()
-    })
+    socket.on('close', () => handleDisconnect('Socket closed for client'))
+    socket.on('end', () => handleDisconnect('Socket ended for client'))
+    socket.on('error', (err) => handleDisconnect(`Socket error: ${err.code} - ${err.message}`))
+    // socket.on('timeout', () => handleDisconnect('Socket timed out for client'))
+    // socket.on('ping', () => {
+    //     // Respond to ping with pong frame (opcode 10)
+    //     const pongFrame = Buffer.from([0x8A, 0x00]) // Pong with no payload
+    //     socket.write(pongFrame)
+    //     lastPongTime = Date.now() // Update last pong time
+    // })
+    // socket.on('pong', () => {
+    //     // Update last pong time on pong response
+    //     lastPongTime = Date.now()
+    // })
 }
 
 export function tickGame() {
