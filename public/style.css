@@ -424,7 +424,8 @@ body {
 
 .chat-area {
   width: 100%;
-  height: 100%;
+  height: 362px;
+  overflow-x: hidden;
   max-width: none;
   background: #2a1810;
   border: 4px solid #8b4513;
