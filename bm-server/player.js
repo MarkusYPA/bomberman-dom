@@ -224,7 +224,12 @@ export class Player {
 
             // power-ups hit
             for (const pow of state.powerups.values()) {
-                if (this.alive && checkHit(playerBounds, pow)) {
+                if (this.alive && !levelMap[pow.row][pow.col] && checkHit(playerBounds, pow)) {
+
+                    //console.log('player', this.name, 'picked up powerup', pow.name, pow.col, pow.row)
+                    //console.log('wallMap', levelMap[pow.row][pow.col])
+                    // get element from powerupmap (2d array) with name
+
                     if (pow.powerType === 'bomb') {
                         this.bombAmount++
                         this.powerups.push('bombUp')
