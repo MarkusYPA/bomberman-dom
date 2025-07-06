@@ -1,5 +1,5 @@
 export const gridStep = 50
 export const halfStep = 25
-export const mult = 0.65
-export const interval = 10
-export const speed = interval * 0.1
+export const mult = 0.68
+export const interval = 15
+export const gameSpeed =  interval * 0.065
