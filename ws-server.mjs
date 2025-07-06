@@ -36,8 +36,22 @@ function replacer(key, value) {
     return value
 }
 
+let stateCount = 0
+
 export function broadcast(obj) {
     const msg = encodeMessage(JSON.stringify(obj, replacer))
+
+    if (obj.type === 'gamestate') {
+        stateCount++
+    }
+
+    if (stateCount % 100 === 0) {
+        console.log(`Broadcasting state ${stateCount} to ${clients.size} clients`)
+        console.log(obj)
+        const sizeInKB = Buffer.byteLength(msg) / 1024
+        console.log(`Message size: ${sizeInKB.toFixed(2)} KB`)
+    }
+
     for (const socket of clients.keys()) {
         try {
             socket.write(msg)
