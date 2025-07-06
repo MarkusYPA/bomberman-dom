@@ -36,13 +36,11 @@ function replacer(key, value) {
     return value
 }
 
-let stateCount = 0
-
 function reduceState(serverState) {
     // state info to send to clients
     const msgState = { type: 'gamestate', payload: { players: [] } }
 
-    // Send non-empty arrays and maps, send relevant player info
+    // Send non-empty arrays and maps, send only relevant player info
     for (const [key, val] of Object.entries(serverState.payload)) {
         if (Array.isArray(val)) {
             if (key === 'players') {
@@ -65,13 +63,25 @@ function reduceState(serverState) {
                 msgState.payload[key] = val
             }
         } else if (val instanceof Map) {
-            if (val.size !== 0) msgState.payload[key] = val
+            if (key === 'newFlames') { 
+                // new flames into an array of objects
+                msgState.payload.newFlames = []
+                for (const flame of val.values()) {
+                    msgState.payload.newFlames.push({
+                        direction: flame.direction,
+                        x: flame.x,
+                        y: flame.y
+                    })
+                }
+            } else if (val.size !== 0) msgState.payload[key] = val
         } else if (val) {
             msgState.payload[key] = val
         }
     }
     return msgState
 }
+
+//let stateCount = 0
 
 export function broadcast(obj) {
     let msg
@@ -81,14 +91,14 @@ export function broadcast(obj) {
         msg = encodeMessage(JSON.stringify(obj, replacer))
     }
 
-    if (obj.type === 'gamestate') {
+/*     if (obj.type === 'gamestate') {
         stateCount++
     }
-    if (obj.type === 'gamestate' && obj.payload.newFlames) {
-        console.log(reduceState(obj).payload.players)
+    if (obj.type === 'gamestate' && obj.payload.newFlames && obj.payload.newFlames.size > 1) {
+        console.log(reduceState(obj).payload.newFlames)
         const sizeInKB = Buffer.byteLength(msg) / 1024
         console.log(`Message size: ${sizeInKB.toFixed(2)} KB`)
-    }
+    } */
 
     for (const socket of clients.keys()) {
         try {
