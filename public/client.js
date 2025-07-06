@@ -2,8 +2,7 @@ import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
 import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
 import { clearClientGameState, clientGameState, setPoints, updateClientGameState } from './shared/state.js'
-import { CountdownComponent, PlayerCountComponent } from './app.js'
-import { LobbyTimerComponent } from './app.js'
+import { PlayerCountComponent } from './app.js'
 import { endGraphic } from './bomberman/endGraphics.js'
 
 let box // game area
@@ -117,20 +116,6 @@ function showErrorMessage(message) {
     } else {
         // Fallback to alert if error container not found
         alert(message)
-    }
-}
-
-function updateCountdown() {
-    const countdownElement = document.getElementById('countdown-container')
-    if (countdownElement) {
-        mount(countdownElement, CountdownComponent())
-    }
-}
-
-function updateLobbyTimer() {
-    const lobbyElement = document.getElementById('lobby-timer-container')
-    if (lobbyElement) {
-        mount(lobbyElement, LobbyTimerComponent())
     }
 }
 
@@ -253,7 +238,7 @@ export async function startClient() {
         await new Promise(resolve => setTimeout(resolve, 100))
     }
     nickname = await createNicknameModal()
-    
+
     // support https and http connections
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
     ws = new WebSocket(`${protocol}//${location.host}`)
@@ -278,13 +263,10 @@ export async function startClient() {
         const msg = JSON.parse(e.data)
         if (msg.type === 'lobby') {
             state.lobbyTime = msg.time
-            updateLobbyTimer()
         } else if (msg.type === 'lobbyFinished') {
             state.lobbyTime = null
-            updateLobbyTimer()
         } else if (msg.type === 'countdown') {
             state.countdownTime = msg.time
-            updateCountdown()
         } else if (msg.type === 'countdownFinished') {
             state.screen = 'game' // Switch to game screen
             state.countdownTime = null

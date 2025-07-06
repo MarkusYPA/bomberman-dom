@@ -224,7 +224,7 @@ export class Player {
 
             // power-ups hit
             for (const pow of state.powerups.values()) {
-                if (this.alive && checkHit(playerBounds, pow)) {
+                if (this.alive && !levelMap[pow.row][pow.col].startsWith('weakWall') && checkHit(playerBounds, pow)) {
                     if (pow.powerType === 'bomb') {
                         this.bombAmount++
                         this.powerups.push('bombUp')
