@@ -23,7 +23,7 @@ export class Player {
         this.bombAmount = 1
         this.bombPower = 2
         this.isMoving = false
-        this.score = 0
+        //this.score = 0
         this.killer = ''
         //this.bombClip = false
         this.wallClip = false
@@ -224,7 +224,7 @@ export class Player {
 
             // power-ups hit
             for (const pow of state.powerups.values()) {
-                if (this.alive && !levelMap[pow.row][pow.col].startsWith('weakWall') && checkHit(playerBounds, pow)) {
+                if (this.alive && (!(levelMap[pow.row][pow.col] && levelMap[pow.row][pow.col].startsWith('weakWall'))) && checkHit(playerBounds, pow)) {
                     if (pow.powerType === 'bomb') {
                         this.bombAmount++
                         this.powerups.push('bombUp')

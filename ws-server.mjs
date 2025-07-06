@@ -10,11 +10,11 @@ export const clients = new Map() // socket -> { id, nickname }
 export const heldInputs = new Map() // id -> Set of held directions
 
 let countdownTimer = null
-let countdown = 5 // 10
+let countdown = 2 // 10
 let lobbyTimer = null
 let lobbyTimeLeft = null
 
-const LOBBY_DURATION = 10 //20
+const LOBBY_DURATION = 3 //20
 
 function encodeMessage(str) {
     const json = Buffer.from(str)
@@ -38,16 +38,54 @@ function replacer(key, value) {
 
 let stateCount = 0
 
+function reduceState(serverState) {
+    // state info to send to clients
+    const msgState = { type: 'gamestate', payload: { players: [] } }
+
+    // Send non-empty arrays and maps, send relevant player info
+    for (const [key, val] of Object.entries(serverState.payload)) {
+        if (Array.isArray(val)) {
+            if (key === 'players') {
+                val.forEach(p => {
+                    msgState.payload.players.push({
+                        id: p.id,
+                        size: p.size,
+                        lives: p.lives,
+                        name: p.name,
+                        x: p.x,
+                        y: p.y,
+                        vulnerable: p.vulnerable,
+                        left: p.left,
+                        lives: p.lives,
+                        alive: p.alive,
+                        killer: p.killer,
+                    })
+                })
+            } else if (val.length !== 0) {
+                msgState.payload[key] = val
+            }
+        } else if (val instanceof Map) {
+            if (val.size !== 0) msgState.payload[key] = val
+        } else if (val) {
+            msgState.payload[key] = val
+        }
+    }
+    return msgState
+}
+
 export function broadcast(obj) {
-    const msg = encodeMessage(JSON.stringify(obj, replacer))
+    let msg
+    if (obj.type === 'gamestate') {
+        msg = encodeMessage(JSON.stringify(reduceState(obj), replacer))
+    } else {
+        msg = encodeMessage(JSON.stringify(obj, replacer))
+    }
 
     if (obj.type === 'gamestate') {
         stateCount++
     }
-
-    if (stateCount % 100 === 0) {
-        console.log(`Broadcasting state ${stateCount} to ${clients.size} clients`)
-        console.log(obj)
+    if (obj.type === 'gamestate' && obj.payload.newFlames) {
+        console.log(reduceState(obj).payload.players)
         const sizeInKB = Buffer.byteLength(msg) / 1024
         console.log(`Message size: ${sizeInKB.toFixed(2)} KB`)
     }
