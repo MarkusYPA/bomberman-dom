@@ -1,4 +1,4 @@
-export const state = {
+export const bbstate = {
     solidWalls: [],             // for player collisions
     surroundingWalls: [],       // no collisions
     weakWalls: new Map(),       // for player collisions
@@ -24,29 +24,29 @@ export function getNarrowState() {
         weakWalls: _weakWalls,
         powerups: _powerups,
         ...narrowState
-    } = state
+    } = bbstate
     return narrowState
 }
 
 export function clearTempsState() {
-    state.collapsingWalls = []
-    state.newBombs.clear()
-    state.removedBombs.clear()
-    state.newFlames.clear()
-    state.newItems.clear()
-    state.pickedItems = []
-    state.burningItems = []
+    bbstate.collapsingWalls = []
+    bbstate.newBombs.clear()
+    bbstate.removedBombs.clear()
+    bbstate.newFlames.clear()
+    bbstate.newItems.clear()
+    bbstate.pickedItems = []
+    bbstate.burningItems = []
 }
 
 // remove player from main game state  
 export function removePlayer(id) {
     let index = 0
     let found = false
-    state.players.forEach((p, i) => {
+    bbstate.players.forEach((p, i) => {
         if (p.id === id) {
             index = i
             found = true
         }
     })
-    if (found) state.players.splice(index, 1)
+    if (found) bbstate.players.splice(index, 1)
 }

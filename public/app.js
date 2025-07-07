@@ -1,8 +1,8 @@
 import { createVNode, mount } from './framework/mini.js'
 import { state, subscribe, createReactiveComponent } from './framework/state.js'
 import { sendLeaveGame, sendBackToLobby, setupChatHandlers, startClient } from './client.js'
-import { stopSequenceClient } from './bomberman/runGame.js'
-import { loadAllSounds } from './bomberman/sounds.js'
+import { stopSequenceClient } from './bomberbear-render/bomberbear-render.js'
+import { loadAllSounds } from './bomberbear-render/sounds.js'
 
 state.screen = 'start'
 state.players = {}          // This can be kept for compatibility, but not used for rendering

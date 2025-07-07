@@ -1,20 +1,20 @@
 import { createHash } from 'crypto'
 import { Buffer } from 'buffer'
-import Game from './game.mjs'
 import { stopMiniGame } from './server.mjs'
-import { countPoints, mainGameRunning, startSequence, removePlayerFromGame } from './bm-server/game.js'
-import { removePlayer } from './bm-server-shared/state.js'
+import { countPoints, mainGameRunning, startSequence, removePlayerFromGame } from './bomberbear-logic/bomberbear-logic.js'
+import { removePlayer } from './bomberbear-logic/bomberbear-state.js'
+import MiniGame from './mini-game.mjs'
 
-const game = new Game()
+const minigame = new MiniGame()
 export const clients = new Map() // socket -> { id, nickname }
 export const heldInputs = new Map() // id -> Set of held directions
 
 let countdownTimer = null
-let countdown = 10 // 10
+let countdown = 2 // 10
 let lobbyTimer = null
 let lobbyTimeLeft = null
 
-const LOBBY_DURATION = 20 //20
+const LOBBY_DURATION = 3 //20
 
 function encodeMessage(str) {
     const json = Buffer.from(str)
@@ -223,9 +223,9 @@ export function handleUpgrade(req, socket) {
             pingInterval = null
         }
         if (id) {
-            game.removePlayer(id)   // remove player from mini game
+            minigame.removePlayer(id)   // remove player from mini game
             removePlayer(id)        // remove player from main game
-            removePlayerFromGame(id) // Also remove from bomberman game state
+            removePlayerFromGame(id) // Also remove from bomberbear game state
             heldInputs.delete(id)
             const sender = clients.get(socket)?.nickname || '???'
             if (sender && sender !== '???') {
@@ -330,7 +330,7 @@ export function handleUpgrade(req, socket) {
                     }
 
                     clients.set(socket, { id, nickname: obj.nickname, points: 0 })
-                    const added = game.addPlayer(id, obj.nickname)
+                    const added = minigame.addPlayer(id, obj.nickname)
                     if (!added) {
                         const errorMsg = encodeMessage(JSON.stringify({
                             type: 'error',
@@ -361,7 +361,7 @@ export function handleUpgrade(req, socket) {
                     const pointsMsg = encodeMessage(JSON.stringify({
                         type: 'points',
                         points: currentPoints,
-                        players: game.getState()
+                        players: minigame.getState()
                     }))
                     socket.write(pointsMsg)
                     
@@ -393,7 +393,7 @@ export function handleUpgrade(req, socket) {
 
                 if (obj.type === 'requestPointsAndPlayers') {
                     const points = countPoints()
-                    broadcast({ type: 'points', points, players: game.getState() })
+                    broadcast({ type: 'points', points, players: minigame.getState() })
                 }
 
                 if (obj.type === 'backToLobby') {
@@ -449,25 +449,14 @@ export function handleUpgrade(req, socket) {
     socket.on('close', () => handleDisconnect('Socket closed for client'))
     socket.on('end', () => handleDisconnect('Socket ended for client'))
     socket.on('error', (err) => handleDisconnect(`Socket error: ${err.code} - ${err.message}`))
-    // socket.on('timeout', () => handleDisconnect('Socket timed out for client'))
-    // socket.on('ping', () => {
-    //     // Respond to ping with pong frame (opcode 10)
-    //     const pongFrame = Buffer.from([0x8A, 0x00]) // Pong with no payload
-    //     socket.write(pongFrame)
-    //     lastPongTime = Date.now() // Update last pong time
-    // })
-    // socket.on('pong', () => {
-    //     // Update last pong time on pong response
-    //     lastPongTime = Date.now()
-    // })
 }
 
 export function tickGame() {
     // Move players based on held inputs
     for (const [id, held] of heldInputs.entries()) {
-        game.handleInput(id, held)
+        minigame.handleInput(id, held)
     }
-    const state = { type: 'state', payload: game.getState() }
+    const state = { type: 'state', payload: minigame.getState() }
     broadcast(state)
 }
 

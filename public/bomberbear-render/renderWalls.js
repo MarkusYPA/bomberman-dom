@@ -1,5 +1,5 @@
 import { Timer } from './timerClient.js'
-import { clientEvents } from './runGame.js'
+import { clientEvents } from './bomberbear-render.js'
 import { currentlyPlaying, playSound } from './sounds.js'
 
 function generalWallAttributes(domWall, wall) {

@@ -1,9 +1,9 @@
 import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
-import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
-import { clearClientGameState, clientGameState, setPoints, updateClientGameState } from './shared/state.js'
+import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberbear-render/bomberbear-render.js'
+import { clearClientGameState, clientGameState, setPoints, updateClientGameState } from './bomberbear-render/clientstate.js'
 import { PlayerCountComponent } from './app.js'
-import { endGraphic } from './bomberman/endGraphics.js'
+import { endGraphic } from './bomberbear-render/endGraphics.js'
 
 let box // game area
 let ws // WebSocket connection

@@ -1,6 +1,6 @@
 import { makeWalls, makeLevelMap, createPlayer } from './initialize.js'
-import { clearTempsState, getNarrowState, state } from '../bm-server-shared/state.js'
-import { interval } from '../bm-server-shared/config.js'
+import { clearTempsState, getNarrowState, bbstate } from './bomberbear-state.js'
+import { interval } from './config.js'
 import { broadcast, clients, heldInputs, updateCountdown } from '../ws-server.mjs'
 import { startMiniGame } from '../server.mjs'
 
@@ -20,13 +20,12 @@ let ended = false
 export let mainGameRunning = false
 
 export function nextLevel() {
-    //state.level++;
-    state.solidWalls = []
-    state.weakWalls.clear()
+    bbstate.solidWalls = []
+    bbstate.weakWalls.clear()
     bombs.clear()
     flames.clear()
     timedEvents.clear()
-    state.powerups.clear()
+    bbstate.powerups.clear()
     stopGame()
 };
 
@@ -37,23 +36,23 @@ export function startSequence(clients) {
     
     // Reset all game state
     mainGameRunning = true
-    state.players.length = 0
+    bbstate.players.length = 0
     playerNames.length = 0
     ending = false
     ended = false
 
     for (const c of clients.values()){
-        state.players.push(createPlayer(c.nickname, c.id))     // bomb ownership breaks (no collision until player is away from it)
+        bbstate.players.push(createPlayer(c.nickname, c.id))     // bomb ownership breaks (no collision until player is away from it)
         playerNames.push(c.nickname)
     }
 
     bounds = { left: 0, right: 650, top: 0, bottom: 550, width: 650, height: 550 }
     levelMap = makeLevelMap()
     powerUpMap = makeLevelMap()
-    makeWalls(state.level)
+    makeWalls(bbstate.level)
 
     // broadcast state to start off game
-    broadcast({ type: 'startgame', payload: state })
+    broadcast({ type: 'startgame', payload: bbstate })
     runGame()
 }
 
@@ -69,7 +68,7 @@ export function countPoints () {
 function endSequence() {
     setTimeout(() => {
         // Broadcast winner and points or undefined
-        const winner = state.players.find(p => p.lives !== 0)
+        const winner = bbstate.players.find(p => p.lives !== 0)
         if (winner) {
             clients.forEach(c => {
                 if (c.id === winner.id) {
@@ -82,11 +81,11 @@ function endSequence() {
 
         // Show result, then return to lobby
         setTimeout(() => {
-            state.players.length = 0
-            state.solidWalls.length = 0
-            state.surroundingWalls.length = 0
-            state.weakWalls.clear()
-            state.powerups.clear()
+            bbstate.players.length = 0
+            bbstate.solidWalls.length = 0
+            bbstate.surroundingWalls.length = 0
+            bbstate.weakWalls.clear()
+            bbstate.powerups.clear()
             levelMap = []
             powerUpMap = []
 
@@ -108,7 +107,7 @@ function runGame() {
     gameIntervalId = setInterval(gameLoop, interval)
 
     function gameLoop() {
-        state.players.forEach(p => {
+        bbstate.players.forEach(p => {
             const input = heldInputs.get(p.id)
             if (!input) return // Skip if player disconnected
             if (ending) input.bomb = false     // don't allow bomb drops when end sequence has started
@@ -117,10 +116,10 @@ function runGame() {
         })
 
         // broadcast only updates to state (no solidWalls, no surroundingWalls, no weakWalls, no powerups)
-        broadcast({ type: 'gamestate', payload: getNarrowState(state) })
+        broadcast({ type: 'gamestate', payload: getNarrowState(bbstate) })
         clearTempsState()
 
-        if (!ending && state.players.filter(p => p.lives !== 0).length < 2) {
+        if (!ending && bbstate.players.filter(p => p.lives !== 0).length < 2) {
             ending = true
             endSequence()
         }
@@ -143,14 +142,14 @@ function stopGame() {
 
 // Add function to remove disconnected players from game state
 export function removePlayerFromGame(id) {
-    const playerIndex = state.players.findIndex(p => p.id === id)
+    const playerIndex = bbstate.players.findIndex(p => p.id === id)
     if (playerIndex !== -1) {
-        state.players.splice(playerIndex, 1)
+        bbstate.players.splice(playerIndex, 1)
     }
     
     // Also remove from playerNames
     const nameIndex = playerNames.findIndex((name, index) => {
-        return state.players[index] && state.players[index].id === id
+        return bbstate.players[index] && bbstate.players[index].id === id
     })
     if (nameIndex !== -1) {
         playerNames.splice(nameIndex, 1)

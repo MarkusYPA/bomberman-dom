@@ -1,4 +1,4 @@
-import { gridStep, mult } from '../bm-server-shared/config.js'
+import { gridStep, mult } from '../config.js'
 
 class Wall {
     constructor(x, y, size) {

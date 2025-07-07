@@ -1,6 +1,6 @@
 const speed = 0.15
 
-export default class Game {
+export default class MiniGame {
     constructor() {
         this.players = {} // id -> { nickname, x, y }
         this.playerSize = 40 // Player size in pixels
