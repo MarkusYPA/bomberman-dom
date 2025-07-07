@@ -626,8 +626,8 @@ body {
 
 .player-board-section {
   width: 85%;
-  background: #44260f;
-  border: 4px solid #000;
+  background: #2a1810;
+  border: 4px solid #8b4513;
   border-style: outset;
   padding: 20px;
   margin: 0 auto 20px auto;
@@ -828,7 +828,7 @@ button {
 }
 
 .nickname-modal::before {
-  content: "=== PLAYER IDENTIFICATION ===";
+  content: "PLAYER IDENTIFICATION";
   display: block;
   background: #1a1a0d;
   color: #ff8c00;
@@ -1025,16 +1025,6 @@ button {
   padding: 30px 40px;
   border: 4px solid #8b4513;
   border-style: outset;
-}
-
-.start-menu h1::before {
-  content: "=== ";
-  color: #ff8c00;
-}
-
-.start-menu h1::after {
-  content: " ===";
-  color: #ff8c00;
 }
 
 .start-menu button {
