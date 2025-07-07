@@ -91,17 +91,7 @@ export function broadcast(obj) {
         msg = encodeMessage(JSON.stringify(obj, replacer))
     }
 
-/*     if (obj.type === 'gamestate') {
-        stateCount++
-    }
-    if (obj.type === 'gamestate' && obj.payload.newFlames && obj.payload.newFlames.size > 1) {
-        console.log(reduceState(obj).payload.newFlames)
-        const sizeInKB = Buffer.byteLength(msg) / 1024
-        console.log(`Message size: ${sizeInKB.toFixed(2)} KB`)
-    } */
-
     const deadSockets = []
-    
     for (const socket of clients.keys()) {
         try {
             if (!socket.destroyed && socket.writable) {
