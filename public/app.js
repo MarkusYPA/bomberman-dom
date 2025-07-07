@@ -1,6 +1,6 @@
 import { createVNode, mount } from './framework/mini.js'
 import { state, subscribe, createReactiveComponent } from './framework/state.js'
-import { sendLeaveGame, sendBackToLobby, setupChatHandlers, startClient } from './client.js'
+import { sendLeaveGame, sendBackToLobby, setupChatHandlers, startClient, redrawAllMessages } from './client.js'
 import { stopSequenceClient } from './bomberbear-render/bomberbear-render.js'
 import { loadAllSounds } from './bomberbear-render/sounds.js'
 
@@ -73,31 +73,33 @@ function MainLayout({ header, boardId, boardClass, boardNode }) {
     )
 }
 
-function LobbyScreen() {
-    const boardNode = createVNode('div', { class: 'lobby-border-wrapper' },
-        createVNode('div', { id: 'lobby', class: 'lobby-area' })
-    )
-
-    // Timer text logic that accounts for all lobby states.
+function getTimerText() {
     let timerText = 'Waiting for players...' // Default message
     if (state.countdownTime) {
         timerText = ` Starting in ${state.countdownTime}s`
     } else if (state.lobbyTime) {
         timerText = ` Game launch in ${state.lobbyTime}s`
     } else if (state.playerCount > 1) {
-        // If there are enough players but no timer, the game is about to start.
         timerText = 'Preparing game...'
     }
+    return timerText
+}
+
+function LobbyScreen() {
+    const boardNode = createVNode('div', { class: 'lobby-border-wrapper' },
+        createVNode('div', { id: 'lobby', class: 'lobby-area' })
+    )
 
     return MainLayout({
         header: createVNode('div', { class: 'game-header' },
-            createVNode('h2', {}, `Lobby: ${timerText}`),
+            createVNode('h2', {}, `Lobby: ${getTimerText()}`),
             createVNode('button', {
                 id: 'leave-lobby',
                 class: 'leave-button',
-                onclick: () => {        
+                onclick: () => {
                     sendLeaveGame()
                     stopSequenceClient('start')
+                    window.location.reload() // Reload to reset the app state
                 }
             }, 'Leave Lobby'),
         ),
@@ -155,10 +157,10 @@ function App() {
     )
 }
 
-// Re-render the app if the screen or timer state changes
+// Re-render the app if the screen changes, update header for timer changes
 function update(changedPath) {
-    const watchedPaths = ['screen', 'lobbyTime', 'countdownTime']
-    if (!changedPath || watchedPaths.includes(changedPath)) {
+    if (!changedPath || changedPath === 'screen') {
+        // Full re-render for screen changes
         mount(document.body, App())
         if (state.screen === 'lobby' || state.screen === 'game') {
             const playerBoard = document.getElementById('player-board-container')
@@ -167,6 +169,13 @@ function update(changedPath) {
             }
         }
         setupChatHandlers()
+        redrawAllMessages()
+    } else if ((changedPath === 'lobbyTime' || changedPath === 'countdownTime') && state.screen === 'lobby') {
+        // For timer changes, only update the header text
+        const headerElement = document.querySelector('.game-header h2')
+        if (headerElement) {
+            headerElement.textContent = `Lobby: ${getTimerText()}`
+        }
     }
 }
 

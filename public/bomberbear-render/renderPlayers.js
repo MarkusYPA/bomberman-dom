@@ -34,38 +34,40 @@ export function updatePlayers(players) {
         lives.push(player.lives)
         const p = domPlayers.get(player.name)
 
-        p.style.transform = `translate(${player.x}px, ${player.y}px)`
-        if (!player.vulnerable) {
-            p.classList.add('invulnerable')
-        } else {
-            p.classList.remove('invulnerable')
-        }
-
-        if (player.left) {
-            p.classList.add('left')
-        } else {
-            p.classList.remove('left')
-        }
-
-        // Add ghost effect if player is out of lives
-        if (player.lives <= 0) {
-            p.classList.add('ghost')
-            if (clientGameState.longDeadPlayers.get(player.id)) {
-                p.classList.add('timeout')
+        if (p) {
+            p.style.transform = `translate(${player.x}px, ${player.y}px)`
+            if (!player.vulnerable) {
+                p.classList.add('invulnerable')
+            } else {
+                p.classList.remove('invulnerable')
             }
-        } else {
-            p.classList.remove('ghost')
-        }
 
-        if (!player.alive) {
-            if (!p.classList.contains('dead')) {
-                if (player.killer === 'bomb') playSound('playerBombDeath')
-                if (player.killer === 'enemy1') playSound('playerDeath')
-                if (player.killer === 'enemy2') playSound('playerDeath2')
+            if (player.left) {
+                p.classList.add('left')
+            } else {
+                p.classList.remove('left')
             }
-            p.classList.add('dead')
-        } else {
-            p.classList.remove('dead')
+
+            // Add ghost effect if player is out of lives
+            if (player.lives <= 0) {
+                p.classList.add('ghost')
+                if (clientGameState.longDeadPlayers.get(player.id)) {
+                    p.classList.add('timeout')
+                }
+            } else {
+                p.classList.remove('ghost')
+            }
+
+            if (!player.alive) {
+                if (!p.classList.contains('dead')) {
+                    if (player.killer === 'bomb') playSound('playerBombDeath')
+                    if (player.killer === 'enemy1') playSound('playerDeath')
+                    if (player.killer === 'enemy2') playSound('playerDeath2')
+                }
+                p.classList.add('dead')
+            } else {
+                p.classList.remove('dead')
+            }
         }
     })
 
