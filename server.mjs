@@ -50,9 +50,12 @@ process.on('unhandledRejection', (reason, promise) => {
 })
 
 
-let miniGameIntervalId = ''
+let miniGameIntervalId = null
+
 export function startMiniGame(){
-    miniGameIntervalId = setInterval(tickGame, interval)
+    if (!miniGameIntervalId) {
+        miniGameIntervalId = setInterval(tickGame, interval)
+    }
 }
 
 // Start server side mini game loop right away.

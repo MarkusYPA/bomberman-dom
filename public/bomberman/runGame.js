@@ -101,11 +101,11 @@ export function startSequenceClient() {
     requestAnimationFrame(processNextTask)
 }
 
-export function stopSequenceClient() {
+export function stopSequenceClient(screenState = 'lobby') {
     //console.log('ending game')
     gameRunning = false     // exit game loop    
     clearClientGameState()  // clear state
-    state.screen = 'lobby'
+    state.screen = screenState
     // minigame will run and update with websockets messages
 }
 

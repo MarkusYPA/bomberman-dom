@@ -100,13 +100,25 @@ export function broadcast(obj) {
         console.log(`Message size: ${sizeInKB.toFixed(2)} KB`)
     } */
 
+    const deadSockets = []
+    
     for (const socket of clients.keys()) {
         try {
-            socket.write(msg)
+            if (!socket.destroyed && socket.writable) {
+                socket.write(msg)
+            } else {
+                deadSockets.push(socket)
+            }
         } catch (err) {
             console.error('Failed to broadcast message:', err)
+            deadSockets.push(socket)
         }
     }
+    
+    // Clean up dead sockets
+    deadSockets.forEach(socket => {
+        clients.delete(socket)
+    })
 }
 
 function resetCountdown() {
@@ -195,26 +207,30 @@ export function handleUpgrade(req, socket) {
     // Set up ping/pong heartbeat to detect disconnected clients
     const startHeartbeat = () => {
         pingInterval = setInterval(() => {
-            //todo: check if 30 seconds pong timeout is appropriate
-            if (Date.now() - lastPongTime > 30000) { // 30 seconds timeout
+            // 60 seconds timeout for more stability
+            if (Date.now() - lastPongTime > 60000) { // 60 seconds timeout
                 console.log(`Client ${id} timeout - closing connection`)
-                socket.destroy()
+                cleanup() // remove player and cleanup
                 return
             }
 
             // Send ping frame (opcode 9)
             try {
-                const pingFrame = Buffer.from([0x89, 0x00]) // Ping with no payload
-                socket.write(pingFrame)
+                if (socket.readyState === 'open' || !socket.destroyed) {
+                    const pingFrame = Buffer.from([0x89, 0x00]) // Ping with no payload
+                    socket.write(pingFrame)
+                }
             } catch (err) {
                 console.log(`Failed to send ping to client ${id}: ${err.message}`)
-                socket.destroy()
+                cleanup() // remove player and cleanup if ping fails
             }
-        }, 10000) // Ping every 10 seconds
-        //todo: check if 10 seconds ping timeout is appropriate
+        }, 15000) // Ping every 15 seconds frequent)
     }
 
+    let isCleanedUp = false
     const cleanup = () => {
+        if (isCleanedUp) return
+        isCleanedUp = true
         if (pingInterval) {
             clearInterval(pingInterval)
             pingInterval = null
@@ -230,6 +246,15 @@ export function handleUpgrade(req, socket) {
             }
         }
         clients.delete(socket)
+        
+        // Properly close the socket if it's still open
+        if (!socket.destroyed) {
+            try {
+                socket.end()
+            } catch (err) {
+                console.error('Error closing socket:', err)
+            }
+        }
     }
 
     socket.on('data', (buffer) => {
@@ -312,6 +337,11 @@ export function handleUpgrade(req, socket) {
                         }
                     }
 
+                    if (obj.nickname === 'Player' || obj.nickname === 'player' || obj.nickname === '') {
+                        // If nickname is default, set it to something unique with adding player ID
+                        obj.nickname = `Player ${id}`
+                    }
+
                     clients.set(socket, { id, nickname: obj.nickname, points: 0 })
                     const added = game.addPlayer(id, obj.nickname)
                     if (!added) {
@@ -338,7 +368,16 @@ export function handleUpgrade(req, socket) {
                         count: clients.size
                     }))
                     socket.write(countMsg)
-
+                    
+                    // Send current points to the new player so they can see everyone's scores
+                    const currentPoints = countPoints()
+                    const pointsMsg = encodeMessage(JSON.stringify({
+                        type: 'points',
+                        points: currentPoints,
+                        players: game.getState()
+                    }))
+                    socket.write(pointsMsg)
+                    
                     // Reset countdown whenever the number of players changes
                     updateCountdown()
                     broadcastPlayerCount()
@@ -370,12 +409,29 @@ export function handleUpgrade(req, socket) {
                     broadcast({ type: 'points', points, players: game.getState() })
                 }
 
-                if (obj.type === 'leaveGame') {
+                if (obj.type === 'backToLobby') {
                     removePlayer(id)        // remove player from main game
                     const sender = clients.get(socket)?.nickname || '???'
                     if (sender && sender !== '???') {
                         broadcast({ type: 'chat', nickname: sender, playerId: id, message: sender + ' exited to lobby!' })
                     }
+                }
+
+                if (obj.type === 'leaveGame') {
+                    // Send confirmation to client before cleanup
+                    const leaveConfirmMsg = encodeMessage(JSON.stringify({
+                        type: 'leaveConfirmed'
+                    }))
+                    socket.write(leaveConfirmMsg)
+                    
+                    // Delay cleanup to allow client to handle the message
+                    setTimeout(() => {
+                        cleanup() // Clean up the socket and player state
+                        const points = countPoints()
+                        broadcast({ type: 'points', points })
+                        updateCountdown()
+                        broadcastPlayerCount()
+                    }, 100)
                 }
 
                 offset = dataEnd
@@ -386,38 +442,37 @@ export function handleUpgrade(req, socket) {
         }
     })
 
-    socket.on('close', () => {
-        console.log(`Socket closed for client ${id}`)
-        cleanup()
-        const points = countPoints()
-        broadcast({ type: 'points', points })
+    const handleDisconnect = (reason) => {
+        if (isCleanedUp) return
+        console.log(`Client ${id} disconnected: ${reason}`)
+        
+        try {
+            cleanup()
+            const points = countPoints()
+            broadcast({ type: 'points', points })
+            updateCountdown()
 
-        // Reset countdown whenever the number of players changes
-        updateCountdown()
-    })
+            // Reset countdown whenever the number of players changes
+            broadcastPlayerCount()
+        } catch (err) {
+            console.error('Error during disconnect cleanup:', err)
+        }
+    }
 
-    socket.on('end', () => {
-        console.log(`Socket ended for client ${id}`)
-        cleanup()
-        const points = countPoints()
-        broadcast({ type: 'points', points })
-
-        // Reset countdown whenever the number of players changes
-        updateCountdown()
-        broadcastPlayerCount()
-    })
-
-    // Handle socket errors (like ECONNRESET) to prevent crashes
-    socket.on('error', (err) => {
-        console.log(`Socket error for client ${id}: ${err.code} - ${err.message}`)
-        cleanup()
-        const points = countPoints()
-        broadcast({ type: 'points', points })
-
-        // Reset countdown whenever the number of players changes
-        updateCountdown()
-        broadcastPlayerCount()
-    })
+    socket.on('close', () => handleDisconnect('Socket closed for client'))
+    socket.on('end', () => handleDisconnect('Socket ended for client'))
+    socket.on('error', (err) => handleDisconnect(`Socket error: ${err.code} - ${err.message}`))
+    // socket.on('timeout', () => handleDisconnect('Socket timed out for client'))
+    // socket.on('ping', () => {
+    //     // Respond to ping with pong frame (opcode 10)
+    //     const pongFrame = Buffer.from([0x8A, 0x00]) // Pong with no payload
+    //     socket.write(pongFrame)
+    //     lastPongTime = Date.now() // Update last pong time
+    // })
+    // socket.on('pong', () => {
+    //     // Update last pong time on pong response
+    //     lastPongTime = Date.now()
+    // })
 }
 
 export function tickGame() {

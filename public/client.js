@@ -2,12 +2,14 @@ import { mount } from './framework/mini.js'
 import { state } from './framework/state.js'
 import { gameRunning, setMoving, setPlayerId, startSequenceClient, stopSequenceClient } from './bomberman/runGame.js'
 import { clearClientGameState, clientGameState, setPoints, updateClientGameState } from './shared/state.js'
+import { PlayerCountComponent } from './app.js'
 import { endGraphic } from './bomberman/endGraphics.js'
 
 let box // game area
 let ws // WebSocket connection
 let nickname
 let firstState = true
+let isLeavingGame = false // Track if user is intentionally leaving
 
 // Function to create beautiful nickname modal
 function createNicknameModal() {
@@ -69,8 +71,11 @@ function createNicknameModal() {
         })
 
         cancelBtn.addEventListener('click', () => {
-            resolve('Player') // Default nickname if cancelled
+            // resolve('Player') // Default nickname if cancelled
+            // document.body.removeChild(overlay)
+
             document.body.removeChild(overlay)
+            state.screen = 'start'
         })
 
         // Add to DOM and focus
@@ -84,12 +89,12 @@ function createNicknameModal() {
         }, 100)
 
         // Close on overlay click
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                resolve('Player') // Default nickname
-                document.body.removeChild(overlay)
-            }
-        })
+        // overlay.addEventListener('click', (e) => {
+        //     if (e.target === overlay) {
+        //         resolve('Player') // Default nickname
+        //         document.body.removeChild(overlay)
+        //     }
+        // })
     })
 }
 
@@ -158,11 +163,13 @@ const allKeys = ['left', 'right', 'up', 'down', 'bomb']
 
 function sendHeld() {
     // create and send object of booleans from set
-    const payload = {}
-    for (const key of allKeys) {
-        payload[key] = held.has(key)
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        const payload = {}
+        for (const key of allKeys) {
+            payload[key] = held.has(key)
+        }
+        ws.send(JSON.stringify({ type: 'input', payload }))
     }
-    ws.send(JSON.stringify({ type: 'input', payload }))
 }
 
 document.addEventListener('keydown', (e) => {
@@ -177,7 +184,7 @@ document.addEventListener('keydown', (e) => {
             held.add(action)
             sendHeld()
         }
-        if (state.screen === 'game' && (action === 'left' || action === 'right' || action === 'up' || action === 'down')) {
+        if (action === 'left' || action === 'right' || action === 'up' || action === 'down') {
             setMoving(true)
         }
     }
@@ -210,16 +217,25 @@ function updatePoints(points) {
         }
     }
     // update points in framework state to trigger scoreboard re-render
-    for (const [id, points] of Object.entries(clientGameState.points)) {
+    for (const[id, points] of Object.entries(clientGameState.points)){
         if (state.players && state.players[id]) {
             state.players[id].points = points
         }
+    }    
+}
+
+function updatePlayerCount() {
+    const playerCountElement = document.getElementById('player-count-container')
+    if (playerCountElement) {
+        mount(playerCountElement, PlayerCountComponent())
     }
 }
 
 export async function startClient() {
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.close(1000, 'New session')
+        // Wait a bit to ensure the old connection is properly closed
+        await new Promise(resolve => setTimeout(resolve, 100))
     }
     nickname = await createNicknameModal()
 
@@ -227,7 +243,16 @@ export async function startClient() {
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
     ws = new WebSocket(`${protocol}//${location.host}`)
 
+    // Add connection timeout
+    const connectionTimeout = setTimeout(() => {
+        if (ws.readyState === WebSocket.CONNECTING) {
+            ws.close()
+            showErrorMessage('Connection timeout. Please try again.')
+        }
+    }, 10000) // 10 second timeout
+
     ws.addEventListener('open', () => {
+        clearTimeout(connectionTimeout)
         ws.send(JSON.stringify({
             type: 'join',
             nickname: nickname,
@@ -236,9 +261,7 @@ export async function startClient() {
 
     ws.addEventListener('message', (e) => {
         const msg = JSON.parse(e.data)
-        if (msg.type === 'playerCount') {
-            state.playerCount = msg.count
-        } else if (msg.type === 'lobby') {
+        if (msg.type === 'lobby') {
             state.lobbyTime = msg.time
         } else if (msg.type === 'lobbyFinished') {
             state.lobbyTime = null
@@ -247,6 +270,10 @@ export async function startClient() {
         } else if (msg.type === 'countdownFinished') {
             state.screen = 'game' // Switch to game screen
             state.countdownTime = null
+            updateCountdown()
+        } else if (msg.type === 'playerCount') {
+            state.playerCount = msg.count
+            updatePlayerCount()
         } else if (msg.type === 'state') {  // for mini game
             // Only update on changes. Keep player points, payload doesn't contain them.
             if (JSON.stringify(state.players) !== JSON.stringify(msg.payload)) {
@@ -255,7 +282,7 @@ export async function startClient() {
                     if (!(id in msg.payload)) {
                         delete state.players[id]
                     }
-                }
+                }                
                 for (const [id, playerInfo] of Object.entries(msg.payload)) {
                     if (state.players[id]) {
                         for (const [key, val] of Object.entries(playerInfo)) {
@@ -267,7 +294,9 @@ export async function startClient() {
                 }
 
                 if (firstState) {
-                    ws.send(JSON.stringify({ type: 'requestPoints' }))
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({ type: 'requestPoints' }))
+                    }
                     firstState = false
                 }
 
@@ -313,24 +342,26 @@ export async function startClient() {
             chatBox.appendChild(messageDiv)
 
             if (isAtBottom) {
-                // User was at bottom, auto-scroll to show new message
+            // User was at bottom, auto-scroll to show new message
                 chatBox.scrollTop = chatBox.scrollHeight
             } else {
-                // User is reading older messages, show new message indicator
+            // User is reading older messages, show new message indicator
                 showNewMessageIndicator()
             }
         } else if (msg.type === 'duplicateNickname') {
-            // Show error message and prompt for new nickname
+        // Show error message and prompt for new nickname
             showErrorMessage(msg.message)
             // Prompt user to enter a different nickname
             createNicknameModal().then(newNickname => {
-                ws.send(JSON.stringify({
-                    type: 'join',
-                    nickname: newNickname,
-                }))
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'join',
+                        nickname: newNickname,
+                    }))
+                }
             })
         } else if (msg.type === 'error') {
-            // Display error message to user
+        // Display error message to user
             showErrorMessage(msg.message)
         } else if (msg.type === 'startgame') {
             clearClientGameState()  // make sure no old calls try to collapse walls
@@ -343,7 +374,9 @@ export async function startClient() {
             startSequenceClient()
         } else if (msg.type === 'gamestate') {
             if (firstState) {
-                ws.send(JSON.stringify({ type: 'requestPointsAndPlayers' }))
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({ type: 'requestPointsAndPlayers' }))
+                }
                 firstState = false
             }
             updateClientGameState(msg.payload)
@@ -358,7 +391,7 @@ export async function startClient() {
             if (gameRunning) {
                 box.innerHTML = ''          // clear main game graphics
                 box.className = 'game-area' // restore default class
-                stopSequenceClient()
+                stopSequenceClient('lobby') // stop game loop
             }
         } else if (msg.type === 'points') {
             if (msg.players) {
@@ -367,24 +400,41 @@ export async function startClient() {
             if (state.players) {
                 updatePoints(msg.points)
             }
+        } else if (msg.type === 'leaveConfirmed') {
+            // Server confirmed leave request, close connection gracefully
+            isLeavingGame = true
+            ws.close(1000, 'User left game')
         }
     })
 
     // Handle WebSocket close event
     ws.addEventListener('close', (event) => {
+        clearTimeout(connectionTimeout)
         console.log('WebSocket connection closed:', event.code, event.reason)
-        showErrorMessage('Connection lost. Please refresh the page to reconnect.')
+        
+        // Don't show error if user is intentionally leaving the game
+        if (isLeavingGame) {
+            isLeavingGame = false // Reset flag
+            return
+        }
+        
+        // Only show error for unexpected closures (not normal or manual closures)
+        if (event.code !== 1000 && event.code !== 1001) {
+            showErrorMessage('Connection lost. Please refresh the page to reconnect.')
+        }
     })
 
     // Handle WebSocket error event  
     ws.addEventListener('error', (error) => {
+        clearTimeout(connectionTimeout)
         console.error('WebSocket error:', error)
         showErrorMessage('Connection error occurred. Please check your internet connection.')
     })
 
     // Add beforeunload event to properly close connection when page is unloaded
     window.addEventListener('beforeunload', () => {
-        if (ws.readyState === WebSocket.OPEN) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            isLeavingGame = true // User is leaving by closing page
             ws.close(1000, 'Page unload') // Normal closure
         }
     })
@@ -417,12 +467,10 @@ export function setupChatHandlers() {
     if (sendButton && chatInput) {
         sendButton.onclick = () => {
             const msg = chatInput.value.trim()
-            if (msg) {
+            if (msg && ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({ type: 'chat', message: msg }))
                 chatInput.value = ''
-
-                // Focus back on input for better UX
-                chatInput.focus()
+                chatInput.blur() // Remove focus to prevent accidental sending
             }
         }
         chatInput.addEventListener('keypress', (e) => {
@@ -444,8 +492,17 @@ export function setupChatHandlers() {
     }
 }
 
-export function sendLeaveGame() {
-    ws.send(JSON.stringify({ type: 'leaveGame' }))
+export function sendLeaveGame(){
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'leaveGame' }))
+        // Don't set isLeavingGame here - wait for server confirmation
+    }
+}
+
+export function sendBackToLobby(){
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'backToLobby' }))
+    }
 }
 
 export { renderMiniGame }

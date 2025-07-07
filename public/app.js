@@ -1,6 +1,6 @@
 import { createVNode, mount } from './framework/mini.js'
 import { state, subscribe, createReactiveComponent } from './framework/state.js'
-import { sendLeaveGame, setupChatHandlers, startClient } from './client.js'
+import { sendLeaveGame, sendBackToLobby, setupChatHandlers, startClient } from './client.js'
 import { stopSequenceClient } from './bomberman/runGame.js'
 import { loadAllSounds } from './bomberman/sounds.js'
 
@@ -91,7 +91,15 @@ function LobbyScreen() {
 
     return MainLayout({
         header: createVNode('div', { class: 'game-header' },
-            createVNode('h2', {}, `Lobby: ${timerText}`)
+            createVNode('h2', {}, `Lobby: ${timerText}`),
+            createVNode('button', {
+                id: 'leave-lobby',
+                class: 'leave-button',
+                onclick: () => {        
+                    sendLeaveGame()
+                    stopSequenceClient('start')
+                }
+            }, 'Leave Lobby'),
         ),
         boardNode
     })
@@ -104,10 +112,25 @@ function GameScreen() {
                 id: 'leave-game',
                 class: 'leave-button',
                 onclick: () => {
-                    stopSequenceClient()
+                    stopSequenceClient('start')
                     sendLeaveGame()
                 }
-            }, 'Leave Game')
+            }, 'Leave Game'),
+            createVNode('button', {
+                id: 'back-to-lobby',
+                class: 'leave-button',
+                onclick: () => {
+                    // version 1
+                    //state.screen = 'lobby'
+
+                    // version 2
+                    //stopSequenceClient()
+
+                    // v3: send ws mesg to server, telling to leave game?
+                    stopSequenceClient('lobby')
+                    sendBackToLobby()
+                }
+            }, 'Back to Lobby'),
         ),
         boardId: 'game',
         boardClass: 'game-area'
@@ -160,6 +183,6 @@ window.addEventListener('keydown', function (e) {
 
 loadAllSounds()
 subscribe(update, ['screen', 'lobbyTime', 'countdownTime']) // Watch for screen and timer changes
-stopSequenceClient()
+stopSequenceClient('lobby')
 state.screen = 'start'
 update()
