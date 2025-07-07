@@ -122,13 +122,6 @@ function GameScreen() {
                 id: 'back-to-lobby',
                 class: 'leave-button',
                 onclick: () => {
-                    // version 1
-                    //state.screen = 'lobby'
-
-                    // version 2
-                    //stopSequenceClient()
-
-                    // v3: send ws mesg to server, telling to leave game?
                     stopSequenceClient('lobby')
                     sendBackToLobby()
                 }

@@ -376,7 +376,6 @@ body {
   border: 3px solid #2a1810;
   border-style: inset;
   padding: 10px;
-  /* margin-bottom: 15px; */
   margin: 0 auto;
   position: relative;
   background: #1a1a0d;
@@ -437,7 +436,6 @@ body {
   background-size: 20px 20px;
   box-sizing: border-box;
   overflow: hidden;
-  /* Prevents growing past parent */
 }
 
 .chat-box {
@@ -603,7 +601,6 @@ body {
   min-width: 320px;
   max-width: 400px;
   flex-shrink: 0;
-  /* Prevent shrinking */
   gap: 3px;
   margin-top: 20px;
 }
@@ -717,15 +714,6 @@ button {
   margin-top: 20px;
 }
 
-/*
-.lobby-timer {
-  font-size: 24px;
-  font-weight: bold;
-  color: orange;
-  text-align: center;
-  margin-top: 20px;
-} */
-
 @keyframes slideIn {
   from {
     transform: translateX(100%);
@@ -832,7 +820,6 @@ button {
   display: block;
   background: #1a1a0d;
   color: #ff8c00;
-  /* color: #00ff41; */
   text-align: center;
   margin: -30px -30px 20px -30px;
   padding: 10px;
@@ -841,7 +828,6 @@ button {
   font-weight: bold;
   letter-spacing: 2px;
   border-bottom: 2px solid #8b4513;
-  /* text-shadow: 0 0 5px #00ff41; */
   text-shadow: 0 0 5px #ff8c00;
 }
 
@@ -1033,16 +1019,12 @@ button {
   font-weight: bold;
   padding: 20px 40px;
   border: 4px solid #654321;
-  /* border-style: outset; */
   background: #8b4513;
   color: #f4f1e8;
   cursor: pointer;
   transition: all 0.1s ease;
   text-transform: uppercase;
   letter-spacing: 2px;
-  /* box-shadow:
-    4px 4px 0px #4a2c17,
-    8px 8px 0px #2d1b0f; */
   text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
   position: relative;
   z-index: 2;
@@ -1071,8 +1053,6 @@ button {
 
 /* Ghost Player */
 .player.ghost {
-  /* opacity: 0.5;
-  filter: grayscale(1) blur(1px); */
   pointer-events: none;
   opacity: 0;
   pointer-events: none;

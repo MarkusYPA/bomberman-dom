@@ -39,7 +39,6 @@ export function makeLevelMap() {
 };
 
 export function makeWalls(level) {
-
     // place 6 * 5 solid walls inside play area
     for (let i = 0; i < 6; i++) {
         for (let j = 0; j < 5; j++) {
@@ -116,7 +115,7 @@ export function makeWalls(level) {
         ) {
             const x = gridStep * mapX
             const y = gridStep * mapY
-            const name = `bombUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`  // use as id to DOM element?
+            const name = `bombUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
             const newBombUp = new BombUp(x, y, gridStep * 1.0, name, mapY, mapX)
             bbstate.powerups.set(name, newBombUp)
             powerUpMap[mapY][mapX] = [name, newBombUp]
@@ -137,7 +136,7 @@ export function makeWalls(level) {
         ) {
             const x = gridStep * mapX
             const y = gridStep * mapY
-            const name = `flameUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`  // use as id to DOM element?
+            const name = `flameUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
             const newFlameUp = new FlameUp(x, y, gridStep * 1.0, name, mapY, mapX)
             bbstate.powerups.set(name, newFlameUp)
             powerUpMap[mapY][mapX] = [name, newFlameUp]
@@ -158,7 +157,7 @@ export function makeWalls(level) {
         ) {
             const x = gridStep * mapX
             const y = gridStep * mapY
-            const name = `speedUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`  // use as id to DOM element?
+            const name = `speedUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
             const newSpeedUp = new SpeedUp(x, y, gridStep * 1.0, name, mapY, mapX)
             bbstate.powerups.set(name, newSpeedUp)
             powerUpMap[mapY][mapX] = [name, newSpeedUp]
