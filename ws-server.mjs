@@ -10,11 +10,11 @@ export const clients = new Map() // socket -> { id, nickname }
 export const heldInputs = new Map() // id -> Set of held directions
 
 let countdownTimer = null
-let countdown = 2 // 10
+let countdown = 10 // 10
 let lobbyTimer = null
 let lobbyTimeLeft = null
 
-const LOBBY_DURATION = 3 //20
+const LOBBY_DURATION = 20 //20
 
 function encodeMessage(str) {
     const json = Buffer.from(str)
