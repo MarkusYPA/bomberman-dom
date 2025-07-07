@@ -62,7 +62,7 @@ function reduceState(serverState) {
                 msgState.payload[key] = val
             }
         } else if (val instanceof Map) {
-            if (key === 'newFlames') { 
+            if (key === 'newFlames') {
                 // new flames into an array of objects
                 msgState.payload.newFlames = []
                 for (const flame of val.values()) {
@@ -103,7 +103,7 @@ export function broadcast(obj) {
             deadSockets.push(socket)
         }
     }
-    
+
     // Clean up dead sockets
     deadSockets.forEach(socket => {
         clients.delete(socket)
@@ -160,6 +160,7 @@ function startLobbyTimer() {
             lobbyTimer = null
             lobbyTimeLeft = null
             broadcast({ type: 'lobbyFinished' })
+            resetCountdown() // Ensure any existing countdown is reset
             startCountdown()
             return
         }
@@ -171,6 +172,7 @@ function startLobbyTimer() {
             lobbyTimer = null
             lobbyTimeLeft = null
             broadcast({ type: 'lobbyFinished' })
+            resetCountdown() // Ensure any existing countdown is reset
             startCountdown()
         }
     }, 1000)
@@ -235,7 +237,7 @@ export function handleUpgrade(req, socket) {
             }
         }
         clients.delete(socket)
-        
+
         // Properly close the socket if it's still open
         if (!socket.destroyed) {
             try {
@@ -357,7 +359,7 @@ export function handleUpgrade(req, socket) {
                         count: clients.size
                     }))
                     socket.write(countMsg)
-                    
+
                     // Send current points to the new player so they can see everyone's scores
                     const currentPoints = countPoints()
                     const pointsMsg = encodeMessage(JSON.stringify({
@@ -366,7 +368,7 @@ export function handleUpgrade(req, socket) {
                         players: game.getState()
                     }))
                     socket.write(pointsMsg)
-                    
+
                     // Reset countdown whenever the number of players changes
                     updateCountdown()
                     broadcastPlayerCount()
@@ -412,7 +414,7 @@ export function handleUpgrade(req, socket) {
                         type: 'leaveConfirmed'
                     }))
                     socket.write(leaveConfirmMsg)
-                    
+
                     // Delay cleanup to allow client to handle the message
                     setTimeout(() => {
                         cleanup() // Clean up the socket and player state
@@ -434,7 +436,7 @@ export function handleUpgrade(req, socket) {
     const handleDisconnect = (reason) => {
         if (isCleanedUp) return
         console.log(`Client ${id} disconnected: ${reason}`)
-        
+
         try {
             cleanup()
             const points = countPoints()
@@ -475,14 +477,29 @@ export function tickGame() {
 
 export function updateCountdown() {
     if (!mainGameRunning) {
-        if (clients.size >= 4) {
-            // Stop lobby timer if running, start countdown immediately
-            resetLobbyTimer()
-            if (!countdownTimer) {
+        if (clients.size === 4) {
+            // If we're in lobby timer phase and reach 4 players, skip to countdown
+            if (lobbyTimer) {
+                resetLobbyTimer()
+                startCountdown()
+            }
+            // If we're already in countdown phase and someone joins, restart countdown
+            else if (countdownTimer) {
+                resetCountdown()
+                startCountdown()
+            }
+            // If no timers are running, start countdown directly
+            else {
                 startCountdown()
             }
         } else if (clients.size >= 2) {
-            if (!lobbyTimer && !lobbyTimeLeft && !countdownTimer) {
+            // If countdown was running but we dropped below 4 players, restart countdown (not lobby timer)
+            if (countdownTimer) {
+                resetCountdown()
+                startCountdown()
+            }
+            // If no timers are running, start lobby timer
+            else if (!lobbyTimer && !lobbyTimeLeft) {
                 startLobbyTimer()
             }
         } else {

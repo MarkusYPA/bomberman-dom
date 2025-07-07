@@ -10,6 +10,7 @@ let ws // WebSocket connection
 let nickname
 let firstState = true
 let isLeavingGame = false // Track if user is intentionally leaving
+const msgDivs = [] // Store message divs for redrawing
 
 // Function to create beautiful nickname modal
 function createNicknameModal() {
@@ -217,17 +218,57 @@ function updatePoints(points) {
         }
     }
     // update points in framework state to trigger scoreboard re-render
-    for (const[id, points] of Object.entries(clientGameState.points)){
+    for (const [id, points] of Object.entries(clientGameState.points)) {
         if (state.players && state.players[id]) {
             state.players[id].points = points
         }
-    }    
+    }
 }
 
 function updatePlayerCount() {
     const playerCountElement = document.getElementById('player-count-container')
     if (playerCountElement) {
         mount(playerCountElement, PlayerCountComponent())
+    }
+}
+
+function makeMessage(msg) {
+    // Create message container
+    const messageDiv = document.createElement('div')
+    const isOwnMessage = msg.nickname === nickname
+    messageDiv.className = `chat-message ${isOwnMessage ? 'own' : 'other'}`
+
+    // Create sender name (only show for other people's messages)
+    if (!isOwnMessage) {
+        const senderDiv = document.createElement('div')
+        senderDiv.className = 'message-sender'
+        senderDiv.textContent = msg.nickname
+        messageDiv.appendChild(senderDiv)
+    }
+
+    // Create message bubble with player color
+    const bubbleDiv = document.createElement('div')
+    bubbleDiv.className = `message-bubble player-color-${msg.playerId}`
+    bubbleDiv.textContent = msg.message
+    messageDiv.appendChild(bubbleDiv)
+
+    // Create timestamp
+    const timestampDiv = document.createElement('div')
+    timestampDiv.className = 'message-timestamp'
+    const now = new Date()
+    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    timestampDiv.textContent = timeString
+
+    messageDiv.appendChild(timestampDiv)
+
+    return messageDiv
+}
+
+export function redrawAllMessages() {
+    const chatBox = document.getElementById('chat')
+    if (chatBox) {
+        msgDivs.forEach(d => chatBox.appendChild(d))
+        chatBox.scrollTop = chatBox.scrollHeight
     }
 }
 
@@ -281,7 +322,7 @@ export async function startClient() {
                     if (!(id in msg.payload)) {
                         delete state.players[id]
                     }
-                }                
+                }
                 for (const [id, playerInfo] of Object.entries(msg.payload)) {
                     if (state.players[id]) {
                         for (const [key, val] of Object.entries(playerInfo)) {
@@ -307,48 +348,20 @@ export async function startClient() {
                 chatBox.scrollTop = chatBox.scrollHeight
             }
 
-            // Check if user is at the bottom before adding message
             const isAtBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1
-
-            // Create message container
-            const messageDiv = document.createElement('div')
-            const isOwnMessage = msg.nickname === nickname
-            messageDiv.className = `chat-message ${isOwnMessage ? 'own' : 'other'}`
-
-            // Create sender name (only show for other people's messages)
-            if (!isOwnMessage) {
-                const senderDiv = document.createElement('div')
-                senderDiv.className = 'message-sender'
-                senderDiv.textContent = msg.nickname
-                messageDiv.appendChild(senderDiv)
-            }
-
-            // Create message bubble with player color
-            const bubbleDiv = document.createElement('div')
-            bubbleDiv.className = `message-bubble player-color-${msg.playerId}`
-            bubbleDiv.textContent = msg.message
-            messageDiv.appendChild(bubbleDiv)
-
-            // Create timestamp
-            const timestampDiv = document.createElement('div')
-            timestampDiv.className = 'message-timestamp'
-            const now = new Date()
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            timestampDiv.textContent = timeString
-
-            messageDiv.appendChild(timestampDiv)
-
+            const messageDiv = makeMessage(msg)
+            msgDivs.push(messageDiv)
             chatBox.appendChild(messageDiv)
 
             if (isAtBottom) {
-            // User was at bottom, auto-scroll to show new message
+                // User was at bottom, auto-scroll to show new message
                 chatBox.scrollTop = chatBox.scrollHeight
             } else {
-            // User is reading older messages, show new message indicator
+                // User is reading older messages, show new message indicator
                 showNewMessageIndicator()
             }
         } else if (msg.type === 'duplicateNickname') {
-        // Show error message and prompt for new nickname
+            // Show error message and prompt for new nickname
             showErrorMessage(msg.message)
             // Prompt user to enter a different nickname
             createNicknameModal().then(newNickname => {
@@ -360,7 +373,7 @@ export async function startClient() {
                 }
             })
         } else if (msg.type === 'error') {
-        // Display error message to user
+            // Display error message to user
             showErrorMessage(msg.message)
         } else if (msg.type === 'startgame') {
             clearClientGameState()  // make sure no old calls try to collapse walls
@@ -410,13 +423,13 @@ export async function startClient() {
     ws.addEventListener('close', (event) => {
         clearTimeout(connectionTimeout)
         console.log('WebSocket connection closed:', event.code, event.reason)
-        
+
         // Don't show error if user is intentionally leaving the game
         if (isLeavingGame) {
             isLeavingGame = false // Reset flag
             return
         }
-        
+
         // Only show error for unexpected closures (not normal or manual closures)
         if (event.code !== 1000 && event.code !== 1001) {
             showErrorMessage('Connection lost. Please refresh the page to reconnect.')
@@ -491,14 +504,14 @@ export function setupChatHandlers() {
     }
 }
 
-export function sendLeaveGame(){
+export function sendLeaveGame() {
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: 'leaveGame' }))
         // Don't set isLeavingGame here - wait for server confirmation
     }
 }
 
-export function sendBackToLobby(){
+export function sendBackToLobby() {
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: 'backToLobby' }))
     }
