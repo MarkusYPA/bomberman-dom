@@ -10,11 +10,11 @@ export const clients = new Map() // socket -> { id, nickname }
 export const heldInputs = new Map() // id -> Set of held directions
 
 let countdownTimer = null
-let countdown = 5 // 10
+let countdown = 10 // 10
 let lobbyTimer = null
 let lobbyTimeLeft = null
 
-const LOBBY_DURATION = 10 //20
+const LOBBY_DURATION = 20 //20
 
 function encodeMessage(str) {
     const json = Buffer.from(str)
@@ -161,7 +161,11 @@ function startLobbyTimer() {
             lobbyTimer = null
             lobbyTimeLeft = null
             broadcast({ type: 'lobbyFinished' })
-            startCountdown()
+
+            // Start game immediately when 4 players join during lobby timer
+            broadcast({ type: 'countdownFinished' })
+            stopMiniGame()
+            startSequence(clients)
             return
         }
         lobbyTimeLeft--
@@ -172,6 +176,7 @@ function startLobbyTimer() {
             lobbyTimer = null
             lobbyTimeLeft = null
             broadcast({ type: 'lobbyFinished' })
+            resetCountdown() // Ensure any existing countdown is reset
             startCountdown()
         }
     }, 1000)
@@ -477,13 +482,22 @@ export function tickGame() {
 export function updateCountdown() {
     if (!mainGameRunning) {
         if (clients.size >= 4) {
-            // Stop lobby timer if running, start countdown immediately
+            // Stop any running timers and start game immediately when 4 players
             resetLobbyTimer()
-            if (!countdownTimer) {
-                startCountdown()
-            }
+            resetCountdown()
+
+            // Start game instantly when 4 players are connected
+            broadcast({ type: 'countdownFinished' }) // Notify clients that game is starting
+
+            // Stop minigame and start bomberman immediately
+            stopMiniGame()
+            startSequence(clients)
         } else if (clients.size >= 2) {
-            if (!lobbyTimer && !lobbyTimeLeft && !countdownTimer) {
+            // If countdown was running but we dropped below 4 players, restart countdown
+            if (countdownTimer) {
+                resetCountdown()
+                startCountdown()
+            } else if (!lobbyTimer && !lobbyTimeLeft) {
                 startLobbyTimer()
             }
         } else {
