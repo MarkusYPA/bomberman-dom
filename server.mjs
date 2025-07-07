@@ -1,7 +1,7 @@
 import { createServer } from 'http'
 import { createReadStream, existsSync } from 'fs'
 import { extname, join } from 'path'
-import { handleUpgrade, tickGame } from './ws-server.mjs'
+import { handleUpgrade, tickGame } from './ws-messaging.mjs'
 
 const mediaTypes = {
     '.html': 'text/html',

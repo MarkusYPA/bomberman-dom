@@ -1,7 +1,7 @@
 import { makeWalls, makeLevelMap, createPlayer } from './initialize.js'
 import { clearTempsState, getNarrowState, bbstate } from './bomberbear-state.js'
 import { interval } from './config.js'
-import { broadcast, clients, heldInputs, updateCountdown } from '../ws-server.mjs'
+import { broadcast, clients, heldInputs, updateCountdown } from '../ws-messaging.mjs'
 import { startMiniGame } from '../server.mjs'
 
 export let bounds
