@@ -478,7 +478,7 @@ export function tickGame() {
 
 export function updateCountdown() {
     if (!mainGameRunning) {
-        if (clients.size >= 4) {
+        if (clients.size === 4) {
             // If we're in lobby timer phase and reach 4 players, skip to countdown
             if (lobbyTimer) {
                 resetLobbyTimer()
