@@ -1,5 +1,4 @@
-import { speed } from './config.mjs'
-
+const speed = 0.15
 
 export default class Game {
     constructor() {

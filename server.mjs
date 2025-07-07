@@ -2,7 +2,6 @@ import { createServer } from 'http'
 import { createReadStream, existsSync } from 'fs'
 import { extname, join } from 'path'
 import { handleUpgrade, tickGame } from './ws-server.mjs'
-import { interval } from './config.mjs'
 
 const mediaTypes = {
     '.html': 'text/html',
@@ -54,7 +53,7 @@ let miniGameIntervalId = null
 
 export function startMiniGame(){
     if (!miniGameIntervalId) {
-        miniGameIntervalId = setInterval(tickGame, interval)
+        miniGameIntervalId = setInterval(tickGame, 10)
     }
 }
 

@@ -80,8 +80,6 @@ function reduceState(serverState) {
     return msgState
 }
 
-//let stateCount = 0
-
 export function broadcast(obj) {
     let msg
     if (obj.type === 'gamestate') {
