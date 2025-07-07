@@ -94,11 +94,10 @@ export function startSequenceClient() {
         if (tasks.length > 0) {
             let task = tasks.shift()
             task()
-            requestAnimationFrame(processNextTask)
+            setTimeout(processNextTask, 16)
         }
     }
-
-    requestAnimationFrame(processNextTask)
+    setTimeout(processNextTask, 0)
 }
 
 export function stopSequenceClient(screenState = 'lobby') {

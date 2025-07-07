@@ -270,7 +270,6 @@ export async function startClient() {
         } else if (msg.type === 'countdownFinished') {
             state.screen = 'game' // Switch to game screen
             state.countdownTime = null
-            updateCountdown()
         } else if (msg.type === 'playerCount') {
             state.playerCount = msg.count
             updatePlayerCount()
