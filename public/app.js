@@ -1,6 +1,6 @@
 import { createVNode, mount } from './framework/mini.js'
 import { state, subscribe, createReactiveComponent } from './framework/state.js'
-import { sendLeaveGame, sendBackToLobby, setupChatHandlers, startClient } from './client.js'
+import { sendLeaveGame, sendBackToLobby, setupChatHandlers, startClient, redrawAllMessages } from './client.js'
 import { stopSequenceClient } from './bomberman/runGame.js'
 import { loadAllSounds } from './bomberman/sounds.js'
 
@@ -168,6 +168,7 @@ function update(changedPath) {
             }
         }
         setupChatHandlers()
+        redrawAllMessages()
     } else if ((changedPath === 'lobbyTime' || changedPath === 'countdownTime') && state.screen === 'lobby') {
         // For timer changes, only update the header text
         const headerElement = document.querySelector('.game-header h2')

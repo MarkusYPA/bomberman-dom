@@ -10,11 +10,11 @@ export const clients = new Map() // socket -> { id, nickname }
 export const heldInputs = new Map() // id -> Set of held directions
 
 let countdownTimer = null
-let countdown = 10 // 10
+let countdown = 5 // 10
 let lobbyTimer = null
 let lobbyTimeLeft = null
 
-const LOBBY_DURATION = 20 //20
+const LOBBY_DURATION = 10 //20
 
 function encodeMessage(str) {
     const json = Buffer.from(str)
@@ -63,7 +63,7 @@ function reduceState(serverState) {
                 msgState.payload[key] = val
             }
         } else if (val instanceof Map) {
-            if (key === 'newFlames') { 
+            if (key === 'newFlames') {
                 // new flames into an array of objects
                 msgState.payload.newFlames = []
                 for (const flame of val.values()) {
@@ -104,7 +104,7 @@ export function broadcast(obj) {
             deadSockets.push(socket)
         }
     }
-    
+
     // Clean up dead sockets
     deadSockets.forEach(socket => {
         clients.delete(socket)
@@ -236,7 +236,7 @@ export function handleUpgrade(req, socket) {
             }
         }
         clients.delete(socket)
-        
+
         // Properly close the socket if it's still open
         if (!socket.destroyed) {
             try {
@@ -358,7 +358,7 @@ export function handleUpgrade(req, socket) {
                         count: clients.size
                     }))
                     socket.write(countMsg)
-                    
+
                     // Send current points to the new player so they can see everyone's scores
                     const currentPoints = countPoints()
                     const pointsMsg = encodeMessage(JSON.stringify({
@@ -367,7 +367,7 @@ export function handleUpgrade(req, socket) {
                         players: game.getState()
                     }))
                     socket.write(pointsMsg)
-                    
+
                     // Reset countdown whenever the number of players changes
                     updateCountdown()
                     broadcastPlayerCount()
@@ -413,7 +413,7 @@ export function handleUpgrade(req, socket) {
                         type: 'leaveConfirmed'
                     }))
                     socket.write(leaveConfirmMsg)
-                    
+
                     // Delay cleanup to allow client to handle the message
                     setTimeout(() => {
                         cleanup() // Clean up the socket and player state
@@ -435,7 +435,7 @@ export function handleUpgrade(req, socket) {
     const handleDisconnect = (reason) => {
         if (isCleanedUp) return
         console.log(`Client ${id} disconnected: ${reason}`)
-        
+
         try {
             cleanup()
             const points = countPoints()
