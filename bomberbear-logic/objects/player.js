@@ -1,8 +1,8 @@
 import { Bomb } from './bomb.js'
-import { bombTime, bombs, bounds, flames, timedEvents, levelMap, powerUpMap } from './game.js'
+import { bombTime, bombs, bounds, flames, timedEvents, levelMap, powerUpMap } from '../bomberbear-logic.js'
 import { Timer } from './timer.js'
-import { state } from '../bm-server-shared/state.js'
-import { gameSpeed, gridStep, halfStep, mult } from '../bm-server-shared/config.js'
+import { bbstate } from '../bomberbear-state.js'
+import { gameSpeed, gridStep, halfStep, mult } from '../config.js'
 import { BombUp, FlameUp, LifeUp, SpeedUp, WallClip } from './powerup.js'
 
 let timedCount = 0
@@ -127,9 +127,9 @@ export class Player {
             }
 
             if (newPowerup) {
-                state.powerups.set(name, newPowerup)
+                bbstate.powerups.set(name, newPowerup)
                 powerUpMap[row][col] = [name, newPowerup]
-                state.newItems.set(name, newPowerup)  // only track changes for rendering
+                bbstate.newItems.set(name, newPowerup)  // only track changes for rendering
             }
         }
 
@@ -165,7 +165,7 @@ export class Player {
 
             // solid wall collisions
             const collidingWalls = []
-            for (const wall of state.solidWalls) {
+            for (const wall of bbstate.solidWalls) {
                 if (wall.checkCollision(newX, newY, this.size, slowDown).toString() != [newX, newY].toString()) {
                     collidingWalls.push(wall)
                     if (collidingWalls.length == 1) break // Can't collide with more than one solid wall
@@ -173,7 +173,7 @@ export class Player {
             };
 
             // weak wall collisions
-            for (const wall of state.weakWalls.values()) {
+            for (const wall of bbstate.weakWalls.values()) {
                 if (!this.wallClip && wall.checkCollision(newX, newY, this.size, slowDown).toString() != [newX, newY].toString()) {
                     collidingWalls.push(wall)
                     if (collidingWalls.length === 3) break // Can't collide with more than three walls
@@ -223,7 +223,7 @@ export class Player {
             }
 
             // power-ups hit
-            for (const pow of state.powerups.values()) {
+            for (const pow of bbstate.powerups.values()) {
                 if (this.alive && (!(levelMap[pow.row] && levelMap[pow.row][pow.col] && typeof levelMap[pow.row][pow.col] === 'string' && levelMap[pow.row][pow.col].startsWith('weakWall'))) && checkHit(playerBounds, pow)) {
                     if (pow.powerType === 'bomb') {
                         this.bombAmount++
@@ -246,7 +246,7 @@ export class Player {
                         this.powerups.push('wallClip')
                     }
                     pow.pickUp()
-                    state.pickedItems.push(pow.name)
+                    bbstate.pickedItems.push(pow.name)
                     break
                 };
             };

@@ -34,9 +34,8 @@ You'll need Node.js installed. If you don't have it, figure it out.
 ## Project Structure (For the Curious)
 
 *   `server.mjs`: The main server application entry point.
-*   `ws-server.mjs`: Handles WebSocket connections and broadcasting.
-*   `bm-server/`: Contains all the core game logic and entity definitions (players, bombs, walls, power-ups, game loop).
-*   `bm-server-shared/`: Holds shared constants and the main game state object.
+*   `ws-messaging.mjs`: Handles WebSocket connections and broadcasting.
+*   `bomberbear-logic/`: Contains all the core game logic, main game state object and entity definitions (players, bombs, walls, power-ups, game loop).
 *   `public/`: All client-side code, including the UI, rendering logic, and client-side WebSocket handling.
 *   `.vscode/`: VS Code settings, mostly for ESLint.
 *   `package.json`: Project dependencies and scripts.

@@ -1,5 +1,5 @@
-import { clientGameState } from '../shared/state.js'
-import { playerId, setNewLives, setThisPlayer } from './runGame.js'
+import { clientGameState } from './clientstate.js'
+import { playerId, setNewLives, setThisPlayer } from './bomberbear-render.js'
 import { playSound } from './sounds.js'
 
 const domPlayers = new Map()

@@ -1,5 +1,5 @@
 import { Timer } from './timerClient.js'
-import { clientEvents } from './runGame.js'
+import { clientEvents } from './bomberbear-render.js'
 import { playSound } from './sounds.js'
 
 function generalItemAttributes(domItem, item) {

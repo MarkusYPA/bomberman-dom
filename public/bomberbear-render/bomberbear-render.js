@@ -1,4 +1,4 @@
-import { clearClientGameState, clientGameState } from '../shared/state.js'
+import { clearClientGameState, clientGameState } from './clientstate.js'
 import { currentlyPlaying, playSound, stopSound } from './sounds.js'
 import { makeTextBar, resizeGameContainer } from './initializeClient.js'
 import { drawSolidWalls, drawWeakWalls, collapseWeakWall } from './renderWalls.js'

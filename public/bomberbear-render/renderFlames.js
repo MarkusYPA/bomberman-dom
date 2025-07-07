@@ -1,6 +1,6 @@
 import { Timer } from './timerClient.js'
-import { clientEvents } from './runGame.js'
-import { gridStep, halfStep } from '../shared/config.js'
+import { clientEvents } from './bomberbear-render.js'
+import { gridStep, halfStep } from './clientconfig.js'
 
 let timedCount = 0
 

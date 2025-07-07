@@ -1,8 +1,8 @@
 import { Flame } from './flames.js'
-import { bombs, bombTime, levelMap, flames, timedEvents, powerUpMap, playerNames } from './game.js'
+import { bombs, bombTime, levelMap, flames, timedEvents, powerUpMap, playerNames } from '../bomberbear-logic.js'
 import { Timer } from './timer.js'
-import { state } from '../bm-server-shared/state.js'
-import { gridStep, halfStep, mult } from '../bm-server-shared/config.js'
+import { bbstate } from '../bomberbear-state.js'
+import { gridStep, halfStep, mult } from '../config.js'
 
 let flameCounter = 0
 let timedCount = 0
@@ -64,7 +64,7 @@ function makeFlame(x, y, dir) {
     }
 
     flames.set(name, newFlame)     // complete map for collisions
-    state.newFlames.set(name, newFlame)  // only track changes for rendering
+    bbstate.newFlames.set(name, newFlame)  // only track changes for rendering
     timeFlame(newFlame)
     return newFlame
 }
@@ -108,7 +108,7 @@ export class Bomb {
         this.setValues(this.size, row, col, power)
         this.active = true
         bombs.set(this.name, this)      // add bomb to map for collision checks
-        state.newBombs.set(this.name, this)
+        bbstate.newBombs.set(this.name, this)
         levelMap[this.mapRow][this.mapCol] = ['bomb', this]  // store reference to level map
 
         this.countNow = timedCount
@@ -138,7 +138,7 @@ export class Bomb {
 
     explode() {
         this.glowing = true
-        state.newBombs.set(this.name, this)
+        bbstate.newBombs.set(this.name, this)
 
         // Draw flames of explosion in the middle
         makeFlame(this.x, this.y, 'H')
@@ -226,7 +226,7 @@ export class Bomb {
             this.glowing = false
             this.active = false
 
-            state.removedBombs.set(this.name, this)
+            bbstate.removedBombs.set(this.name, this)
             bombs.delete(this.name)
             timedEvents.delete(`explosion${this.countNow}`)
             levelMap[this.mapRow][this.mapCol] = ''
@@ -237,10 +237,10 @@ export class Bomb {
 
     destroyWall(row, col) {
         let name = levelMap[row][col]
-        state.collapsingWalls.push(name)
+        bbstate.collapsingWalls.push(name)
 
         const timedDeleteWall = new Timer(() => {
-            state.weakWalls.delete(name)
+            bbstate.weakWalls.delete(name)
             levelMap[row][col] = ''
             timedEvents.delete(`deleteWall${this.countNow}`)
         }, 500)

@@ -1,9 +1,9 @@
-import { levelMap, powerUpMap } from './game.js'
-import { Player } from './player.js'
-import { BombUp, FlameUp, LifeUp, SpeedUp, WallClip } from './powerup.js'
-import { SolidWall, WeakWall } from './walls.js'
-import { state } from '../bm-server-shared/state.js'
-import { gridStep, halfStep, mult } from '../bm-server-shared/config.js'
+import { levelMap, powerUpMap } from './bomberbear-logic.js'
+import { Player } from './objects/player.js'
+import { BombUp, FlameUp, LifeUp, SpeedUp, WallClip } from './objects/powerup.js'
+import { SolidWall, WeakWall } from './objects/walls.js'
+import { bbstate } from './bomberbear-state.js'
+import { gridStep, halfStep, mult } from './config.js'
 
 export function createPlayer(playerName, id = 1) {
     const playerSpeed = 4.5 * mult
@@ -49,7 +49,7 @@ export function makeWalls(level) {
             const y = gridStep * mapY
             // Create SolidWall instance with level passed
             const newSolid = new SolidWall(x, y, gridStep, level)      // 6 * 5 solid walls
-            state.solidWalls.push(newSolid)
+            bbstate.solidWalls.push(newSolid)
 
             levelMap[mapY][mapX] = 'solidWall'
         };
@@ -64,7 +64,7 @@ export function makeWalls(level) {
             const x = gridStep * mapX
             const y = gridStep * mapY
             const newSolid = new SolidWall(x, y, gridStep, level)
-            state.surroundingWalls.push(newSolid)
+            bbstate.surroundingWalls.push(newSolid)
         }
     };
     const xVals = [-1, 13]
@@ -75,12 +75,12 @@ export function makeWalls(level) {
             const x = gridStep * mapX
             const y = gridStep * mapY
             const newSolid = new SolidWall(x, y, gridStep, level)
-            state.surroundingWalls.push(newSolid)
+            bbstate.surroundingWalls.push(newSolid)
         }
     };
 
     // place weak walls randomly
-    while (state.weakWalls.size < 44) {
+    while (bbstate.weakWalls.size < 44) {
         const mapX = Math.floor(Math.random() * 13)
         const mapY = Math.floor(Math.random() * 11)
 
@@ -99,7 +99,7 @@ export function makeWalls(level) {
         const name = `weakWall${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
         const newWeak = new WeakWall(x, y, gridStep, level, name)
 
-        state.weakWalls.set(name, newWeak)
+        bbstate.weakWalls.set(name, newWeak)
         levelMap[mapY][mapX] = name
     };
 
@@ -118,7 +118,7 @@ export function makeWalls(level) {
             const y = gridStep * mapY
             const name = `bombUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`  // use as id to DOM element?
             const newBombUp = new BombUp(x, y, gridStep * 1.0, name, mapY, mapX)
-            state.powerups.set(name, newBombUp)
+            bbstate.powerups.set(name, newBombUp)
             powerUpMap[mapY][mapX] = [name, newBombUp]
             placements ++
         };
@@ -139,7 +139,7 @@ export function makeWalls(level) {
             const y = gridStep * mapY
             const name = `flameUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`  // use as id to DOM element?
             const newFlameUp = new FlameUp(x, y, gridStep * 1.0, name, mapY, mapX)
-            state.powerups.set(name, newFlameUp)
+            bbstate.powerups.set(name, newFlameUp)
             powerUpMap[mapY][mapX] = [name, newFlameUp]
             placements ++
         };
@@ -160,7 +160,7 @@ export function makeWalls(level) {
             const y = gridStep * mapY
             const name = `speedUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`  // use as id to DOM element?
             const newSpeedUp = new SpeedUp(x, y, gridStep * 1.0, name, mapY, mapX)
-            state.powerups.set(name, newSpeedUp)
+            bbstate.powerups.set(name, newSpeedUp)
             powerUpMap[mapY][mapX] = [name, newSpeedUp]
             placements ++
         };
@@ -181,32 +181,11 @@ export function makeWalls(level) {
             const y = gridStep * mapY
             const name = `lifeUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
             const newLifeUp = new LifeUp(x, y, gridStep * 1.0, name, mapY, mapX)
-            state.powerups.set(name, newLifeUp)
+            bbstate.powerups.set(name, newLifeUp)
             powerUpMap[mapY][mapX] = [name, newLifeUp]
             placements ++
         };
     }
-
-    // place 2 bomb clip powerups inside weak walls  
-    /* placements = 0
-    while (placements < 2) {
-        const mapX = Math.floor(Math.random() * 13)
-        const mapY = Math.floor(Math.random() * 11)
-
-        if (levelMap[mapY][mapX] &&
-            typeof levelMap[mapY][mapX] == 'string' &&
-            levelMap[mapY][mapX].startsWith('weakWall') &&
-            !powerUpMap[mapY][mapX]
-        ) {
-            const x = gridStep * mapX
-            const y = gridStep * mapY
-            const name = `bombClip${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
-            const newBombClip = new BombClip(x, y, gridStep * 1.0, name, mapY, mapX)
-            state.powerups.set(name, newBombClip)
-            powerUpMap[mapY][mapX] = [name, newBombClip]
-            placements ++
-        };
-    } */
 
     // place 2 wall clip powerups inside weak walls  
     placements = 0
@@ -223,7 +202,7 @@ export function makeWalls(level) {
             const y = gridStep * mapY
             const name = `wallClip${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`
             const newWallClip = new WallClip(x, y, gridStep * 1.0, name, mapY, mapX)
-            state.powerups.set(name, newWallClip)
+            bbstate.powerups.set(name, newWallClip)
             powerUpMap[mapY][mapX] = [name, newWallClip]
             placements ++
         };

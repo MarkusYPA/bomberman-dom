@@ -1,8 +1,8 @@
 import { createVNode, mount } from './framework/mini.js'
 import { state, subscribe, createReactiveComponent } from './framework/state.js'
 import { sendLeaveGame, sendBackToLobby, setupChatHandlers, startClient, redrawAllMessages } from './client.js'
-import { stopSequenceClient } from './bomberman/runGame.js'
-import { loadAllSounds } from './bomberman/sounds.js'
+import { stopSequenceClient } from './bomberbear-render/bomberbear-render.js'
+import { loadAllSounds } from './bomberbear-render/sounds.js'
 
 state.screen = 'start'
 state.players = {}          // This can be kept for compatibility, but not used for rendering
@@ -28,21 +28,21 @@ export const PlayerBoardComponent = createReactiveComponent(
         return createVNode('div', {
             class: 'scoreboard-box'
         },
-            createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
-            ...[1, 2, 3, 4].map(i => {
-                const player = state.players[i]
-                return createVNode('div', {
-                    class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
-                },
-                    // display player points
-                    createVNode('span', { class: 'player-points' },
-                        player ? player.points ? player.points : '0' : ''
-                    ),
-                    createVNode('span', { class: 'player-nickname' },
-                        player ? player.nickname : `Player ${i}`
-                    )
-                )
-            })
+        createVNode('div', { id: 'player-count-container' }, PlayerCountComponent()),
+        ...[1, 2, 3, 4].map(i => {
+            const player = state.players[i]
+            return createVNode('div', {
+                class: `scoreboard-player player-color-${i}${player ? '' : ' inactive'}`
+            },
+            // display player points
+            createVNode('span', { class: 'player-points' },
+                player ? player.points ? player.points : '0' : ''
+            ),
+            createVNode('span', { class: 'player-nickname' },
+                player ? player.nickname : `Player ${i}`
+            )
+            )
+        })
         )
     },
     ['players'] // Only watch the 'players' path

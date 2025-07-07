@@ -1,4 +1,4 @@
-import { gridStep, mult } from '../shared/config.js'
+import { gridStep, mult } from './clientconfig.js'
 
 export function resizeGameContainer(level = 1) {
     const gameContainer = document.getElementById('game')

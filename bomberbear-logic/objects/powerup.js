@@ -1,7 +1,7 @@
-import { powerUpMap, timedEvents } from './game.js'
+import { powerUpMap, timedEvents } from '../bomberbear-logic.js'
 import { Timer } from './timer.js'
-import { state } from '../bm-server-shared/state.js'
-import { halfStep } from '../bm-server-shared/config.js'
+import { bbstate } from '../bomberbear-state.js'
+import { halfStep } from '../config.js'
 
 let timedCount = 0
 
@@ -29,11 +29,11 @@ class PowerUp {
 
     pickUp() {
         powerUpMap[this.row][this.col] = ''
-        state.powerups.delete(this.name)
+        bbstate.powerups.delete(this.name)
     }
 
     burn() {
-        state.burningItems.push(this.name)
+        bbstate.burningItems.push(this.name)
         const countNow = timedCount
         const timedCollapse = new Timer(() => {
             this.pickUp()
