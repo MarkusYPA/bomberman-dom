@@ -1,6 +1,6 @@
 import { makeWalls, makeLevelMap, createPlayer } from './initialize.js'
 import { clearTempsState, getNarrowState, state } from '../bm-server-shared/state.js'
-import { interval, speed } from '../bm-server-shared/config.js'
+import { interval } from '../bm-server-shared/config.js'
 import { broadcast, clients, heldInputs, updateCountdown } from '../ws-server.mjs'
 import { startMiniGame } from '../server.mjs'
 
@@ -112,7 +112,7 @@ function runGame() {
             const input = heldInputs.get(p.id)
             if (!input) return // Skip if player disconnected
             if (ending) input.bomb = false     // don't allow bomb drops when end sequence has started
-            p.movePlayer(speed, input)
+            p.movePlayer(input)
             input.bomb = false
         })
 

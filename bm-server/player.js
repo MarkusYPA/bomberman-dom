@@ -2,7 +2,7 @@ import { Bomb } from './bomb.js'
 import { bombTime, bombs, bounds, flames, timedEvents, levelMap, powerUpMap } from './game.js'
 import { Timer } from './timer.js'
 import { state } from '../bm-server-shared/state.js'
-import { gridStep, halfStep, mult } from '../bm-server-shared/config.js'
+import { gameSpeed, gridStep, halfStep, mult } from '../bm-server-shared/config.js'
 import { BombUp, FlameUp, LifeUp, SpeedUp, WallClip } from './powerup.js'
 
 let timedCount = 0
@@ -23,7 +23,7 @@ export class Player {
         this.bombAmount = 1
         this.bombPower = 2
         this.isMoving = false
-        this.score = 0
+        //this.score = 0
         this.killer = ''
         //this.bombClip = false
         this.wallClip = false
@@ -135,7 +135,7 @@ export class Player {
 
     };
 
-    movePlayer(deltaTime, inputs) {
+    movePlayer(inputs) {
 
         if (this.alive) {
 
@@ -153,7 +153,7 @@ export class Player {
             };
 
             // normalize speed for diagonal movement and different framerates
-            let moveDistance = this.speed * slowDown * deltaTime
+            let moveDistance = this.speed * slowDown * gameSpeed
 
             // calculate next position
             let newX = this.x
@@ -224,7 +224,7 @@ export class Player {
 
             // power-ups hit
             for (const pow of state.powerups.values()) {
-                if (this.alive && !levelMap[pow.row][pow.col].startsWith('weakWall') && checkHit(playerBounds, pow)) {
+                if (this.alive && (!(levelMap[pow.row][pow.col] && levelMap[pow.row][pow.col].startsWith('weakWall'))) && checkHit(playerBounds, pow)) {
                     if (pow.powerType === 'bomb') {
                         this.bombAmount++
                         this.powerups.push('bombUp')
