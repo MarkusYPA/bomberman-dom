@@ -337,21 +337,21 @@ export async function startClient() {
         } else if (msg.type === 'chat') {
             const chatBox = document.getElementById('chat')
             if (chatBox) {
-                chatBox.scrollTop = chatBox.scrollHeight
+                const isAtBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1
+                const messageDiv = makeMessage(msg)
+                msgDivs.push(messageDiv)
+                chatBox.appendChild(messageDiv)
+
+                if (isAtBottom) {
+                    // User was at bottom, auto-scroll to show new message
+                    chatBox.scrollTop = chatBox.scrollHeight
+                } else {
+                    // User is reading older messages, show new message indicator
+                    showNewMessageIndicator()
+                }
             }
 
-            const isAtBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 1
-            const messageDiv = makeMessage(msg)
-            msgDivs.push(messageDiv)
-            chatBox.appendChild(messageDiv)
-
-            if (isAtBottom) {
-                // User was at bottom, auto-scroll to show new message
-                chatBox.scrollTop = chatBox.scrollHeight
-            } else {
-                // User is reading older messages, show new message indicator
-                showNewMessageIndicator()
-            }
+            
         } else if (msg.type === 'duplicateNickname') {
             // Show error message and prompt for new nickname
             showErrorMessage(msg.message)

@@ -738,6 +738,31 @@ button {
   }
 }
 
+.chat-box .new-message-indicator {
+  position: sticky;
+  bottom: 0;
+  align-self: center;
+  background: #ff8c00;
+  color: #1a1a0d;
+  padding: 6px 12px;
+  border: 2px solid #654321;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #4a2c17;
+  z-index: 10;
+  transition: all 0.1s ease;
+  user-select: none;
+  min-width: 120px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.3);
+  margin-top: auto;
+  margin-bottom: 10px;
+}
+
 .new-message-indicator:hover {
   background: #ffa500;
   transform: translate(1px, 1px);
