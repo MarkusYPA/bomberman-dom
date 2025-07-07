@@ -479,12 +479,12 @@ export function tickGame() {
 export function updateCountdown() {
     if (!mainGameRunning) {
         if (clients.size >= 4) {
-            // If we're in lobby timer phase and reach 4 players, stop lobby and start countdown
+            // If we're in lobby timer phase and reach 4 players, skip to countdown
             if (lobbyTimer) {
                 resetLobbyTimer()
                 startCountdown()
             }
-            // If we're already in countdown phase and someone joins/leaves, just restart the countdown
+            // If we're already in countdown phase and someone joins, restart countdown
             else if (countdownTimer) {
                 resetCountdown()
                 startCountdown()
@@ -494,11 +494,13 @@ export function updateCountdown() {
                 startCountdown()
             }
         } else if (clients.size >= 2) {
-            // If countdown was running but we dropped below 4 players, restart countdown
+            // If countdown was running but we dropped below 4 players, restart countdown (not lobby timer)
             if (countdownTimer) {
                 resetCountdown()
                 startCountdown()
-            } else if (!lobbyTimer && !lobbyTimeLeft) {
+            }
+            // If no timers are running, start lobby timer
+            else if (!lobbyTimer && !lobbyTimeLeft) {
                 startLobbyTimer()
             }
         } else {

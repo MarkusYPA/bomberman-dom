@@ -99,6 +99,7 @@ function LobbyScreen() {
                 onclick: () => {
                     sendLeaveGame()
                     stopSequenceClient('start')
+                    window.location.reload() // Reload to reset the app state
                 }
             }, 'Leave Lobby'),
         ),
