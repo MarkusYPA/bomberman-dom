@@ -161,11 +161,8 @@ function startLobbyTimer() {
             lobbyTimer = null
             lobbyTimeLeft = null
             broadcast({ type: 'lobbyFinished' })
-
-            // Start game immediately when 4 players join during lobby timer
-            broadcast({ type: 'countdownFinished' })
-            stopMiniGame()
-            startSequence(clients)
+            resetCountdown() // Ensure any existing countdown is reset
+            startCountdown()
             return
         }
         lobbyTimeLeft--
@@ -482,16 +479,20 @@ export function tickGame() {
 export function updateCountdown() {
     if (!mainGameRunning) {
         if (clients.size >= 4) {
-            // Stop any running timers and start game immediately when 4 players
-            resetLobbyTimer()
-            resetCountdown()
-
-            // Start game instantly when 4 players are connected
-            broadcast({ type: 'countdownFinished' }) // Notify clients that game is starting
-
-            // Stop minigame and start bomberman immediately
-            stopMiniGame()
-            startSequence(clients)
+            // If we're in lobby timer phase and reach 4 players, stop lobby and start countdown
+            if (lobbyTimer) {
+                resetLobbyTimer()
+                startCountdown()
+            }
+            // If we're already in countdown phase and someone joins/leaves, just restart the countdown
+            else if (countdownTimer) {
+                resetCountdown()
+                startCountdown()
+            }
+            // If no timers are running, start countdown directly
+            else {
+                startCountdown()
+            }
         } else if (clients.size >= 2) {
             // If countdown was running but we dropped below 4 players, restart countdown
             if (countdownTimer) {
