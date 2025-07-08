@@ -134,10 +134,9 @@ function startCountdown() {
             countdownTimer = null
             broadcast({ type: 'countdownFinished' }) // Notify clients that countdown is finished
 
-            // stop minigame and start bomberman
+            // stop minigame and start bomber bear
             if (!mainGameRunning) {
                 stopMiniGame()
-                //console.log('clients when starting game:', clients.values())
                 startSequence(clients)
             }
         }

@@ -19,16 +19,6 @@ let ending = false
 let ended = false
 export let mainGameRunning = false
 
-export function nextLevel() {
-    bbstate.solidWalls = []
-    bbstate.weakWalls.clear()
-    bombs.clear()
-    flames.clear()
-    timedEvents.clear()
-    bbstate.powerups.clear()
-    stopGame()
-};
-
 // start main game
 export function startSequence(clients) {
     // Stop any existing game loop first
@@ -42,7 +32,7 @@ export function startSequence(clients) {
     ended = false
 
     for (const c of clients.values()){
-        bbstate.players.push(createPlayer(c.nickname, c.id))     // bomb ownership breaks (no collision until player is away from it)
+        bbstate.players.push(createPlayer(c.nickname, c.id))
         playerNames.push(c.nickname)
     }
 
@@ -89,7 +79,7 @@ function endSequence() {
             levelMap = []
             powerUpMap = []
 
-            ended = true    // exits game loop
+            ended = true    // triggers exit game loop
             broadcast({ type: 'back to lobby' })
             mainGameRunning = false
             updateCountdown()
@@ -99,18 +89,15 @@ function endSequence() {
 
 function runGame() {
     // Make sure we don't have multiple game loops running
-    if (gameIntervalId) {
-        clearInterval(gameIntervalId)
-        gameIntervalId = null
-    }
+    stopGame()
     
     gameIntervalId = setInterval(gameLoop, interval)
 
     function gameLoop() {
         bbstate.players.forEach(p => {
             const input = heldInputs.get(p.id)
-            if (!input) return // Skip if player disconnected
-            if (ending) input.bomb = false     // don't allow bomb drops when end sequence has started
+            if (!input) return                  // Skip if player disconnected
+            if (ending) input.bomb = false      // don't allow bomb drops when end sequence has started
             p.movePlayer(input)
             input.bomb = false
         })
