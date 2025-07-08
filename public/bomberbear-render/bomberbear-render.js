@@ -11,8 +11,8 @@ import { state } from '../framework/state.js'
 export let playerId = ''
 export let thisPlayer
 let livesinfos = []
-let oldlives = 0
-export let newLives = 0
+let oldlives = 0                        
+export let newLives = 0                 // update in-game 'livesinfos' when lives change
 export const clientEvents = new Map()
 let isMoving = false
 let wasMoving = false
@@ -56,6 +56,7 @@ export function restartGame() {
     location.reload()
 };
 
+// HUD info of player names and lives
 export function updateLivesInfo(players) {
     oldlives = 0
     players.forEach((p, i) => {
@@ -73,8 +74,8 @@ export function updateLivesInfo(players) {
     }
 }
 
+// runs when mini game stops and full game loads
 export function startSequenceClient() {
-    //console.log('starting game')
     thisPlayer = clientGameState.players[playerId - 1]
 
     let tasks = [
@@ -90,6 +91,7 @@ export function startSequenceClient() {
         () => { runGame() },
     ]
 
+    // don't perform all start-up tasks at once to avoid frame drops
     function processNextTask() {
         if (tasks.length > 0) {
             let task = tasks.shift()
@@ -100,12 +102,11 @@ export function startSequenceClient() {
     setTimeout(processNextTask, 0)
 }
 
+// stop running full game
 export function stopSequenceClient(screenState = 'lobby') {
-    //console.log('ending game')
-    gameRunning = false     // exit game loop    
+    gameRunning = false     // triggers exiting game loop    
     clearClientGameState()  // clear state
     state.screen = screenState
-    // minigame will run and update with websockets messages
 }
 
 function runGame() {
@@ -114,7 +115,6 @@ function runGame() {
 
     function gameLoop(_timestamp) {
         if (!gameRunning) {
-            //console.log('exiting client game loop')
             return
         }
 
@@ -158,7 +158,6 @@ function runGame() {
             clientGameState.pickedItems.length = 0
         }
 
-        // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)
         requestAnimationFrame(gameLoop)
     }
 };

@@ -5,14 +5,14 @@ import { broadcast, clients, heldInputs, updateCountdown } from '../ws-messaging
 import { startMiniGame } from '../server.mjs'
 
 export let bounds
-export let levelMap                    // for placing elements, wall collapses
-export let powerUpMap                  // powerups on different map
+export let levelMap                     // for placing elements, wall collapses
+export let powerUpMap                   // powerups on different map
 
-export const bombs = new Map()         // for player collisions
+export const bombs = new Map()          // for player collisions
 export const bombTime = 2500
-export const flames = new Map()        // for player collisions
+export const flames = new Map()         // for player collisions
 export const timedEvents = new Map()
-export const playerNames = []
+export const playerNames = []           // deals with bomb collisions
 
 let gameIntervalId
 let ending = false
