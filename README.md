@@ -46,3 +46,13 @@ You'll need Node.js installed. If you don't have it, figure it out.
 *   **WebSockets:** For real-time, bidirectional communication.
 *   **ESLint:** Keeping the code somewhat readable (or at least, linted).
 
+## Authors
+- [Roope Hongisto](https://github.com/RuBoMa)
+- [Parisa Rahimi Darabad](https://github.com/prahimi94)
+- [Toft Diederichs](https://github.com/Toft08)
+- [Markus Amberla](https://github.com/MarkusYPA)
+
+#### Original Single-Player [Bomber Bear](https://github.com/MarkusYPA/make-your-game) by
+- [Markus Amberla](https://github.com/MarkusYPA)
+- [Sagyn Osmonaliev](https://github.com/borsokman)
+- [Inka Säävuori](https://github.com/Inkasaa)
