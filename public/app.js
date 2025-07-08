@@ -163,6 +163,7 @@ function update(changedPath) {
         }
         setupChatHandlers()
         redrawAllMessages()
+        scaleGameBody()
     } else if ((changedPath === 'lobbyTime' || changedPath === 'countdownTime') && state.screen === 'lobby') {
         // For timer changes, only update the header text
         const headerElement = document.querySelector('.game-header h2')
@@ -183,7 +184,29 @@ window.addEventListener('keydown', function (e) {
     };
 })
 
+// fit game into narrow window
+function scaleGameBody() {
+    if (state.screen === 'lobby' || state.screen === 'game') {    
+        const element = document.querySelector('.game-body')
+        const width = window.innerWidth
+
+        if (element) {
+            element.style.transformOrigin = 'top left'
+            if (width < 766 && width > 300) {
+                const scale = (width-16) / 750
+                element.style.transform = `scale(${scale})`
+            } else if (width <= 400) {
+                const scale = (400-16) / 750
+                element.style.transform = `scale(${scale})`
+            } else {
+                element.style.transform = 'scale(1)'
+            }
+        }
+    }
+}
+
 loadAllSounds()
+window.addEventListener('resize', scaleGameBody)
 subscribe(update, ['screen', 'lobbyTime', 'countdownTime']) // Watch for screen and timer changes
 stopSequenceClient('lobby')
 state.screen = 'start'
