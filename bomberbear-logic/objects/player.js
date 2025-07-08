@@ -205,10 +205,12 @@ export class Player {
             this.x = Math.max(0, Math.min(newX, bounds.width - this.size))
             this.y = Math.max(0, Math.min(newY, bounds.height - this.size))
 
-            // Fatal, power-up and finish collisions after movement 
+            
+            // Flame and power-up collisions after movement 
             let playerBounds = { left: this.x, right: this.x + this.size, top: this.y, bottom: this.y + this.size }
+
+            // flames hit
             if (this.vulnerable) {
-                // flames hit
                 for (const flame of flames.values()) {
                     if (checkHit(playerBounds, flame)) {
                         this.killer = 'bomb'
