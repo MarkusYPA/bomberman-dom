@@ -31,6 +31,8 @@ You'll need Node.js installed. If you don't have it, figure it out.
     ```
     The server will start, and you can then open `https://localhost:3000` in your web browser to connect as a client. Open multiple tabs/browsers to simulate multiple players.
 
+**Can't be bothered with local setup?** We get it. just use the online version: [https://bomberman-test-production.up.railway.app/](https://bomberman-test-production.up.railway.app/)
+
 ## Project Structure (For the Curious)
 
 *   `server.mjs`: The main server application entry point.
