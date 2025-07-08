@@ -23,9 +23,7 @@ export class Player {
         this.bombAmount = 1
         this.bombPower = 2
         this.isMoving = false
-        //this.score = 0
         this.killer = ''
-        //this.bombClip = false
         this.wallClip = false
         this.powerups = []      // drop one picked powerup at death
         this.invulnerability()
@@ -94,7 +92,7 @@ export class Player {
             const col = Math.floor((this.x + this.size / 2) / gridStep)
 
             // pick one string from this.powerups or, if it's empty, from powerupTypes
-            const powerupTypes = ['bombUp', 'flameUp', 'speedUp', 'wallClip']   // no life up: could lead to long lineof 6 lives
+            const powerupTypes = ['bombUp', 'flameUp', 'speedUp', 'wallClip']   // no life up: could lead to long line of 6+ lives
             let powerupType = ''
             if (this.powerups.length > 0) {
                 powerupType = this.powerups[Math.floor(Math.random() * this.powerups.length)]
@@ -104,7 +102,6 @@ export class Player {
 
             // Create the powerup and the necessary information
             const name = `${powerupType}${String(col).padStart(2, '0')}${String(row).padStart(2, '0')}`
-            //console.log('dropping power up:', row, col, powerupType, name)
 
             let newPowerup
             const [x, y] = [this.x + this.size / 2 - halfStep, this.y + this.size / 2 - halfStep]
@@ -152,7 +149,7 @@ export class Player {
                 slowDown = 0.707
             };
 
-            // normalize speed for diagonal movement and different framerates
+            // normalize speed for diagonal movement and different update frequencies
             let moveDistance = this.speed * slowDown * gameSpeed
 
             // calculate next position
@@ -198,14 +195,13 @@ export class Player {
 
             // adjust next coordinates based on collisions to bombs
             for (const bomb of collidingBombs) {
-                // No collision if bomb has this owner or bombClip power-up has been picked up
-                //if (!this.bombClip && !bomb.owners[this.name]) {
+                // No collision if invulnerable or bomb has this owner
                 if (this.vulnerable && !bomb.owners[this.name]) {
                     [newX, newY] = bomb.checkCollision(newX, newY, this.size)
                 };
             };
 
-            // set coordinates based on possible collisions to area boundaries
+            // finally apply next coordinates adjusting for possible collisions to area boundaries
             this.x = Math.max(0, Math.min(newX, bounds.width - this.size))
             this.y = Math.max(0, Math.min(newY, bounds.height - this.size))
 
@@ -234,7 +230,7 @@ export class Player {
                         this.powerups.push('flameUp')
                     }
                     if (pow.powerType === 'speed') {
-                        this.speed += 1.2 * mult // Increase speed by a reasonable amount
+                        this.speed += 1.2 * mult
                         this.powerups.push('speedUp')
                     }
                     if (pow.powerType === 'life') {
