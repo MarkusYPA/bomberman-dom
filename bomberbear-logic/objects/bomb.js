@@ -155,7 +155,8 @@ export class Bomb {
 
         for (let i = 1; i <= this.power; i++) {
 
-            // In four directions: Stop flames at walls and edges, destroy weak walls, explode other bombs
+            // In four directions: Stop flames at walls and edges, destroy weak walls and power-ups, explode other bombs
+            // Player object handles player-flame collisions
             for (let j = 0; j < 4; j++) {
                 switch (fourDirs[j].name) {
                 case 'right':
@@ -208,7 +209,7 @@ export class Bomb {
 
             // Mark flames as ends
             if (fourDirs[0].going && lastRight && i == this.power) {
-                lastRight.direction = 'R'  // Does it update the one on the map too? Same reference?
+                lastRight.direction = 'R'
             }
             if (fourDirs[1].going && lastLeft && i == this.power) {
                 lastLeft.direction = 'L'
@@ -225,7 +226,6 @@ export class Bomb {
         const timedExplotion = new Timer(() => {
             this.glowing = false
             this.active = false
-
             bbstate.removedBombs.set(this.name, this)
             bombs.delete(this.name)
             timedEvents.delete(`explosion${this.countNow}`)

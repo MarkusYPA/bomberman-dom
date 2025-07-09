@@ -16,6 +16,7 @@ const mediaTypes = {
     '.ico': 'image/x-icon',
 }
 
+// Create server to handle incoming HTTP requests and serve static files from 'public'.
 const server = createServer((req, res) => {
     let filePath = req.url === '/' ? '/index.html' : req.url
     filePath = join('public', filePath)
@@ -48,7 +49,6 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason)
 })
 
-
 let miniGameIntervalId = null
 
 export function startMiniGame(){
@@ -57,9 +57,6 @@ export function startMiniGame(){
     }
 }
 
-// Start server side mini game loop right away.
-startMiniGame()
-
 export function stopMiniGame() {
     if (miniGameIntervalId) {
         clearInterval(miniGameIntervalId)
@@ -67,6 +64,10 @@ export function stopMiniGame() {
     }
 }
 
+// Start server side mini game loop right away
+startMiniGame()
+
+// Start server
 server.listen(3000, () => {
     console.log('Server running at http://localhost:3000')
 })

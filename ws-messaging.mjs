@@ -16,6 +16,8 @@ let lobbyTimeLeft = null
 
 const LOBBY_DURATION = 20 //20
 
+// encodeMessage() formats outgoing messages according to the WebSocket protocol:
+// wrap string in correct binary frame, proper header and payload lengt
 function encodeMessage(str) {
     const json = Buffer.from(str)
     const len = json.length
@@ -25,7 +27,7 @@ function encodeMessage(str) {
     return Buffer.concat([header, json])
 }
 
-// JSON.stringify doesn't serialize Maps and Sets by default, this helps
+// JSON.stringify doesn't serialize Maps and Sets, this helps
 function replacer(key, value) {
     if (value instanceof Map) {
         return Object.fromEntries(value)
@@ -36,6 +38,7 @@ function replacer(key, value) {
     return value
 }
 
+// reduceState() removes unused properties and empty objects
 function reduceState(serverState) {
     // state info to send to clients
     const msgState = { type: 'gamestate', payload: { players: [] } }
@@ -80,6 +83,8 @@ function reduceState(serverState) {
     return msgState
 }
 
+// broadcast() sends a message to all connected WebSocket clients.
+// If a client socket is no longer writable or is destroyed, it removes that client from the list.
 export function broadcast(obj) {
     let msg
     if (obj.type === 'gamestate') {
@@ -129,15 +134,15 @@ function startCountdown() {
             countdownTimer = null
             broadcast({ type: 'countdownFinished' }) // Notify clients that countdown is finished
 
-            // stop minigame and start bomberman
+            // stop minigame and start bomber bear
             if (!mainGameRunning) {
                 stopMiniGame()
-                //console.log('clients when starting game:', clients.values())
                 startSequence(clients)
             }
         }
     }, 1000)
 }
+
 function resetLobbyTimer() {
     if (lobbyTimer) {
         clearInterval(lobbyTimer)
@@ -176,12 +181,16 @@ function startLobbyTimer() {
     }, 1000)
 }
 
+// handleUpgrade() upgrades an incoming HTTP connection to a WebSocket connection.
+// It performs the WebSocket handshake, manages client registration, message parsing, 
+// heartbeat (ping/pong) for connection health, and handles player join/leave logic.
 export function handleUpgrade(req, socket) {
     const key = req.headers['sec-websocket-key']
     const hash = createHash('sha1')
         .update(key + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11')
         .digest('base64')
 
+    // Handshake: send required HTTP headers to establish a WebSocket connection
     socket.write(
         'HTTP/1.1 101 Switching Protocols\r\n' +
         'Upgrade: websocket\r\n' +
@@ -226,8 +235,8 @@ export function handleUpgrade(req, socket) {
         }
         if (id) {
             minigame.removePlayer(id)   // remove player from mini game
-            removePlayer(id)        // remove player from main game
-            removePlayerFromGame(id) // Also remove from bomberbear game state
+            removePlayer(id)            // remove player from main game
+            removePlayerFromGame(id)    // remove player from game state
             heldInputs.delete(id)
             const sender = clients.get(socket)?.nickname || '???'
             if (sender && sender !== '???') {
@@ -250,34 +259,37 @@ export function handleUpgrade(req, socket) {
         let offset = 0
         while (offset < buffer.length) {
             try {
+                // opcode indicates the type of WebSocket frame received
                 const opcode = buffer[offset] & 0x0f
 
-                // Handle pong frames (opcode 10)
+                // Handle pong frames (opcode 10) to keep connection alive
                 if (opcode === 10) {
                     lastPongTime = Date.now()
                     offset += 2 // Skip pong frame
                     continue
                 }
 
-                if (opcode !== 1) break // Only handle text frames
+                // Only handle text frames (opcode 1)
+                if (opcode !== 1) break
 
-                // Make sure at least 2 bytes are available for header
+                // Ensure there are enough bytes for the header
                 if (offset + 2 > buffer.length) break
 
+                // Parse payload length and mask position
                 let len = buffer[offset + 1] & 127
                 let maskStart = offset + 2
 
                 if (len === 126) {
-                    // Need 4 bytes for header + extended length
+                    // Extended payload length (16-bit)
                     if (offset + 4 > buffer.length) break
                     len = buffer.readUInt16BE(offset + 2)
                     maskStart = offset + 4
                 } else if (len === 127) {
-                    // Not supporting 64-bit lengths, skip frame
+                    // 64-bit lengths not supported, skip frame
                     break
                 }
 
-                // Need 4 bytes for mask + payload
+                // Ensure mask and payload are present
                 if (maskStart + 4 > buffer.length) break
                 const mask = buffer.slice(maskStart, maskStart + 4)
                 const dataStart = maskStart + 4
@@ -286,13 +298,14 @@ export function handleUpgrade(req, socket) {
                 // Make sure the whole payload is available
                 if (dataEnd > buffer.length) break
 
+                // Unmask the payload data
                 const data = buffer.slice(dataStart, dataEnd)
                 const unmasked = Buffer.alloc(data.length)
                 for (let i = 0; i < data.length; i++) {
                     unmasked[i] = data[i] ^ mask[i % 4]
                 }
                 const msg = unmasked.toString()
-                const obj = JSON.parse(msg)
+                const obj = JSON.parse(msg) // Parse the JSON message from client
 
                 if (obj.type === 'join') {
                     if (clients.size >= 4) {
@@ -453,6 +466,7 @@ export function handleUpgrade(req, socket) {
     socket.on('error', (err) => handleDisconnect(`Socket error: ${err.code} - ${err.message}`))
 }
 
+// tickGame() runs one tick of the mini game and sends the result to all clients
 export function tickGame() {
     // Move players based on held inputs
     for (const [id, held] of heldInputs.entries()) {
