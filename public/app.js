@@ -192,7 +192,7 @@ function scaleGameBody() {
 
         if (element) {
             element.style.transformOrigin = 'top left'
-            if (width < 766 && width > 300) {
+            if (width < 766 && width > 400) {
                 const scale = (width-16) / 750
                 element.style.transform = `scale(${scale})`
             } else if (width <= 400) {
